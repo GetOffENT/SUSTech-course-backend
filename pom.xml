@@ -21,6 +21,11 @@
     <developers>
         <developer/>
     </developers>
+    <modules>
+        <module>sustech-course-base</module>
+        <module>sustech-course-api</module>
+        <module>sustech-course-common</module>
+    </modules>
     <scm>
         <connection/>
         <developerConnection/>
