@@ -1,0 +1,33 @@
+server:
+  port: 8085
+spring:
+  profiles:
+    active: dev
+  redis:
+    host: ${sustechcourse.redis.host}
+    port: ${sustechcourse.redis.port}
+    database: ${sustechcourse.redis.database}
+    password: ${sustechcourse.redis.password}
+  mail:
+    username: ${sustechcourse.mail.username}
+    password: ${sustechcourse.mail.password}
+    host: ${sustechcourse.mail.host}
+    properties:
+      mail:
+        smtp:
+          auth: ${sustechcourse.mail.properties.mail.smtp.auth}
+          ssl:
+            enable: ${sustechcourse.mail.properties.mail.smtp.ssl.enable}
+          starttls:
+            enable: ${sustechcourse.mail.properties.mail.smtp.starttls.enable}
+            required: ${sustechcourse.mail.properties.mail.smtp.starttls.required}
+    port: ${sustechcourse.mail.port}
+    default-encoding: utf-8
+  # 解决swagger启动报错问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB

@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+edu.sustech.common.advice.GlobalExceptionAdvice,\
+edu.sustech.common.config.RedisConfiguration,\
+edu.sustech.common.config.WebMvcConfiguration

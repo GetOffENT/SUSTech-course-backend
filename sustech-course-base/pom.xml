@@ -16,6 +16,8 @@
         <module>sustech-course-user</module>
         <module>sustech-course-interaction</module>
         <module>sustech-course-admin</module>
+        <module>sustech-course-message</module>
+        <module>sustech-course-gateway</module>
     </modules>
 
     <properties>
@@ -25,6 +27,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>edu.sustech</groupId>
+            <artifactId>sustech-course-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -78,17 +86,8 @@
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
 
-        <!--swagger-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-        </dependency>
 
-        <!--lombok用来简化实体类：需要安装lombok插件-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
+
 
         <!--xls-->
         <!--        <dependency>-->

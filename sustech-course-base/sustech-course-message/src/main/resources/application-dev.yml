@@ -1,0 +1,20 @@
+sustechcourse:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password: redis
+  mail:
+    username: sustech_course@163.com
+    password: TF7hXuaBZskJDpvM
+    host: smtp.163.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
+    port: 994
