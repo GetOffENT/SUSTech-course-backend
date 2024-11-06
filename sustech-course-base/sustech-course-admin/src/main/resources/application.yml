@@ -1,5 +1,19 @@
 server:
   port: 8084
 spring:
+  application:
+    name: sustech-course-admin
   profiles:
     active: dev
+  cloud:
+    nacos:
+      server-addr: ${sustechcourse.cloud.nacos.server-addr}
+  datasource:
+    url: jdbc:mysql://${sustechcourse.database.host}:3306/${sustechcourse.database.database}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: ${sustechcourse.database.password}
+  # 解决swagger启动报错问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

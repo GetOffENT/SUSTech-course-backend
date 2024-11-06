@@ -18,3 +18,10 @@ sustechcourse:
             enable: true
             required: true
     port: 994
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  cloud:
+    nacos:
+      server-addr: 192.168.101.135:8848

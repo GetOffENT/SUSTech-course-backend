@@ -1,8 +1,13 @@
 server:
   port: 8085
 spring:
+  application:
+    name: sustech-course-message
   profiles:
     active: dev
+  cloud:
+    nacos:
+      server-addr: ${sustechcourse.cloud.nacos.server-addr}
   redis:
     host: ${sustechcourse.redis.host}
     port: ${sustechcourse.redis.port}
@@ -29,5 +34,5 @@ spring:
       matching-strategy: ant_path_matcher
   servlet:
     multipart:
-      max-file-size: 1024MB
-      max-request-size: 1024MB
+      max-file-size: ${sustechcourse.servlet.multipart.max-file-size}
+      max-request-size: ${sustechcourse.servlet.multipart.max-request-size}
