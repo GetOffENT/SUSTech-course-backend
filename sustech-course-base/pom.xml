@@ -17,7 +17,6 @@
         <module>sustech-course-interaction</module>
         <module>sustech-course-admin</module>
         <module>sustech-course-message</module>
-        <module>sustech-course-gateway</module>
     </modules>
 
     <properties>
@@ -130,11 +129,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
         </dependency>
     </dependencies>
 

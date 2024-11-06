@@ -25,6 +25,7 @@
         <module>sustech-course-base</module>
         <module>sustech-course-api</module>
         <module>sustech-course-common</module>
+        <module>sustech-course-gateway</module>
     </modules>
     <scm>
         <connection/>
@@ -59,7 +60,7 @@
         <docker.image.prefix>zx</docker.image.prefix>
         <!--<cloud-alibaba.version>0.2.2.RELEASE</cloud-alibaba.version>-->
         <knife4j>3.0.2</knife4j>
-        <hutool-core>5.8.32</hutool-core>
+        <hutool-all>5.8.32</hutool-all>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -226,8 +227,8 @@
 
             <dependency>
                 <groupId>cn.hutool</groupId>
-                <artifactId>hutool-core</artifactId>
-                <version>${hutool-core}</version>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

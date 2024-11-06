@@ -2,7 +2,7 @@ server:
   port: 8085
 spring:
   application:
-    name: sustech-course-message
+    name: message-service
   profiles:
     active: dev
   cloud:

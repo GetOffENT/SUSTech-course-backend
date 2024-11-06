@@ -5,12 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * <p>
- * 网关启动类
  * </p>
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-07 4:43
+ * @since 2024-11-07 6:01
  */
 @SpringBootApplication
 public class GatewayApplication {

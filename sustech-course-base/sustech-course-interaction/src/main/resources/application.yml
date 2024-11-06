@@ -2,7 +2,7 @@ server:
   port: 8083
 spring:
   application:
-      name: sustech-course-interaction
+    name: interaction-service
   profiles:
     active: dev
   cloud:

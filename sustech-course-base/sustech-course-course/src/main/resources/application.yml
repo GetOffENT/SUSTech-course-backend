@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-      name: sustech-course-course
+    name: course-service
   profiles:
     active: dev
   cloud:

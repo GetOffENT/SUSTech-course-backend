@@ -1,10 +1,12 @@
 package edu.sustech.common.advice;
 
+import edu.sustech.common.config.WebMvcConfiguration;
 import edu.sustech.common.exception.BadRequestException;
 import edu.sustech.common.exception.BaseException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.WebUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
  */
 @RestControllerAdvice
 @Slf4j
+@ConditionalOnClass(WebMvcConfiguration.class)
 public class GlobalExceptionAdvice {
 
     @ExceptionHandler(BaseException.class)
