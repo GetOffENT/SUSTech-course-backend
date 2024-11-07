@@ -1,6 +1,7 @@
 package edu.sustech.gateway.filter;
 
 import cn.hutool.core.collection.CollUtil;
+import edu.sustech.common.constant.AuthorizationConstant;
 import edu.sustech.common.exception.UnauthorizedException;
 import edu.sustech.gateway.properties.AuthProperties;
 import edu.sustech.gateway.util.JwtTool;
@@ -47,7 +48,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         String token = null;
-        List<String> headers = request.getHeaders().get("authorization");
+        List<String> headers = request.getHeaders().get(AuthorizationConstant.AUTHORIZATION);
         if (CollUtil.isNotEmpty(headers)) {
             token = headers.get(0);
         }
@@ -61,9 +62,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             return response.setComplete();
         }
 
-        String userInfo = userId.toString();
         ServerWebExchange swe = exchange.mutate()
-                .request(builder -> builder.header("user-info", userInfo))
+                .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()))
                 .build();
 
         return chain.filter(swe);

@@ -1,6 +1,8 @@
 package edu.sustech.message.controller;
 
+import edu.sustech.common.constant.AuthorizationConstant;
 import edu.sustech.common.result.Result;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.message.service.MailService;
 import edu.sustech.message.util.EmailUtil;
 import io.swagger.annotations.Api;
@@ -55,5 +57,13 @@ public class MailController {
                 null, List.of(file));
 
         return Result.success();
+    }
+
+
+    @GetMapping
+    public Result testToken(@RequestHeader(value = "Authorization",required = false) String authorization) {
+        System.out.println(authorization);
+        System.out.println(UserContext.getUser());
+        return Result.success(UserContext.getUser());
     }
 }
