@@ -17,7 +17,7 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/user/**
+            - Path=/user/**,/captcha/**
 sustechcourse:
   jwt:
     location: classpath:jwt.jks
@@ -26,7 +26,8 @@ sustechcourse:
     tokenTTL: 30m
   auth:
     excludePaths:
-      - /search/**
-      - /users/login
+      - /captcha/**
+      - /email/**
+      - /user/**
       - /items/**
       - /hi

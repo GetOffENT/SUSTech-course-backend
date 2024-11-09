@@ -51,7 +51,7 @@ public class MailController {
     @PostMapping
     public Result test(@RequestPart("file") MultipartFile file) {
 
-        emailUtil.sendMail(List.of("12212614@mail.sustech.edu.cn"), "测试图片", "测试图片",
+        emailUtil.sendMail(List.of("12212618@mail.sustech.edu.cn"), "测试图片", "测试图片",
                 "测试图片", false,
                 List.of("12212613@mail.sustech.edu.cn"),
                 null, List.of(file));
@@ -64,6 +64,6 @@ public class MailController {
     public Result testToken(@RequestHeader(value = "Authorization",required = false) String authorization) {
         System.out.println(authorization);
         System.out.println(UserContext.getUser());
-        return Result.success(UserContext.getUser());
+        return Result.success(1);
     }
 }

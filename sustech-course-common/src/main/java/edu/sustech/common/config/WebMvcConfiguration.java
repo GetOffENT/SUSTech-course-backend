@@ -1,10 +1,13 @@
 package edu.sustech.common.config;
 
 import edu.sustech.common.interceptor.AuthInterceptor;
+import edu.sustech.common.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,6 +18,8 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.List;
 
 /**
  * <p>
@@ -69,5 +74,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor());
+    }
+
+    /**
+     * 拓展SpringMVC框架的消息转换器
+     * @param converters
+     */
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        log.info("拓展SpringMVC框架的消息转换器...");
+        // 创建一个消息转换器
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        // 需要为消息转换器设置一个对象转换器，对象转换器可以将Java对象序列化为JSON对象
+        converter.setObjectMapper(new JacksonObjectMapper());
+        // 将自己的消息转换器添加到容器中
+        converters.add(0,converter);
     }
 }

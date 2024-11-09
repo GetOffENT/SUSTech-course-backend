@@ -13,6 +13,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${sustechcourse.database.password}
+  redis:
+    host: ${sustechcourse.redis.host}
+    port: ${sustechcourse.redis.port}
+    database: ${sustechcourse.redis.database}
+    password: ${sustechcourse.redis.password}
   # 解决swagger启动报错问题
   mvc:
     pathmatch:
@@ -23,3 +28,53 @@ feign:
 logging:
   level:
     edu.sustech: debug
+
+# 验证码配置
+aj:
+  captcha:
+    ########## 重点关注 ##########
+    # 验证码类型：default,blockPuzzle,clickWord
+    type: default
+    # 底图路径，支持全路径、项目资源路径
+    jigsaw: classpath:images/jigsaw
+    # 滑动图路径，支持全路径、项目资源路径
+    pic-click: classpath:images/pic-click
+    # 缓存类型：local,redis,other
+    cache-type: redis
+    # local缓存的阈值,达到这个值，清除缓存
+    cache-number: 1000
+    # local定时清除过期缓存(单位秒)，设置为0代表不执行
+    timing-clear: 180
+    # 滑块验证码的偏移量
+    slip-offset: 5
+    # 滑块验证码的加密坐标
+    aes-status: true
+    # 滑块验证码的滑块干扰项
+    interference-options: 2
+    # 文字验证码的文字数量【暂不可用】
+    click-word-count: 4
+    # 文字验证码的文字字体
+    font-type: WenQuanZhengHei.ttf
+    # 文字验证码的字体样式
+    font-style: 1
+    # 文字验证码的字体大小
+    font-size: 25
+    # 水印文字
+    water-mark: SUSTech-Course
+    # 水印文字字体
+    water-font: WenQuanZhengHei.ttf
+    ########## 接口相关配置 ##########
+    # 历史数据清理是否开启
+    history-data-clear-enable: false
+    # 接口请求次数一分钟限制是否开启
+    req-frequency-limit-enable: true
+    # 验证失败5次，get接口锁定
+    req-get-lock-limit: 5
+    # 验证失败后，锁定时间间隔,s
+    req-get-lock-seconds: 360
+    # get接口一分钟内请求数限制
+    req-get-minute-limit: 30
+    # check接口一分钟内请求数限制
+    req-check-minute-limit: 60
+    # verify接口一分钟内请求数限制
+    req-verify-minute-limit: 60

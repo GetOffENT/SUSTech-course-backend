@@ -1,13 +1,13 @@
 package edu.sustech.user.controller;
 
-import edu.sustech.api.client.MessageClient;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.result.Result;
+import edu.sustech.user.entity.User;
+import edu.sustech.user.service.UserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -24,11 +24,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final MessageClient messageClient;
+    private final UserService userService;
 
-    @GetMapping
-    public Result testToken() {
-
-        return Result.success(messageClient.testToken());
+    @GetMapping("/{email}")
+    public Result<String> getByEmail(@PathVariable String email) {
+        log.info("通过邮箱获取用户: {}", email);
+        User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
+        if (user == null) {
+            return Result.success();
+        }
+        return Result.error("用户已存在");
     }
+
+
 }
