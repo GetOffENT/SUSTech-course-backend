@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -21,6 +23,8 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
+@Data
+@Builder
 @Accessors(chain = true)
 @ApiModel(value = "User对象", description = "用户表")
 public class User implements Serializable {
