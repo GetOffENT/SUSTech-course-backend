@@ -1,0 +1,7 @@
+server:
+  port: 8083
+spring:
+  # 解决swagger启动报错问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

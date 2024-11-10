@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: message-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.101.135:8848
+      config:
+          file-extension: yaml
+          shared-configs:
+          - data-id: shared-log.yaml
+          - data-id: shared-redis.yaml

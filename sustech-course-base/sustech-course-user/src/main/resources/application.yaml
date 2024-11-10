@@ -1,23 +1,6 @@
 server:
   port: 8081
 spring:
-  application:
-      name: user-service
-  profiles:
-    active: dev
-  cloud:
-    nacos:
-      server-addr: ${sustechcourse.cloud.nacos.server-addr}
-  datasource:
-    url: jdbc:mysql://${sustechcourse.database.host}:3306/${sustechcourse.database.database}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ${sustechcourse.database.password}
-  redis:
-    host: ${sustechcourse.redis.host}
-    port: ${sustechcourse.redis.port}
-    database: ${sustechcourse.redis.database}
-    password: ${sustechcourse.redis.password}
   # 解决swagger启动报错问题
   mvc:
     pathmatch:
@@ -25,9 +8,6 @@ spring:
 feign:
   okhttp:
     enabled: true
-logging:
-  level:
-    edu.sustech: debug
 
 # 验证码配置
 aj:

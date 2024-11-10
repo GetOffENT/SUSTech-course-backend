@@ -1,7 +1,9 @@
 sustechcourse:
   database:
     host: 192.168.101.135
+    port: 3306
     database: sc-course
+    username: root
     password: mysql
   cloud:
     nacos:

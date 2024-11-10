@@ -1,18 +1,6 @@
 server:
   port: 8085
 spring:
-  application:
-    name: message-service
-  profiles:
-    active: dev
-  cloud:
-    nacos:
-      server-addr: ${sustechcourse.cloud.nacos.server-addr}
-  redis:
-    host: ${sustechcourse.redis.host}
-    port: ${sustechcourse.redis.port}
-    database: ${sustechcourse.redis.database}
-    password: ${sustechcourse.redis.password}
   mail:
     username: ${sustechcourse.mail.username}
     password: ${sustechcourse.mail.password}
