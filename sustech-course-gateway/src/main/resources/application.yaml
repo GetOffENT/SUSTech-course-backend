@@ -18,6 +18,10 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/user/**,/captcha/**
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/admin/**
 sustechcourse:
   jwt:
     location: classpath:jwt.jks
@@ -29,5 +33,5 @@ sustechcourse:
       - /captcha/**
       - /email/**
       - /user/**
-      - /items/**
+      - /admin/**
       - /hi
