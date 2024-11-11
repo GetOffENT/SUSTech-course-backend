@@ -7,7 +7,7 @@ sustechcourse:
     nacos:
       server-addr: 192.168.101.135:8848
   redis:
-    host: localhost
+    host: 192.168.101.135
     port: 6379
     database: 0
-    password: redis
+    #password: redis

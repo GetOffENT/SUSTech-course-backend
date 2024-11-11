@@ -7,6 +7,7 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.CaptchaConstant;
+import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.RegisterException;
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.User;
@@ -50,17 +51,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long count = baseMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getEmail, registerByEmailDTO.getEmail()));
 
         if (count > 0) {
-            throw new RegisterException("用户已存在");
+            throw new RegisterException(MessageConstant.ACCOUNT_ALREADY_EXIST);
         }
 
         checkCaptcha(registerByEmailDTO.getCaptcha(), registerByEmailDTO.getEmail());
 
         User user = BeanUtil.copyProperties(registerByEmailDTO, User.class);
         // 使用hutool工具包随机字符串
-        user.setNickname("SUSTecher" + RandomUtil.randomString(10));
+        user.setNickname(MessageConstant.RANDOM_NICKNAME_PREFIX + RandomUtil.randomString(10));
         int insert = baseMapper.insert(user);
         if (insert == 0) {
-            throw new RegisterException("服务器繁忙，请稍后再试");
+            throw new RegisterException(MessageConstant.ERROR);
         }
     }
 
@@ -77,7 +78,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         Long count = baseMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getEmail, foundByEmailDTO.getEmail()));
         if (count == 0) {
-            throw new RegisterException("用户未注册");
+            throw new RegisterException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
         checkCaptcha(foundByEmailDTO.getCaptcha(), foundByEmailDTO.getEmail());
@@ -89,7 +90,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         .eq(User::getEmail, foundByEmailDTO.getEmail())
         );
         if (insert == 0) {
-            throw new RegisterException("服务器繁忙，请稍后再试");
+            throw new RegisterException(MessageConstant.ERROR);
         }
     }
 
@@ -107,14 +108,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (user == null) {
                 return Result.success();
             }
-            return Result.error("该邮箱已注册");
+            return Result.error(MessageConstant.ACCOUNT_ALREADY_EXIST);
         } else if (type.equals("found")) {
             if (user != null) {
                 return Result.success();
             }
-            return Result.error("该邮箱未注册");
+            return Result.error(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-        return Result.error("服务器繁忙，请稍后再试");
+        return Result.error(MessageConstant.ERROR);
     }
 
     // 检查redis中的验证码
@@ -123,12 +124,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 检查redis中的验证码
         // 如果不存在
         if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
-            throw new RegisterException("验证码未发送或已过期");
+            throw new RegisterException(MessageConstant.CAPTCHA_NOT_SEND_OR_EXPIRED);
         }
 
         String captcha2 = (String) redisTemplate.opsForValue().get(key);
         if (!captcha.equals(captcha2)) {
-            throw new RegisterException("验证码错误");
+            throw new RegisterException(MessageConstant.CAPTCHA_ERROR);
         }
     }
 
@@ -145,7 +146,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!response.isSuccess()) {
             String repCode = response.getRepCode();
             log.error("图形验证码校验失败: {}", repCode);
-            throw new RegisterException("验证码校验失败，请重新获取");
+            throw new RegisterException(MessageConstant.CAPTCHA_VERIFICATION_FAILED);
         }
     }
 }

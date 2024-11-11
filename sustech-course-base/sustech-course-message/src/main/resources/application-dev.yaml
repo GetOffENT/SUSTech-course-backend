@@ -1,9 +1,9 @@
 sustechcourse:
   redis:
-    host: localhost
+    host: 192.168.101.135
     port: 6379
     database: 0
-    password: redis
+    #password: redis
   mail:
     username: sustech_course@163.com
     password: TF7hXuaBZskJDpvM

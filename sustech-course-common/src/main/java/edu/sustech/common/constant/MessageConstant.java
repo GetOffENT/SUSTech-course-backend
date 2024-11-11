@@ -10,9 +10,10 @@ package edu.sustech.common.constant;
  * @since 2024-10-05 14:56
  */
 public class MessageConstant {
-    public static final String ACCOUNT_ALREADY_EXIST = "邮箱或用户名已存在";
+    public static final String ACCOUNT_ALREADY_EXIST = "该邮箱已注册";
+    public static final String RANDOM_NICKNAME_PREFIX = "SUSTecher";
     public static final String PASSWORD_ERROR = "密码错误";
-    public static final String ACCOUNT_NOT_FOUND = "账号不存在";
+    public static final String ACCOUNT_NOT_FOUND = "该邮箱未注册";
     public static final String STUDENT_NOT_FOUND = "学生不存在";
     public static final String TEACHER_NOT_FOUND = "教师不存在";
     public static final String ADMIN_NOT_FOUND = "管理员不存在";
@@ -21,5 +22,8 @@ public class MessageConstant {
     public static final String CAPTCHA_RETRY_TOO_SOON = "%d秒后可重新发送";
     public static final String CAPTCHA_MAX_SEND_LIMIT_EXCEEDED = "当天验证码发送次数超过限制：%d次";
     public static final String CAPTCHA_TYPE_NOT_SUPPORTED = "不支持的获取验证码类型";
+    public static final String CAPTCHA_ERROR = "验证码错误";
+    public static final String CAPTCHA_NOT_SEND_OR_EXPIRED = "验证码未发送或已过期";
+    public static final String CAPTCHA_VERIFICATION_FAILED = "验证码校验失败，请重新获取";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
 }

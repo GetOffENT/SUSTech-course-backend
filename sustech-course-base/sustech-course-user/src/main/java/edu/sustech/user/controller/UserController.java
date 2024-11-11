@@ -1,9 +1,6 @@
 package edu.sustech.user.controller;
 
-import com.anji.captcha.service.CaptchaService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.result.Result;
-import edu.sustech.user.entity.User;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.user.service.UserService;
@@ -30,9 +27,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
-    private final CaptchaService captchaService;
-
 
     /**
      * 判断邮箱是否已经注册
@@ -74,5 +68,6 @@ public class UserController {
         userService.foundPassword(foundByEmailDTO);
         return Result.success();
     }
+
 
 }
