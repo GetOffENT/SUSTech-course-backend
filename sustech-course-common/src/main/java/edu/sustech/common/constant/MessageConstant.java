@@ -20,4 +20,6 @@ public class MessageConstant {
     public static final String CAPTCHA_ALREADY_SEND = "验证码已发送，还需等待：%d秒";
     public static final String CAPTCHA_RETRY_TOO_SOON = "%d秒后可重新发送";
     public static final String CAPTCHA_MAX_SEND_LIMIT_EXCEEDED = "当天验证码发送次数超过限制：%d次";
+    public static final String CAPTCHA_TYPE_NOT_SUPPORTED = "不支持的获取验证码类型";
+    public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
 }

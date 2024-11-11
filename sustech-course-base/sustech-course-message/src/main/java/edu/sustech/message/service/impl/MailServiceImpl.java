@@ -37,7 +37,7 @@ public class MailServiceImpl implements MailService {
      * @param email 邮箱
      */
     @Override
-    public void sendCaptcha(String email) {
+    public void sendCaptcha(String email, String type) {
         String captcha = RandomUtil.randomNumbers(6);
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
         String captchaKey = CaptchaConstant.REGISTER_EMAIL_Captcha + email;
@@ -75,8 +75,15 @@ public class MailServiceImpl implements MailService {
         }
 
         // 发送邮件
-        String content = CaptchaConstant.CONTENT_TEMPLATE.formatted(captcha);
-        emailUtil.sendSimpleMail(email, CaptchaConstant.DEFAULT_SENDER, CaptchaConstant.EMAIL_SUBJECT, content);
+        if (CaptchaConstant.REGISTER_EMAIL.equals(type)) {
+            String content = CaptchaConstant.REGISTER_CONTENT_TEMPLATE.formatted(captcha);
+            emailUtil.sendSimpleMail(email, CaptchaConstant.DEFAULT_SENDER, CaptchaConstant.REGISTER_EMAIL_SUBJECT, content);
+        } else if (CaptchaConstant.FOUND_EMAIL.equals(type)) {
+            String content = CaptchaConstant.FOUND_CONTENT_TEMPLATE.formatted(captcha);
+            emailUtil.sendSimpleMail(email, CaptchaConstant.DEFAULT_SENDER, CaptchaConstant.FOUND_EMAIL_SUBJECT, content);
+        } else {
+            throw new CaptchaException(MessageConstant.CAPTCHA_TYPE_NOT_SUPPORTED);
+        }
         log.info("已发送到邮箱：{}, 验证码：{}", email, captcha);
     }
 }

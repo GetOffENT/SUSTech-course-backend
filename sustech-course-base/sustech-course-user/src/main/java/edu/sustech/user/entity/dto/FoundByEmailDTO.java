@@ -11,7 +11,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * <p>
@@ -19,14 +18,14 @@ import java.io.Serializable;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-09 15:57
+ * @since 2024-11-11 1:25
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "注册表单")
-public class RegisterByEmailDTO implements Serializable{
+@ApiModel(description = "找回密码表单")
+public class FoundByEmailDTO {
     @NotNull
     @Email
     private String email;
@@ -34,10 +33,6 @@ public class RegisterByEmailDTO implements Serializable{
     private String password;
     @Length(min = 6, max = 6)
     private String captcha;
-    @NotNull
-    @Max(2)
-    @Min(0)
-    private Integer role;
     @NotNull
     private String captchaVerification;
 }

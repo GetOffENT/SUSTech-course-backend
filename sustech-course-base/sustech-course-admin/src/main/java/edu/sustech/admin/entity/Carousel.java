@@ -10,8 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,7 +23,10 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
+@Builder
 @Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(value = "Carousel对象", description = "轮播图表")
 public class Carousel implements Serializable {
 

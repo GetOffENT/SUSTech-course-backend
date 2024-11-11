@@ -14,5 +14,5 @@ public interface MailService {
      * 发送验证码
      * @param email 邮箱
      */
-    void sendCaptcha(String email);
+    void sendCaptcha(String email, String type);
 }

@@ -39,14 +39,13 @@ public class MailController {
      * @param email 邮箱
      * @return Result
      */
-    @PostMapping("/sendCaptcha")
+    @PostMapping("/captcha/{type}")
     @ApiOperation("发送验证码")
-    public Result sendCaptcha(@RequestParam String email) {
+    public Result sendCaptcha(@RequestParam String email, @PathVariable String type) {
         log.info("发送验证码到邮箱：{}", email);
-        mailService.sendCaptcha(email);
+        mailService.sendCaptcha(email, type);
         return Result.success();
     }
-
 
     @PostMapping
     public Result test(@RequestPart("file") MultipartFile file) {
@@ -59,9 +58,8 @@ public class MailController {
         return Result.success();
     }
 
-
     @GetMapping
-    public Result testToken(@RequestHeader(value = "Authorization",required = false) String authorization) {
+    public Result testToken(@RequestHeader(value = "Authorization", required = false) String authorization) {
         System.out.println(authorization);
         System.out.println(UserContext.getUser());
         return Result.success(1);

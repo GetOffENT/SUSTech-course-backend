@@ -2,6 +2,7 @@ package edu.sustech.admin.service;
 
 import edu.sustech.admin.entity.Carousel;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.admin.entity.vo.CarouselAdminVO;
 import edu.sustech.admin.entity.vo.CarouselVO;
 
 import java.util.List;
@@ -21,4 +22,16 @@ public interface CarouselService extends IService<Carousel> {
      * @return 轮播图列表
      */
     List<CarouselVO> getCarouselList();
+
+    /**
+     * 获取所有轮播图列表
+     * @return 轮播图列表
+     */
+    List<CarouselAdminVO> getAllCarouselList();
+
+    /**
+     * 改变轮播图展示状态
+     * @param id 轮播图id
+     */
+    Carousel showOrHide(Long id);
 }

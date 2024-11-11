@@ -22,6 +22,16 @@ spring:
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedOriginPatterns:
+              - "http://localhost:9527"
+              - "http://localhost:5173"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+        add-to-simple-url-handler-mapping: true
 sustechcourse:
   jwt:
     location: classpath:jwt.jks

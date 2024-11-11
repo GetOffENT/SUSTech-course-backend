@@ -10,8 +10,8 @@ package edu.sustech.common.result;
  * @since 2024-11-06 18:05
  */
 public enum ResultCode {
-    SUCCESS(200, "成功"),
-    ERROR(201, "失败");
+    SUCCESS(20000, "成功"),
+    ERROR(20001, "失败");
 
     private final Integer code;
     private final String message;
