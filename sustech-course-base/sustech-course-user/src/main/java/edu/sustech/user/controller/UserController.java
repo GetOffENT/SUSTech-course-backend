@@ -3,6 +3,7 @@ package edu.sustech.user.controller;
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,6 +68,33 @@ public class UserController {
         log.info("用户找回密码: {}", foundByEmailDTO);
         userService.foundPassword(foundByEmailDTO);
         return Result.success();
+    }
+
+    /**
+     * 获取用户信息(包括其发布的课程信息汇总)
+     *
+     * @param uid 用户id
+     * @return 用户信息
+     */
+    @ApiOperation("获取用户信息")
+    @GetMapping("/{uid}")
+    public Result<UserDTO> getUserAndCoursesById(@PathVariable Long uid) {
+        log.info("获取用户信息: {}", uid);
+        return Result.success(userService.getUserAndCoursesById(uid));
+    }
+
+
+    /**
+     * 获取用户信息(提供远程调用)
+     *
+     * @param uid 用户id
+     * @return 用户信息(不包含该用户发布的课程信息)
+     */
+    @ApiOperation("获取用户信息")
+    @GetMapping("/info/{uid}")
+    public Result<UserDTO> getUserInfo(@PathVariable Long uid) {
+        log.info("获取用户信息(不包含课程信息): {}", uid);
+        return Result.success(userService.getUserById(uid));
     }
 
 

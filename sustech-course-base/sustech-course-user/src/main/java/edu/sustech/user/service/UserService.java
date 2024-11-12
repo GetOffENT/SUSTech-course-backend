@@ -5,6 +5,7 @@ import edu.sustech.user.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.api.entity.dto.UserDTO;
 
 /**
  * <p>
@@ -39,4 +40,19 @@ public interface UserService extends IService<User> {
      */
     Result<String> judgeEmail(String email, String type);
 
+    /**
+     * 根据用户ID获取用户信息
+     *
+     * @param uid 用户ID
+     * @return 用户信息
+     */
+    UserDTO getUserAndCoursesById(Long uid);
+
+    /**
+     * 根据用户ID获取用户信息(不包含课程信息)
+     *
+     * @param uid 用户ID
+     * @return 用户信息
+     */
+    UserDTO getUserById(Long uid);
 }

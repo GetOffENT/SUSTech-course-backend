@@ -7,10 +7,7 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -21,8 +18,8 @@ import lombok.experimental.Accessors;
  * @author Yuxian Wu
  * @since 2024-11-09
  */
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 @Accessors(chain = true)

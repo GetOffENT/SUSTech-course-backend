@@ -22,6 +22,10 @@ spring:
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
+        - id: course-service
+          uri: lb://course-service
+          predicates:
+            - Path=/course/**
       globalcors:
         cors-configurations:
           '[/**]':
@@ -44,4 +48,5 @@ sustechcourse:
       - /email/**
       - /user/**
       - /admin/**
+      - /course/**
       - /hi

@@ -11,6 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -25,7 +26,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "找回密码表单")
-public class FoundByEmailDTO {
+public class FoundByEmailDTO implements Serializable {
     @NotNull
     @Email
     private String email;

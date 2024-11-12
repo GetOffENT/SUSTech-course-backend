@@ -2,17 +2,22 @@ package edu.sustech.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.RegisterException;
 import edu.sustech.common.result.Result;
+import edu.sustech.common.result.ResultCode;
 import edu.sustech.user.entity.User;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.mapper.UserMapper;
 import edu.sustech.user.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,6 +25,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -37,6 +46,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final CaptchaService captchaService;
+
+    private final CourseClient courseClient;
 
     /**
      * 邮箱注册
@@ -116,6 +127,71 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.error(MessageConstant.ACCOUNT_NOT_FOUND);
         }
         return Result.error(MessageConstant.ERROR);
+    }
+
+    /**
+     * 根据用户ID获取用户信息
+     *
+     * @param uid 用户ID
+     * @return 用户信息
+     */
+    @Override
+    public UserDTO getUserAndCoursesById(Long uid) {
+
+        UserDTO userDTO = this.getUserById(uid);
+
+
+        // TODO: 实现从redis中查询该用户发布的课程id集合(redis中以set形式存储)
+//        String courseKey = "USER:COURSE:" + uid;
+//        Set<Object> courseIds = redisTemplate.opsForSet().members(courseKey);
+//        if (CollUtil.isEmpty(courseIds)) {
+//            userVO.setVideoCount(0).setLoveCount(0).setPlayCount(0);
+//            return userVO;
+//        }
+        // 远程调用，从mysql中查询该用户发布的课程信息
+        Result<UserCourseInfoDTO> coursesInfoByUserId = courseClient.getCoursesInfoByUserId(uid);
+        if (Objects.equals(coursesInfoByUserId.getCode(), ResultCode.SUCCESS.code())) {
+            UserCourseInfoDTO data = coursesInfoByUserId.getData();
+            userDTO.setCourseCount(data.getCourseCount())
+                    .setLike(data.getLike())
+                    .setPlay(data.getPlay());
+            return userDTO;
+        } else {
+            throw new RuntimeException(coursesInfoByUserId.getMessage());
+        }
+    }
+
+    /**
+     * 根据用户ID获取用户信息(不包含课程信息)
+     *
+     * @param uid 用户ID
+     * @return 用户信息
+     */
+    @Override
+    public UserDTO getUserById(Long uid) {
+        // 先从redis中查询
+        String key = "USER:INFO:" + uid;
+        // 使用json序列化
+        User user = JSONObject.parseObject((String) redisTemplate.opsForValue().get(key), User.class);
+
+        if (user == null) {
+            user = baseMapper.selectById(uid);
+            if (user == null) {
+                return null;
+            }
+            User finalUser = user;
+            CompletableFuture.runAsync(() -> {
+                // 存入redis
+                redisTemplate.opsForValue().set(key, JSONObject.toJSONString(finalUser), 10, TimeUnit.MINUTES);
+            });
+        }
+
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+
+        // TODO: 粉丝和关注暂未实现
+        userDTO.setFansCount(0).setFollowsCount(0);
+
+        return userDTO;
     }
 
     // 检查redis中的验证码

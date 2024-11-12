@@ -1,0 +1,32 @@
+package edu.sustech.course.service;
+
+import edu.sustech.course.entity.Course;
+import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.api.entity.dto.UserCourseInfoDTO;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ * 课程 服务类
+ * </p>
+ *
+ * @author Yuxian Wu
+ * @since 2024-11-12
+ */
+public interface CourseService extends IService<Course> {
+
+    /**
+     * 获取随机推荐课程
+     * @return 随机推荐课程
+     */
+    List<Map<String, Object>> getRandomRecommendCourses();
+
+    /**
+     * 根据用户id查询该用户的所有课程信息
+     * @param id 用户id
+     * @return 该用户的所有课程信息
+     */
+    UserCourseInfoDTO getUserCoursesInfoByUserId(Long id);
+}
