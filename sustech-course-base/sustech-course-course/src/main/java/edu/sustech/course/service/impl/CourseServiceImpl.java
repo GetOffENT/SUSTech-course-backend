@@ -43,20 +43,60 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<Map<String, Object>> getRandomRecommendCourses() {
-        // TODO: 查询redis中有无缓存的已发布状态的视频id数据
+        // TODO: 查询redis中有无缓存的已发布状态的课程id数据
 
-        // 先从数据库查询所有已发布状态的视频id数据
-        Set<Integer> ids = baseMapper.selectIds();
+        // 先从数据库查询所有已发布状态的课程id数据
+        List<Long> ids = baseMapper.selectPublishedCourseIds();
 
-        if (CollUtil.isNotEmpty(ids)) {
-            List<Map<String, Object>> videoList = page(ids, 1, 11);
-            // copy
-            List<Map<String, Object>> videoListCopy = new ArrayList<>(videoList);
-            // 使用hutool工具把videoList随机排序
-            Collections.shuffle(videoListCopy);
-            return videoListCopy;
+        if (CollUtil.isEmpty(ids)) {
+            return List.of();
         }
-        return List.of();
+
+        List<Map<String, Object>> courseList = page(ids, 1, 11);
+        // copy
+        List<Map<String, Object>> courseListCopy = new ArrayList<>(courseList);
+        // 使用hutool工具把courseList随机排序
+        Collections.shuffle(courseListCopy);
+        return courseListCopy;
+    }
+
+    /**
+     * 累加获取更多课程
+     *
+     * @param courseIds 已经获取的课程id列表
+     * @return 返回十门新课程，以及其id列表，并标注是否有更多课程可以获取
+     */
+    @Override
+    public Map<String, Object> getCumulativeCourses(List<Long> courseIds) {
+        // TODO: 查询redis中有无缓存的已发布状态的课程id数据
+
+        // 先从数据库查询所有已发布状态的课程id数据
+        List<Long> ids = baseMapper.selectPublishedCourseIds();
+
+        if (CollUtil.isEmpty(ids)) {
+            return Map.of(
+                    "courses", List.of(),
+                    "courseIds", List.of(),
+                    "hasMore", false
+            );
+        }
+
+        // 从ids中过滤掉已经获取的课程id
+        ids.removeAll(courseIds);
+
+        // 从ids中随机选取10条记录
+        List<Long> randomIds = getRandomElements(ids, 10);
+        List<Map<String, Object>> courseList = page(randomIds, 1, 10);
+        // copy
+        List<Map<String, Object>> courseListCopy = new ArrayList<>(courseList);
+        // 使用hutool工具把courseList随机排序
+        Collections.shuffle(courseListCopy);
+
+        return Map.of(
+                "courses", courseListCopy,
+                "courseIds", randomIds,
+                "hasMore", ids.size() - 10 > 0
+        );
     }
 
     /**
@@ -73,14 +113,14 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
 
     /**
-     * 分页查询视频信息
+     * 分页查询课程信息
      *
-     * @param ids      视频id集合
+     * @param ids      课程id集合
      * @param page     页码
      * @param pageSize 每页数量
-     * @return 视频信息
+     * @return 课程信息
      */
-    public List<Map<String, Object>> page(Set<Integer> ids, Integer page, Integer pageSize) {
+    public List<Map<String, Object>> page(List<Long> ids, Integer page, Integer pageSize) {
         if (page == null || page < 1) {
             page = 1;
         }
@@ -95,7 +135,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return List.of();
         }
 
-        List<Integer> queryIds = new ArrayList<>(ids).subList(start, Math.min(end, ids.size()));
+        List<Long> queryIds = new ArrayList<>(ids).subList(start, Math.min(end, ids.size()));
         List<Course> courseList = baseMapper.selectList(
                 new LambdaQueryWrapper<Course>()
                         .in(Course::getId, queryIds)
@@ -136,5 +176,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                     allFutures.join();
                     return map;
                 }).toList();
+    }
+
+    public <T> List<T> getRandomElements(List<T> list, int n) {
+        Collections.shuffle(list);
+        return new ArrayList<>(list.subList(0, Math.min(n, list.size())));
     }
 }

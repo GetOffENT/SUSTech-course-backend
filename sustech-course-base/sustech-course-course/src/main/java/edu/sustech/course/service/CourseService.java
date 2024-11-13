@@ -29,4 +29,11 @@ public interface CourseService extends IService<Course> {
      * @return 该用户的所有课程信息
      */
     UserCourseInfoDTO getUserCoursesInfoByUserId(Long id);
+
+    /**
+     * 累加获取更多课程
+     * @param courseIds 已经获取的课程id列表
+     * @return 返回十门新课程，以及其id列表，并标注是否有更多课程可以获取
+     */
+    Map<String, Object> getCumulativeCourses(List<Long> courseIds);
 }
