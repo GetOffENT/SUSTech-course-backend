@@ -3,6 +3,7 @@ package edu.sustech.course.controller;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
+import edu.sustech.course.entity.vo.ChapterVO;
 import edu.sustech.course.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +63,18 @@ public class CourseController {
     public Result<UserCourseInfoDTO> getUserCoursesInfoByUserId(@PathVariable Long id) {
         log.info("根据用户id查询该用户的所有课程信息 id:{}", id);
         return Result.success(courseService.getUserCoursesInfoByUserId(id));
+    }
+
+    /**
+     * 获取课程目录, 如果已经登录，则还会获取用户每一个小节是否学习
+     * @param courseId 课程id
+     * @return 课程目录(包括小节 : title id isLearned isPublic)
+     */
+    @GetMapping("/catalog/{courseId}")
+    @ApiOperation("获取课程目录")
+    public Result<List<ChapterVO>> getCatalog(@PathVariable Long courseId) {
+        log.info("获取课程目录 courseId:{}", courseId);
+        return Result.success(courseService.getCatalog(courseId));
     }
 
 }

@@ -17,6 +17,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient("user-service")
 public interface UserClient {
 
+    /**
+     * 根据用户ID获取用户信息
+     * @param uid 用户ID
+     * @return 用户信息
+     */
+    @GetMapping("/user/user/{uid}")
+    Result<UserDTO> getUserById(@PathVariable Long uid);
+
+    /**
+     * 根据用户ID获取用户信息(包含课程数据)
+     * @param uid 用户ID
+     * @return 用户信息
+     */
     @GetMapping("/user/user/info/{uid}")
     Result<UserDTO> getUserAndCoursesById(@PathVariable Long uid);
 

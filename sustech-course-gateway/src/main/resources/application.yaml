@@ -26,6 +26,14 @@ spring:
           uri: lb://course-service
           predicates:
             - Path=/course/**
+        - id: interaction-service
+          uri: lb://interaction-service
+          predicates:
+            - Path=/interaction/**
+        - id: interaction-service-websocket
+          uri: lb:ws://interaction-service
+          predicates:
+            - Path=/ws/**
       globalcors:
         cors-configurations:
           '[/**]':
@@ -49,4 +57,6 @@ sustechcourse:
       - /user/**
       - /admin/**
       - /course/**
+      - /interaction/**
+      - /ws/**
       - /hi

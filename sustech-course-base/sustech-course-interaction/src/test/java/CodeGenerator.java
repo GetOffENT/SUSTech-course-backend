@@ -11,16 +11,16 @@ public class CodeGenerator {
 
     @Test
     public void create() {
-        FastAutoGenerator.create("jdbc:mysql://192.168.101.135:3306/sc-course?serverTimezone=GMT%2B8", "root", "mysql")
+        FastAutoGenerator.create("jdbc:mysql://192.168.101.135:3306/sc-interaction?serverTimezone=GMT%2B8", "root", "mysql")
                 .globalConfig(builder -> {
                     builder.author("Yuxian Wu") // 设置作者
-                            .outputDir("E:\\courses\\CS309-Object-orientedAnalysisAndDesign\\project\\SUSTech-course\\SUSTech-course-backend\\sustech-course-base\\sustech-course-course" + "/src/main/java") // 输出目录
+                            .outputDir("E:\\courses\\CS309-Object-orientedAnalysisAndDesign\\project\\SUSTech-course\\SUSTech-course-backend\\sustech-course-base\\sustech-course-interaction" + "/src/main/java") // 输出目录
                             .disableOpenDir() // 生成后不打开文件夹
                             .enableSwagger();
 //                            .dateType(DateType.ONLY_DATE); // 设置日期类型
                 })
                 .packageConfig(builder -> {
-                    builder.moduleName("course") // 设置模块名
+                    builder.moduleName("interaction") // 设置模块名
                             .parent("edu.sustech") // 设置父包名
                             .controller("controller") // 设置 Controller 包名
                             .entity("entity") // 设置实体类包名
@@ -30,7 +30,7 @@ public class CodeGenerator {
                             .xml("mapper.xml"); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("user_video_record")// 设置需要生成的表名
+                    builder.addInclude("comment_video")// 设置需要生成的表名
                             .entityBuilder()
                             .enableRemoveIsPrefix() // 去除表前缀
                             .idType(IdType.ASSIGN_ID)

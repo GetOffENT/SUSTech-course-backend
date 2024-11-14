@@ -16,10 +16,10 @@ import java.util.List;
  */
 public interface CourseMapper extends BaseMapper<Course> {
     /**
-     * 获取已经发布的课程id列表
+     * 获取已发布且公开或半公开的课程id列表
      *
-     * @return 已经发布的课程id列表
+     * @return 已发布且公开或半公开的课程id列表
      */
-    @Select("select id from course where status = 1")
+    @Select("select id from course where status = 1 and open_state != 0")
     List<Long> selectPublishedCourseIds();
 }

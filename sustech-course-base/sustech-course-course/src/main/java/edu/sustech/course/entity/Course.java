@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
@@ -27,6 +29,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "Course对象", description = "课程")
 public class Course implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("课程ID")
@@ -71,6 +74,9 @@ public class Course implements Serializable {
 
     @ApiModelProperty("浏览数量")
     private Long viewCount;
+
+    @ApiModelProperty("总弹幕数")
+    private Long danmuCount;
 
     @ApiModelProperty("点赞数量")
     private Long likeCount;

@@ -71,14 +71,14 @@ public class UserController {
     }
 
     /**
-     * 获取用户信息(包括其发布的课程信息汇总)
+     * 获取用户信息(包括其发布的课程数据汇总)
      *
      * @param uid 用户id
      * @return 用户信息
      */
     @ApiOperation("获取用户信息")
-    @GetMapping("/{uid}")
-    public Result<UserDTO> getUserAndCoursesById(@PathVariable Long uid) {
+    @GetMapping("/info/{uid}")
+    public Result<UserDTO> getUserAndCoursesDataById(@PathVariable Long uid) {
         log.info("获取用户信息: {}", uid);
         return Result.success(userService.getUserAndCoursesById(uid));
     }
@@ -88,10 +88,10 @@ public class UserController {
      * 获取用户信息(提供远程调用)
      *
      * @param uid 用户id
-     * @return 用户信息(不包含该用户发布的课程信息)
+     * @return 用户信息(不包含该用户发布的课程数据)
      */
     @ApiOperation("获取用户信息")
-    @GetMapping("/info/{uid}")
+    @GetMapping("/{uid}")
     public Result<UserDTO> getUserInfo(@PathVariable Long uid) {
         log.info("获取用户信息(不包含课程信息): {}", uid);
         return Result.success(userService.getUserById(uid));

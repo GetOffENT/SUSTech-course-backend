@@ -1,0 +1,25 @@
+package edu.sustech.course.service;
+
+import edu.sustech.course.entity.Video;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Map;
+
+/**
+ * <p>
+ * 课程视频 服务类
+ * </p>
+ *
+ * @author Yuxian Wu
+ * @since 2024-11-13
+ */
+public interface VideoService extends IService<Video> {
+
+    /**
+     * 获取单个视频信息
+     *
+     * @param id 视频ID
+     * @return 单个视频信息(包含发布用户信息)
+     */
+    Map<String, Object> getVideoWithDataById(Long id);
+}

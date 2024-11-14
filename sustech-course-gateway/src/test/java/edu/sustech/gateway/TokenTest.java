@@ -24,7 +24,7 @@ public class TokenTest {
 
     @Test
     public void test(){
-        String token = jwtTool.createToken(1L, Duration.ofDays(365));
+        String token = jwtTool.createToken(1855669696418648065L, Duration.ofDays(365));
         System.out.println(token);
     }
 }

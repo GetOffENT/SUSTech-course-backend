@@ -1,14 +1,24 @@
 package edu.sustech.course.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
+import edu.sustech.common.util.UserContext;
+import edu.sustech.course.entity.Chapter;
 import edu.sustech.course.entity.Course;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
+import edu.sustech.course.entity.UserVideoRecord;
+import edu.sustech.course.entity.Video;
+import edu.sustech.course.entity.vo.ChapterVO;
+import edu.sustech.course.entity.vo.VideoVO;
+import edu.sustech.course.mapper.ChapterMapper;
 import edu.sustech.course.mapper.CourseMapper;
+import edu.sustech.course.mapper.UserVideoRecordMapper;
+import edu.sustech.course.mapper.VideoMapper;
 import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,6 +45,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private final UserClient userClient;
 
     private final CategoryService categoryService;
+
+    private final ChapterMapper chapterMapper;
+
+    private final VideoMapper videoMapper;
+
+    private final UserVideoRecordMapper userVideoRecordMapper;
 
     /**
      * 获取随机推荐课程
@@ -100,6 +116,65 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 获取课程目录, 如果已经登录，则还会获取用户每一个小节是否学习
+     *
+     * @param courseId 课程id
+     * @return 课程目录(包括小节 : title id isLearned isPublic)
+     */
+    @Override
+    public List<ChapterVO> getCatalog(Long courseId) {
+
+        // 查询课程的章节信息
+        List<Chapter> chapters = chapterMapper.selectList(new LambdaQueryWrapper<Chapter>()
+                .eq(Chapter::getCourseId, courseId)
+        );
+
+        // 查询课程的视频(小节)信息
+        List<Video> videos = videoMapper.selectList(new LambdaQueryWrapper<Video>()
+                .eq(Video::getCourseId, courseId)
+        );
+        List<VideoVO> videoVOs = BeanUtil.copyToList(videos, VideoVO.class);
+
+        // 如果用户登录了，则查询是否已经学习
+        Long user = UserContext.getUser();
+        if (user != null) {
+            // 查询用户的视频学习记录
+            List<UserVideoRecord> userVideoRecords = userVideoRecordMapper.selectList(
+                    new LambdaQueryWrapper<UserVideoRecord>()
+                            .eq(UserVideoRecord::getUserId, user)
+                            .eq(UserVideoRecord::getCourseId, courseId)
+            );
+
+            for (VideoVO videoVO : videoVOs) {
+                for (UserVideoRecord userVideoRecord : userVideoRecords) {
+                    if (videoVO.getId().equals(userVideoRecord.getVideoId())) {
+                        videoVO.setIsLearned(userVideoRecord.getIsLearned());
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (CollUtil.isEmpty(chapters)) {
+            return List.of();
+        }
+
+        List<ChapterVO> chapterVOList = new ArrayList<>();
+        for (Chapter chapter : chapters) {
+            ChapterVO chapterVO = BeanUtil.copyProperties(chapter, ChapterVO.class);
+            List<VideoVO> videoVOList = new ArrayList<>();
+            for (VideoVO video : videoVOs) {
+                if (video.getChapterId().equals(chapter.getId())) {
+                    videoVOList.add(video);
+                }
+            }
+            chapterVO.setVideos(videoVOList);
+            chapterVOList.add(chapterVO);
+        }
+        return chapterVOList;
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id
@@ -155,7 +230,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                         // 查询用户信息
                         UserCourseInfoDTO userCoursesInfoByUserId = this.getUserCoursesInfoByUserId(course.getUserId());
-                        Result<UserDTO> userAndCoursesById = userClient.getUserAndCoursesById(course.getUserId());
+                        Result<UserDTO> userAndCoursesById = userClient.getUserById(course.getUserId());
                         if (Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
                             UserDTO data = userAndCoursesById.getData();
                             data.setCourseCount(userCoursesInfoByUserId.getCourseCount())
