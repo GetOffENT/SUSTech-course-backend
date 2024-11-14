@@ -12,12 +12,9 @@ package edu.sustech.common.constant;
 public class MessageConstant {
     public static final String ACCOUNT_ALREADY_EXIST = "该邮箱已注册";
     public static final String RANDOM_NICKNAME_PREFIX = "SUSTecher";
-    public static final String PASSWORD_ERROR = "密码错误";
+    public static final String LOGIN_ERROR = "邮箱未注册或密码错误";
     public static final String ACCOUNT_NOT_FOUND = "该邮箱未注册";
-    public static final String STUDENT_NOT_FOUND = "学生不存在";
-    public static final String TEACHER_NOT_FOUND = "教师不存在";
-    public static final String ADMIN_NOT_FOUND = "管理员不存在";
-    public static final String ACCOUNT_LOCKED = "账号被锁定";
+    public static final String ACCOUNT_LOCKED = "账号被锁定或不存在";
     public static final String CAPTCHA_ALREADY_SEND = "验证码已发送，还需等待：%d秒";
     public static final String CAPTCHA_RETRY_TOO_SOON = "%d秒后可重新发送";
     public static final String CAPTCHA_MAX_SEND_LIMIT_EXCEEDED = "当天验证码发送次数超过限制：%d次";

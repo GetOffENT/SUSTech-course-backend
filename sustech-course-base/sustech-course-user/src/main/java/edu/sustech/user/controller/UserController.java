@@ -2,6 +2,7 @@ package edu.sustech.user.controller;
 
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
+import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.service.UserService;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -50,10 +53,23 @@ public class UserController {
      */
     @ApiOperation("用户注册")
     @PostMapping("/register")
-    public Result register(@RequestBody @Validated RegisterByEmailDTO registerByEmailDTO) {
+    public Result<Object> register(@RequestBody @Validated RegisterByEmailDTO registerByEmailDTO) {
         log.info("用户注册: {}", registerByEmailDTO);
         userService.register(registerByEmailDTO);
         return Result.success();
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param loginByEmailDTO 登录信息
+     * @return 用户信息
+     */
+    @ApiOperation("用户登录")
+    @PostMapping("/login")
+        public Result<Map<String, Object>> login(@RequestBody LoginByEmailDTO loginByEmailDTO) {
+        log.info("用户登录: {}", loginByEmailDTO);
+        return Result.success(userService.login(loginByEmailDTO));
     }
 
     /**
@@ -64,14 +80,14 @@ public class UserController {
      */
     @ApiOperation("用户找回密码")
     @PostMapping("/found")
-    public Result foundPassword(@RequestBody @Validated FoundByEmailDTO foundByEmailDTO) {
+    public Result<Object> foundPassword(@RequestBody @Validated FoundByEmailDTO foundByEmailDTO) {
         log.info("用户找回密码: {}", foundByEmailDTO);
         userService.foundPassword(foundByEmailDTO);
         return Result.success();
     }
 
     /**
-     * 获取用户信息(包括其发布的课程数据汇总)
+     * 获取用户信息(包括其发布的课程数据汇总，提供远程调用)
      *
      * @param uid 用户id
      * @return 用户信息

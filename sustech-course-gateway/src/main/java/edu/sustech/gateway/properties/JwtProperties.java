@@ -21,4 +21,5 @@ public class JwtProperties {
     private String password;
     private String alias;
     private Duration tokenTTL = Duration.ofMinutes(10);
+    private String loginPath = "/**/login";
 }

@@ -16,6 +16,7 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
 import edu.sustech.user.entity.User;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
+import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.mapper.UserMapper;
@@ -25,7 +26,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -68,12 +71,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         checkCaptcha(registerByEmailDTO.getCaptcha(), registerByEmailDTO.getEmail());
 
         User user = BeanUtil.copyProperties(registerByEmailDTO, User.class);
+        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         // 使用hutool工具包随机字符串
         user.setNickname(MessageConstant.RANDOM_NICKNAME_PREFIX + RandomUtil.randomString(10));
         int insert = baseMapper.insert(user);
         if (insert == 0) {
             throw new RegisterException(MessageConstant.ERROR);
         }
+    }
+
+    /**
+     * 邮箱登录
+     *
+     * @param loginByEmailDTO 登录信息
+     * @return 用户信息
+     */
+    @Override
+    public Map<String, Object> login(LoginByEmailDTO loginByEmailDTO) {
+
+        // TODO: redis缓存用户信息
+
+
+        User user = baseMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, loginByEmailDTO.getEmail()));
+        if (user == null) {
+            throw new RegisterException(MessageConstant.LOGIN_ERROR);
+        }
+
+        String password = DigestUtils.md5DigestAsHex(loginByEmailDTO.getPassword().getBytes());
+        if (!password.equals(user.getPassword())) {
+            throw new RegisterException(MessageConstant.LOGIN_ERROR);
+        }
+
+        if (user.getState() != 0) {
+            throw new RegisterException(MessageConstant.ACCOUNT_LOCKED);
+        }
+
+        return Map.of("user", BeanUtil.copyProperties(user, UserDTO.class));
     }
 
 

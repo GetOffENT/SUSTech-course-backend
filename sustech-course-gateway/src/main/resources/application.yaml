@@ -18,6 +18,8 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/user/**,/captcha/**
+          filters:
+            - Login
         - id: admin-service
           uri: lb://admin-service
           predicates:

@@ -4,8 +4,11 @@ import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
+import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -23,6 +26,14 @@ public interface UserService extends IService<User> {
      * @param registerByEmailDTO 注册信息
      */
     void register(RegisterByEmailDTO registerByEmailDTO);
+
+    /**
+     * 邮箱登录
+     *
+     * @param loginByEmailDTO 登录信息
+     * @return 用户信息
+     */
+    Map<String, Object> login(LoginByEmailDTO loginByEmailDTO);
 
     /**
      * 找回密码
