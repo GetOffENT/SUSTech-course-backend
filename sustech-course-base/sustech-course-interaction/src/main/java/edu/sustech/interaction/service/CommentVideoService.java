@@ -44,4 +44,10 @@ public interface CommentVideoService extends IService<CommentVideo> {
      */
     CommentTreeVO saveComment(CommentDTO commentDTO);
 
+    /**
+     * 删除评论
+     *
+     * @param id 评论id
+     */
+    void deleteComment(Long id);
 }

@@ -3,7 +3,9 @@ package edu.sustech.interaction.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.client.UserClient;
+import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
@@ -16,9 +18,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +39,8 @@ import java.util.stream.Collectors;
 public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, CommentVideo> implements CommentVideoService {
 
     private final UserClient userClient;
+
+    private final CourseClient courseClient;
 
     /**
      * 获取对应视频的评论树
@@ -115,6 +121,51 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
 
         return getCommentTree(commentVideo, -1L);
 
+    }
+
+    /**
+     * 删除评论
+     *
+     * @param id 评论id
+     */
+    @Transactional
+    @Override
+    public void deleteComment(Long id) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CommentException(MessageConstant.NOT_LOGIN);
+        }
+        CommentVideo commentVideo = baseMapper.selectById(id);
+        if (commentVideo == null) {
+            throw new CommentException(MessageConstant.COMMENT_NOT_EXIST);
+        }
+
+        VideoDTO videoDTO = courseClient.getVideoById(commentVideo.getVideoId()).getData();
+        if (!commentVideo.getUserId().equals(userId) && !Objects.equals(videoDTO.getUserId(), userId)) {
+            throw new CommentException(MessageConstant.COMMENT_NO_PERMISSION);
+        }
+
+
+        Integer count;
+        if (commentVideo.getRootId() == 0) {
+            // 删除根评论及其子评论
+            count = baseMapper.deleteById(id);
+            count += baseMapper.delete(
+                    new LambdaQueryWrapper<CommentVideo>()
+                            .eq(CommentVideo::getRootId, id)
+            );
+        } else {
+            // 删除该评论并且递归删除子评论
+            List<Long> ids = baseMapper.selectIdsToDeleteRecursively(id);
+            count = baseMapper.deleteBatchByIds(ids);
+        }
+
+        if (count == 0) {
+            throw new CommentException(MessageConstant.COMMENT_DELETE_ERROR);
+        }
+        // TODO 更新视频状态， 评论信息
+
+        log.info("删除评论{}及其{}条子评论", id, count);
     }
 
 

@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.sustech.interaction.mapper.CommentVideoMapper">
+    <!-- 递归查询所有需要删除的评论ID -->
+    <select id="selectIdsToDeleteRecursively" resultType="Long">
+        <![CDATA[
+        WITH RECURSIVE CommentHierarchy AS (
+            -- 从目标评论开始
+            SELECT id
+            FROM comment_video
+            WHERE id = #{commentId}
+            UNION
+            SELECT c.id
+            FROM comment_video c
+                     JOIN CommentHierarchy ch ON c.parent_id = ch.id)
+        SELECT id
+        FROM CommentHierarchy;
+        ]]>
+    </select>
 
+    <!-- 逻辑批量删除评论 -->
+    <delete id="deleteBatchByIds">
+        UPDATE comment_video
+        SET is_delete = 1
+        WHERE id IN
+        <foreach collection="commentIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

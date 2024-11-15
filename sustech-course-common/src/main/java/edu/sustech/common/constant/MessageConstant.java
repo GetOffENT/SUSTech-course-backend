@@ -23,5 +23,8 @@ public class MessageConstant {
     public static final String CAPTCHA_NOT_SEND_OR_EXPIRED = "验证码未发送或已过期";
     public static final String CAPTCHA_VERIFICATION_FAILED = "验证码校验失败，请重新获取";
     public static final String NOT_LOGIN = "用户未登录";
+    public static final String COMMENT_NOT_EXIST = "评论不存在";
+    public static final String COMMENT_NO_PERMISSION = "无权限删除该评论";
+    public static final String COMMENT_DELETE_ERROR = "删除评论失败";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
 }

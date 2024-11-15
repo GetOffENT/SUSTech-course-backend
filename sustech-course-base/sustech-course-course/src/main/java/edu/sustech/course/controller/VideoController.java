@@ -1,5 +1,7 @@
 package edu.sustech.course.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.course.service.VideoService;
 import io.swagger.annotations.Api;
@@ -39,7 +41,19 @@ public class VideoController {
     @GetMapping("/{id}")
     public Result<Map<String, Object>> getVideoWithDataById(@PathVariable Long id) {
         // TODO: 完善Apifox接口文档
-        log.info("获取单个视频信息...视频ID: {}", id);
+        log.info("获取单个视频信息(包含发布用户信息)...视频ID: {}", id);
         return Result.success(videoService.getVideoWithDataById(id));
+    }
+
+    /**
+     * 获取单个视频信息
+     *
+     * @return 单个视频信息
+     */
+    @ApiOperation("获取单个视频信息")
+    @GetMapping("/info/{id}")
+    public Result<VideoDTO> getVideoById(@PathVariable Long id) {
+        log.info("获取单个视频信息...视频ID: {}", id);
+        return Result.success(BeanUtil.copyProperties(videoService.getById(id), VideoDTO.class));
     }
 }

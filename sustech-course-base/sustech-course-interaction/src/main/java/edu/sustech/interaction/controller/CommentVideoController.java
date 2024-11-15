@@ -40,8 +40,8 @@ public class CommentVideoController {
     @GetMapping("/tree")
     @ApiOperation("获取对应视频的评论树")
     public Result<Map<String, Object>> getCommentTree(@RequestParam("vid") Long vid,
-                                 @RequestParam("offset") Long offset,
-                                 @RequestParam("type") Integer type) {
+                                                      @RequestParam("offset") Long offset,
+                                                      @RequestParam("type") Integer type) {
         log.info("获取视频{}的评论树，按照{}排序", vid, type == 1 ? "热度" : "时间");
         Map<String, Object> map = commentVideoService.getCommentTree(
                 vid, offset, type
@@ -51,22 +51,34 @@ public class CommentVideoController {
 
     @GetMapping("tree/{id}")
     @ApiOperation("获取指定id根评论的评论树")
-    public Result<CommentTreeVO> getCommentTreeById(@PathVariable Long id){
+    public Result<CommentTreeVO> getCommentTreeById(@PathVariable Long id) {
         log.info("获取指定id: {}根评论的评论树", id);
         return Result.success(commentVideoService.getCommentTreeById(id));
     }
 
     /**
      * 新增评论
+     *
      * @return 评论
      */
-    @PostMapping("/comment")
+    @PostMapping
     @ApiOperation("新增评论")
-    public Result<CommentTreeVO> saveComment(@RequestBody CommentDTO commentDTO){
+    public Result<CommentTreeVO> saveComment(@RequestBody CommentDTO commentDTO) {
         log.info("新增评论: {}", commentDTO);
-
         return Result.success(commentVideoService.saveComment(commentDTO));
     }
 
-
+    /**
+     * 删除评论
+     *
+     * @param id 评论id
+     * @return 成功或异常
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation("删除评论")
+    public Result<Object> deleteComment(@PathVariable Long id) {
+        log.info("删除评论: {}", id);
+        commentVideoService.deleteComment(id);
+        return Result.success();
+    }
 }

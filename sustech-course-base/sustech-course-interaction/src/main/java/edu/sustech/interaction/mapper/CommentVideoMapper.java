@@ -2,6 +2,10 @@ package edu.sustech.interaction.mapper;
 
 import edu.sustech.interaction.entity.CommentVideo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface CommentVideoMapper extends BaseMapper<CommentVideo> {
 
+
+    List<Long> selectIdsToDeleteRecursively(Long id);
+
+
+    Integer deleteBatchByIds(List<Long> commentIds);
 }
