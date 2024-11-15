@@ -202,6 +202,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public UserDTO getUserById(Long uid) {
+        if (uid == null) {
+            return null;
+        }
+
         // 先从redis中查询
         String key = "USER:INFO:" + uid;
         // 使用json序列化

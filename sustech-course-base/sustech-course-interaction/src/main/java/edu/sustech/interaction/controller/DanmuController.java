@@ -8,13 +8,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>
@@ -48,5 +44,19 @@ public class DanmuController {
                         .eq(Danmu::getVideoId, vid)
         );
         return Result.success(danmuList);
+    }
+
+    /**
+     * 删除弹幕
+     *
+     * @param id 弹幕id
+     * @return 响应对象
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation("删除弹幕")
+    public Result<Object> deleteDanmu(@PathVariable("id") Long id) {
+        log.info("删除弹幕{}", id);
+        danmuService.removeById(id);
+        return Result.success();
     }
 }

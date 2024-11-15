@@ -22,5 +22,6 @@ public class MessageConstant {
     public static final String CAPTCHA_ERROR = "验证码错误";
     public static final String CAPTCHA_NOT_SEND_OR_EXPIRED = "验证码未发送或已过期";
     public static final String CAPTCHA_VERIFICATION_FAILED = "验证码校验失败，请重新获取";
+    public static final String NOT_LOGIN = "用户未登录";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
 }

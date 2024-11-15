@@ -129,11 +129,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         // 查询课程的章节信息
         List<Chapter> chapters = chapterMapper.selectList(new LambdaQueryWrapper<Chapter>()
                 .eq(Chapter::getCourseId, courseId)
+                .orderByAsc(Chapter::getSort)
         );
 
         // 查询课程的视频(小节)信息
         List<Video> videos = videoMapper.selectList(new LambdaQueryWrapper<Video>()
                 .eq(Video::getCourseId, courseId)
+                .orderByAsc(Video::getSort)
         );
         List<VideoVO> videoVOs = BeanUtil.copyToList(videos, VideoVO.class);
 

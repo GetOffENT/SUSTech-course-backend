@@ -4,7 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import edu.sustech.api.client.UserClient;
+import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.CommentException;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.CommentVideo;
+import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
 import edu.sustech.interaction.mapper.CommentVideoMapper;
 import edu.sustech.interaction.service.CommentVideoService;
@@ -63,7 +67,7 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
 
         List<CommentTreeVO> commmentTreeVOList = rootComments.stream().parallel()
                 .map(rootComment -> {
-                    return getCommentTree(rootComment);
+                    return getCommentTree(rootComment, 2L);
                 })
                 .toList();
 
@@ -73,8 +77,48 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         );
     }
 
+    /**
+     * 获取指定id根评论的评论树
+     *
+     * @param id 根评论id
+     * @return 单棵评论树
+     */
+    @Override
+    public CommentTreeVO getCommentTreeById(Long id) {
+        return getCommentTree(baseMapper.selectById(id), -1L);
+    }
 
-    private CommentTreeVO getCommentTree(CommentVideo rootComment) {
+    /**
+     * 新增评论
+     *
+     * @param commentDTO 评论表单
+     * @return 单棵评论树
+     */
+    @Override
+    public CommentTreeVO saveComment(CommentDTO commentDTO) {
+        CommentVideo commentVideo = CommentVideo.builder()
+                .videoId(commentDTO.getVid())
+                .rootId(commentDTO.getRootId())
+                .parentId(commentDTO.getParentId())
+                .toUserId(commentDTO.getToUserId())
+                .content(commentDTO.getContent())
+                .build();
+
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CommentException(MessageConstant.NOT_LOGIN);
+        }
+        commentVideo.setUserId(userId).setLove(0L).setBad(0L).setIsTop((byte) 0);
+        baseMapper.insert(commentVideo);
+        // TODO 更新视频状态
+
+
+        return getCommentTree(commentVideo, -1L);
+
+    }
+
+
+    private CommentTreeVO getCommentTree(CommentVideo rootComment, Long limit) {
         CommentTreeVO commentTreeVO = BeanUtil.copyProperties(rootComment, CommentTreeVO.class);
         commentTreeVO.setCount(baseMapper.selectCount(
                 new LambdaQueryWrapper<CommentVideo>()
@@ -83,23 +127,25 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         commentTreeVO.setUser(userClient.getUserAndCoursesById(rootComment.getUserId()).getData());
         commentTreeVO.setToUser(userClient.getUserAndCoursesById(rootComment.getToUserId()).getData());
 
-        List<CommentVideo> childComments = baseMapper.selectList(
-                new QueryWrapper<CommentVideo>()
-                        .eq("root_id", rootComment.getId())
-                        .orderByDesc("love - bad")
-                        .last("LIMIT 10")
-        );
-
-        commentTreeVO.setReplies(
-                childComments.stream().parallel()
-                        .map(childComment -> {
-                            CommentTreeVO childCommentVO = BeanUtil.copyProperties(childComment, CommentTreeVO.class);
-                            childCommentVO.setUser(userClient.getUserAndCoursesById(childComment.getUserId()).getData());
-                            childCommentVO.setToUser(userClient.getUserAndCoursesById(childComment.getToUserId()).getData());
-                            return childCommentVO;
-                        })
-                        .toList()
-        );
+        if (rootComment.getRootId() == 0) {
+            QueryWrapper<CommentVideo> queryWrapper = new QueryWrapper<CommentVideo>()
+                    .eq("root_id", rootComment.getId())
+                    .orderByDesc("love - bad");
+            if (limit > 0) {
+                queryWrapper.last("LIMIT " + limit);
+            }
+            List<CommentVideo> childComments = baseMapper.selectList(queryWrapper);
+            commentTreeVO.setReplies(
+                    childComments.stream().parallel()
+                            .map(childComment -> {
+                                CommentTreeVO childCommentVO = BeanUtil.copyProperties(childComment, CommentTreeVO.class);
+                                childCommentVO.setUser(userClient.getUserAndCoursesById(childComment.getUserId()).getData());
+                                childCommentVO.setToUser(userClient.getUserAndCoursesById(childComment.getToUserId()).getData());
+                                return childCommentVO;
+                            })
+                            .toList()
+            );
+        }
         return commentTreeVO;
     }
 }

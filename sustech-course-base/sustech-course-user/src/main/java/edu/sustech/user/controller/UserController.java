@@ -1,6 +1,7 @@
 package edu.sustech.user.controller;
 
 import edu.sustech.common.result.Result;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
@@ -108,10 +109,20 @@ public class UserController {
      */
     @ApiOperation("获取用户信息")
     @GetMapping("/{uid}")
-    public Result<UserDTO> getUserInfo(@PathVariable Long uid) {
+    public Result<UserDTO> getUserInfoById(@PathVariable Long uid) {
         log.info("获取用户信息(不包含课程信息): {}", uid);
         return Result.success(userService.getUserById(uid));
     }
 
+    /**
+     * 获取当前登录用户信息
+     * @return 用户信息
+     */
+    @ApiOperation("获取当前登录用户信息")
+    @GetMapping
+    public Result<UserDTO> getUserInfo(){
+        log.info("根据token获取用户信息");
+        return Result.success(userService.getUserById(UserContext.getUser()));
+    }
 
 }

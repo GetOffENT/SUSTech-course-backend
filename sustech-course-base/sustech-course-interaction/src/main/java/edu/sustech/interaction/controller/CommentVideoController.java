@@ -1,15 +1,14 @@
 package edu.sustech.interaction.controller;
 
 import edu.sustech.common.result.Result;
+import edu.sustech.interaction.entity.dto.CommentDTO;
+import edu.sustech.interaction.entity.vo.CommentTreeVO;
 import edu.sustech.interaction.service.CommentVideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/interaction/comment/video")
 @Slf4j
-@Api(tags = "评论相关接口")
+@Api(tags = "视频评论相关接口")
 @RequiredArgsConstructor
 public class CommentVideoController {
 
@@ -49,4 +48,25 @@ public class CommentVideoController {
         );
         return Result.success(map);
     }
+
+    @GetMapping("tree/{id}")
+    @ApiOperation("获取指定id根评论的评论树")
+    public Result<CommentTreeVO> getCommentTreeById(@PathVariable Long id){
+        log.info("获取指定id: {}根评论的评论树", id);
+        return Result.success(commentVideoService.getCommentTreeById(id));
+    }
+
+    /**
+     * 新增评论
+     * @return 评论
+     */
+    @PostMapping("/comment")
+    @ApiOperation("新增评论")
+    public Result<CommentTreeVO> saveComment(@RequestBody CommentDTO commentDTO){
+        log.info("新增评论: {}", commentDTO);
+
+        return Result.success(commentVideoService.saveComment(commentDTO));
+    }
+
+
 }
