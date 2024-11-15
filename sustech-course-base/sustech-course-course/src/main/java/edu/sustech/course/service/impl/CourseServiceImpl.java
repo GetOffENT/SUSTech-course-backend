@@ -23,6 +23,7 @@ import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -40,6 +41,7 @@ import java.util.concurrent.Executors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> implements CourseService {
 
     private final UserClient userClient;
@@ -138,6 +140,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         // 如果用户登录了，则查询是否已经学习
         Long user = UserContext.getUser();
         if (user != null) {
+            log.info("用户已登录，查询用户的视频学习记录");
             // 查询用户的视频学习记录
             List<UserVideoRecord> userVideoRecords = userVideoRecordMapper.selectList(
                     new LambdaQueryWrapper<UserVideoRecord>()

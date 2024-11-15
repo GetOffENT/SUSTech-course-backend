@@ -1,6 +1,10 @@
 package edu.sustech.interaction.websocket;
 
+import com.alibaba.fastjson.JSONObject;
+import edu.sustech.interaction.entity.Danmu;
+import edu.sustech.interaction.mapper.DanmuMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -26,6 +30,16 @@ public class WebSocketServer {
     // 对每个视频存储该视频下的session集合
     private static final Map<String, Set<Session>> videoConnectionMap = new ConcurrentHashMap<>();
 
+    // 存储每个Session对应的userId
+    private static final Map<Session, Long> sessionUserMap = new ConcurrentHashMap<>();
+
+    private static DanmuMapper danmuMapper;
+
+    @Autowired
+    public void setDanmuMapper(DanmuMapper danmuMapper) {
+        WebSocketServer.danmuMapper = danmuMapper;
+    }
+
     /**
      * 连接建立时触发，记录session到map
      *
@@ -34,7 +48,6 @@ public class WebSocketServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("vid") String vid) {
-        log.info("客户端：{} 正在观看视频：{}", session, vid);
         if (videoConnectionMap.get(vid) == null) {
             Set<Session> set = new HashSet<>();
             set.add(session);
@@ -42,8 +55,19 @@ public class WebSocketServer {
         } else {
             videoConnectionMap.get(vid).add(session);
         }
+
+        // 提取Session queryString中的userId
+        String userId = null;
+        String queryString = session.getQueryString();
+        if (queryString != null) {
+            userId = queryString.split("=")[1];
+            if (userId != null) {
+                sessionUserMap.put(session, Long.parseLong(userId));
+            }
+        }
+
         sendMessage(vid, "当前观看人数" + videoConnectionMap.get(vid).size());
-//        System.out.println("建立连接，当前观看人数: " + videoConnectionMap.get(vid).size());
+        log.info("用户：【{}】正在客户端：【{}】 观看视频：【{}】", userId == null ? "游客" : userId, session, vid);
     }
 
     /**
@@ -56,7 +80,26 @@ public class WebSocketServer {
     @OnMessage
     public void onMessage(Session session, String message, @PathParam("vid") String vid) {
         try {
+            Long userId = sessionUserMap.get(session);
+            if (userId == null) {
+                session.getBasicRemote().sendText("请先登录");
+            }
 
+            JSONObject danmuData = JSONObject.parseObject(message);
+            Danmu danmu = Danmu.builder()
+                    .videoId(Long.parseLong(vid))
+                    .userId(userId)
+                    .content(danmuData.getString("content"))
+                    .fontsize(danmuData.getByte("fontsize"))
+                    .mode(danmuData.getByte("mode"))
+                    .color(danmuData.getString("color"))
+                    .timePoint(danmuData.getDouble("timePoint"))
+                    .state((byte) 1)
+                    .isDelete((byte) 0)
+                    .build();
+            danmuMapper.insert(danmu);
+            // TODO：是否需要更新视频中的弹幕数量有待考量，可能视频表格不需要弹幕数量字段
+            sendMessage(vid, JSONObject.toJSONString(danmu));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +113,8 @@ public class WebSocketServer {
      */
     @OnClose
     public void onClose(Session session, @PathParam("vid") String vid) {
-        log.info("客户端：{} 已结束观看视频：{}", session, vid);
+        Long userId = sessionUserMap.get(session);
+        log.info("用户: 【{}】 客户端：【{}】 已结束观看视频：【{}】", userId == null ? "游客" : userId, session, vid);
         // 从缓存中移除连接记录
         videoConnectionMap.get(vid).remove(session);
         if (videoConnectionMap.get(vid).isEmpty()) {
@@ -80,6 +124,9 @@ public class WebSocketServer {
             // 否则更新在线人数
             sendMessage(vid, "当前观看人数" + videoConnectionMap.get(vid).size());
         }
+
+        // 移除session对应的userId
+        sessionUserMap.remove(session);
 //        System.out.println("关闭连接，当前观看人数: " + videoConnectionMap.get(vid).size());
     }
 

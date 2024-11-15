@@ -55,7 +55,7 @@ public class Danmu implements Serializable {
     private String color;
 
     @ApiModelProperty("弹幕所在视频的时间点(分秒，十分之一秒)")
-    private Integer timePoint;
+    private Double timePoint;
 
     @ApiModelProperty("弹幕状态 1默认过审 2被举报审核中 3删除")
     private Byte state;

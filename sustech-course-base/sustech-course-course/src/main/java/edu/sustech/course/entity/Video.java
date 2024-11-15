@@ -62,11 +62,11 @@ public class Video implements Serializable {
     @ApiModelProperty("是否公开 0不公开 1公开")
     private Byte isPublic;
 
-    @ApiModelProperty("视频时长（分秒，十分之一秒）")
-    private Integer duration;
+    @ApiModelProperty("视频时长（秒）")
+    private Double duration;
 
-    @ApiModelProperty("至少观看时长（分秒，十分之一秒）")
-    private Integer minWatchTime;
+    @ApiModelProperty("至少观看时长（秒）")
+    private Double minWatchTime;
 
     @ApiModelProperty("视频源文件大小（字节）")
     private Long size;

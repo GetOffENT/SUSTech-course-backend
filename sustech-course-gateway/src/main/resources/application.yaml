@@ -36,6 +36,8 @@ spring:
           uri: lb:ws://interaction-service
           predicates:
             - Path=/ws/**
+          filters:
+            - Websocket
       globalcors:
         cors-configurations:
           '[/**]':

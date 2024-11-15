@@ -41,16 +41,32 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         ServerHttpRequest request = exchange.getRequest();
-
-        if (isExclude(request.getPath().toString())) {
-            // 放行
-            return chain.filter(exchange);
-        }
-
         String token = null;
         List<String> headers = request.getHeaders().get(AuthorizationConstant.AUTHORIZATION);
         if (CollUtil.isNotEmpty(headers)) {
             token = headers.get(0);
+        }
+
+        if (token != null) {
+            Long userId;
+            try {
+                userId = jwtTool.parseToken(token);
+            } catch (UnauthorizedException e) {
+                ServerHttpResponse response = exchange.getResponse();
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return response.setComplete();
+            }
+
+            ServerWebExchange swe = exchange.mutate()
+                    .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()))
+                    .build();
+
+            return chain.filter(swe);
+        }
+
+        if (isExclude(request.getPath().toString())) {
+            // 放行
+            return chain.filter(exchange);
         }
 
         Long userId;
@@ -83,7 +99,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
      */
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
 
     private boolean isExclude(String path) {

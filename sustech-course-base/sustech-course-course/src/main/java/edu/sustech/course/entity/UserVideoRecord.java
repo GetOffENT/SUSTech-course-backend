@@ -45,14 +45,14 @@ public class UserVideoRecord implements Serializable {
     @ApiModelProperty("课程ID")
     private Long courseId;
 
-    @ApiModelProperty("播放时长(分秒，十分之一秒)")
-    private Integer playTime;
+    @ApiModelProperty("播放时长(秒)")
+    private Double playTime;
 
     @ApiModelProperty("播放区间 例:\"(1,2), (3,6), (4,7)\"")
     private String playRange;
 
-    @ApiModelProperty("总已观看时长(分秒，十分之一秒)")
-    private Integer totalPlayTime;
+    @ApiModelProperty("总已观看时长(秒)")
+    private Double totalPlayTime;
 
     @ApiModelProperty("是否学习完毕 0否 1是(根据min_watch_time)")
     private Byte isLearned;

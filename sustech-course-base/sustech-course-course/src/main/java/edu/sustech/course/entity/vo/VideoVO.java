@@ -31,8 +31,8 @@ public class VideoVO {
     @ApiModelProperty("小节名称")
     private String title;
 
-    @ApiModelProperty("视频时长（分秒，十分之一秒）")
-    private Integer duration;
+    @ApiModelProperty("视频时长（秒）")
+    private Double duration;
 
     @ApiModelProperty("是否公开 0不公开 1公开")
     private Byte isPublic;
