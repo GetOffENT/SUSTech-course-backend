@@ -81,6 +81,9 @@ public class Course implements Serializable {
     @ApiModelProperty("点赞数量")
     private Long likeCount;
 
+    @ApiModelProperty("踩数量")
+    private Long dislikeCount;
+
     @ApiModelProperty("收藏数")
     private Long collectCount;
 

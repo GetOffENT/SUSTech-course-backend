@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author Yuxian Wu
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @SpringBootApplication
 @MapperScan("edu.sustech.course.mapper")
 @ComponentScan("edu.sustech")
+@EnableTransactionManagement
 public class CourseApplication {
     public static void main(String[] args) {
         SpringApplication.run(CourseApplication.class, args);

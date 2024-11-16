@@ -6,10 +6,14 @@ import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.UserCourse;
 import edu.sustech.course.entity.enums.LikeEnum;
+import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.mapper.UserCourseMapper;
 import edu.sustech.course.service.UserCourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -20,7 +24,11 @@ import org.springframework.stereotype.Service;
  * @since 2024-11-15
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCourse> implements UserCourseService {
+
+    private final CourseMapper courseMapper;
 
     /**
      * 获取用户课程记录
@@ -45,6 +53,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
      * @param isLike 设置赞或踩 true赞 false踩
      * @return 更新后的信息
      */
+    @Transactional
     @Override
     public UserCourse likeOrNot(Long id, Boolean isLike) {
         Long userId = checkUser();
@@ -66,14 +75,18 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
 
         if (isLike) {
             if (userCourse.getLike() == LikeEnum.LIKE) {
+                courseMapper.updateLikeCount(id, -1);
                 userCourse.setLike(LikeEnum.NONE);
             } else {
+                courseMapper.updateLikeCountAndDislikeCount(id, 1, userCourse.getLike() == LikeEnum.DISLIKE ? -1 : 0);
                 userCourse.setLike(LikeEnum.LIKE);
             }
         } else {
             if (userCourse.getLike() == LikeEnum.DISLIKE) {
+                courseMapper.updateDislikeCount(id, -1);
                 userCourse.setLike(LikeEnum.NONE);
             } else {
+                courseMapper.updateLikeCountAndDislikeCount(id, userCourse.getLike() == LikeEnum.LIKE ? -1 : 0, 1);
                 userCourse.setLike(LikeEnum.DISLIKE);
             }
         }
