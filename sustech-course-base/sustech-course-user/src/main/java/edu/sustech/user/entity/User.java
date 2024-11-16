@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import edu.sustech.user.entity.enums.GenderEnum;
+import edu.sustech.user.entity.enums.RoleEnum;
+import edu.sustech.user.entity.enums.StateEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -54,7 +57,7 @@ public class User implements Serializable {
     private String background;
 
     @ApiModelProperty("性别 0女 1男 2未知")
-    private Byte gender;
+    private GenderEnum gender;
 
     @ApiModelProperty("个性签名")
     private String description;
@@ -66,16 +69,10 @@ public class User implements Serializable {
     private Integer point;
 
     @ApiModelProperty("状态 0正常 1封禁 2注销")
-    private Byte state;
+    private StateEnum state;
 
     @ApiModelProperty("角色类型 0普通用户 1学生 2教师")
-    private Byte role;
-
-    @ApiModelProperty("教师头像url")
-    private String teacherAvatar;
-
-    @ApiModelProperty("教师简介")
-    private String teacher;
+    private RoleEnum role;
 
     @ApiModelProperty("注销时间")
     private LocalDateTime gmtDestroy;

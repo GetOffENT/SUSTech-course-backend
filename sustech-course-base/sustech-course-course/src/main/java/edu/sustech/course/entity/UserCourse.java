@@ -47,8 +47,8 @@ public class UserCourse implements Serializable {
     @TableField("`like`")
     private LikeEnum like;
 
-    @ApiModelProperty("是否加入  0否 1是")
-    private JoinEnum isJoin;
+    @ApiModelProperty("加入状态  0否 1申请中 2已加入 3申请被拒绝 4已退出")
+    private JoinEnum joinState;
 
     @ApiModelProperty("已学习时长(秒)")
     private Double learnedTime;

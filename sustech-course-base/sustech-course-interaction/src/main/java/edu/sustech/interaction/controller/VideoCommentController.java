@@ -3,7 +3,7 @@ package edu.sustech.interaction.controller;
 import edu.sustech.common.result.Result;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
-import edu.sustech.interaction.service.CommentVideoService;
+import edu.sustech.interaction.service.VideoCommentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ import java.util.Map;
 @Slf4j
 @Api(tags = "视频评论相关接口")
 @RequiredArgsConstructor
-public class CommentVideoController {
+public class VideoCommentController {
 
-    private final CommentVideoService commentVideoService;
+    private final VideoCommentService videoCommentService;
 
     /**
      * 获取对应视频的评论树
@@ -43,17 +43,23 @@ public class CommentVideoController {
                                                       @RequestParam("offset") Long offset,
                                                       @RequestParam("type") Integer type) {
         log.info("获取视频{}的评论树，按照{}排序", vid, type == 1 ? "热度" : "时间");
-        Map<String, Object> map = commentVideoService.getCommentTree(
+        Map<String, Object> map = videoCommentService.getCommentTree(
                 vid, offset, type
         );
         return Result.success(map);
     }
 
+    /**
+     * 获取指定id根评论的评论树
+     *
+     * @param id 根评论id
+     * @return 单棵评论树
+     */
     @GetMapping("tree/{id}")
     @ApiOperation("获取指定id根评论的评论树")
     public Result<CommentTreeVO> getCommentTreeById(@PathVariable Long id) {
         log.info("获取指定id: {}根评论的评论树", id);
-        return Result.success(commentVideoService.getCommentTreeById(id));
+        return Result.success(videoCommentService.getCommentTreeById(id));
     }
 
     /**
@@ -65,7 +71,7 @@ public class CommentVideoController {
     @ApiOperation("新增评论")
     public Result<CommentTreeVO> saveComment(@RequestBody CommentDTO commentDTO) {
         log.info("新增评论: {}", commentDTO);
-        return Result.success(commentVideoService.saveComment(commentDTO));
+        return Result.success(videoCommentService.saveComment(commentDTO));
     }
 
     /**
@@ -78,7 +84,7 @@ public class CommentVideoController {
     @ApiOperation("删除评论")
     public Result<Object> deleteComment(@PathVariable Long id) {
         log.info("删除评论: {}", id);
-        commentVideoService.deleteComment(id);
+        videoCommentService.deleteComment(id);
         return Result.success();
     }
 }

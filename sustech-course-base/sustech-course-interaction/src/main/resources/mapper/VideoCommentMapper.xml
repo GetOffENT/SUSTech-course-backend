@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="edu.sustech.interaction.mapper.CommentVideoMapper">
+<mapper namespace="edu.sustech.interaction.mapper.VideoCommentMapper">
     <!-- 递归查询所有需要删除的评论ID -->
     <select id="selectIdsToDeleteRecursively" resultType="Long">
         <![CDATA[

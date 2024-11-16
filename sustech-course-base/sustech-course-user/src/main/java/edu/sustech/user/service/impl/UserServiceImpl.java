@@ -19,6 +19,7 @@ import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
+import edu.sustech.user.entity.enums.StateEnum;
 import edu.sustech.user.mapper.UserMapper;
 import edu.sustech.user.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -102,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RegisterException(MessageConstant.LOGIN_ERROR);
         }
 
-        if (user.getState() != 0) {
+        if (user.getState() != StateEnum.NORMAL) {
             throw new RegisterException(MessageConstant.ACCOUNT_LOCKED);
         }
 

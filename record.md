@@ -8,7 +8,7 @@ docker run -d \
   --name mysql \
   -p 3306:3306 \
   -e TZ=Asia/Shanghai \
-  -e MYSQL_ROOT_PASSWORD=mysql \
+  -e MYSQL_ROOT_PASSWORD=7NCx4_3gTuTj6nr \
   -v /root/mysql/data:/var/lib/mysql \
   -v /root/mysql/conf:/etc/mysql/conf.d \
   -v /root/mysql/init:/docker-entrypoint-initdb.d \

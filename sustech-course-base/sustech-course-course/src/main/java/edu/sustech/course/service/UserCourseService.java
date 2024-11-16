@@ -29,4 +29,12 @@ public interface UserCourseService extends IService<UserCourse> {
      * @return 更新后的信息
      */
     UserCourse likeOrNot(Long id, Boolean isLike);
+
+    /**
+     * 申请加入课程
+     *
+     * @param id 课程ID
+     * @return 用户课程记录
+     */
+    UserCourse applyCourse(Long id);
 }

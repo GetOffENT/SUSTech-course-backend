@@ -6,28 +6,25 @@ import lombok.Getter;
 
 /**
  * <p>
- * 加入状态枚举
  * </p>
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-16 6:52
+ * @since 2024-11-16 13:43
  */
 @Getter
-public enum JoinEnum {
-    NONE(0, "未加入"),
-    APPLYING(1, "申请中"),
-    JOINED(2, "已加入"),
-    REJECTED(3, "申请被拒绝"),
-    QUIT(4, "已退出");
+public enum CourseForm {
+    COURSEWARE(1, "课件"),
+    VIDEO(2, "视频"),
+    LIVE(3, "直播");
 
     @JsonValue
     @EnumValue
     private final Integer code;
-    private final String desc;
+    private final String name;
 
-    JoinEnum(Integer code, String desc) {
+    CourseForm(Integer code, String name) {
         this.code = code;
-        this.desc = desc;
+        this.name = name;
     }
 }

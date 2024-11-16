@@ -1,11 +1,10 @@
 package edu.sustech.interaction.service;
 
-import edu.sustech.interaction.entity.CommentVideo;
+import edu.sustech.interaction.entity.VideoComment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Map;
  * @author Yuxian Wu
  * @since 2024-11-13
  */
-public interface CommentVideoService extends IService<CommentVideo> {
+public interface VideoCommentService extends IService<VideoComment> {
 
     /**
      * 获取对应视频的评论树

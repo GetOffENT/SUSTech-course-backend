@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import edu.sustech.course.entity.enums.CourseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -33,7 +35,7 @@ public class Course implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("课程ID")
-      @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     @ApiModelProperty("发布用户ID")
@@ -47,6 +49,9 @@ public class Course implements Serializable {
 
     @ApiModelProperty("课程标题")
     private String title;
+
+    @ApiModelProperty("课程形式 1课件 2视频 3直播")
+    private CourseForm form;
 
     @ApiModelProperty("类型 1自制 2转载")
     private Byte type;

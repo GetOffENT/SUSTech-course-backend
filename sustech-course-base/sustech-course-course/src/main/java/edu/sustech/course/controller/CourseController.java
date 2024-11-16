@@ -3,7 +3,9 @@ package edu.sustech.course.controller;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
+import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.vo.ChapterVO;
+import edu.sustech.course.service.CourseDescriptionService;
 import edu.sustech.course.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +31,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
+
+    private final CourseDescriptionService courseDescriptionService;
 
     /**
      * 获取随机推荐课程
@@ -78,5 +82,30 @@ public class CourseController {
         return Result.success(courseService.getCatalog(courseId));
     }
 
+    /**
+     * 获取课程简介
+     *
+     * @param courseId 课程id
+     * @return 课程简介
+     */
+    @GetMapping("/description/{courseId}")
+    @ApiOperation("获取课程简介")
+    public Result<String> getCourseDescription(@PathVariable Long courseId) {
+        log.info("获取课程简介 courseId:{}", courseId);
+        return Result.success(courseDescriptionService.getById(courseId).getDescription());
+    }
+
+    /**
+     * 获取课程信息
+     *
+     * @param courseId 课程id
+     * @return 课程信息
+     */
+    @GetMapping("/{courseId}")
+    @ApiOperation("获取课程信息")
+    public Result<Course> getCourseById(@PathVariable Long courseId) {
+        log.info("获取课程信息 courseId:{}", courseId);
+        return Result.success(courseService.getById(courseId));
+    }
 
 }

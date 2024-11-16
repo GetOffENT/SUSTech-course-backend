@@ -9,11 +9,11 @@ import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
-import edu.sustech.interaction.entity.CommentVideo;
+import edu.sustech.interaction.entity.VideoComment;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
-import edu.sustech.interaction.mapper.CommentVideoMapper;
-import edu.sustech.interaction.service.CommentVideoService;
+import edu.sustech.interaction.mapper.VideoCommentMapper;
+import edu.sustech.interaction.service.VideoCommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, CommentVideo> implements CommentVideoService {
+public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, VideoComment> implements VideoCommentService {
 
     private final UserClient userClient;
 
@@ -57,14 +56,14 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
 
 
         Long rootCommentCount = baseMapper.selectCount(
-                new LambdaQueryWrapper<CommentVideo>()
-                        .eq(CommentVideo::getVideoId, vid)
-                        .eq(CommentVideo::getRootId, 0)
+                new LambdaQueryWrapper<VideoComment>()
+                        .eq(VideoComment::getVideoId, vid)
+                        .eq(VideoComment::getRootId, 0)
         );
 
         // 获取根评论列表
-        List<CommentVideo> rootComments = baseMapper.selectList(
-                new QueryWrapper<CommentVideo>()
+        List<VideoComment> rootComments = baseMapper.selectList(
+                new QueryWrapper<VideoComment>()
                         .eq("video_id", vid)
                         .eq("root_id", 0)
                         .orderByDesc(type == 1 ? "(love - bad)" : "gmt_create")
@@ -102,7 +101,7 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
      */
     @Override
     public CommentTreeVO saveComment(CommentDTO commentDTO) {
-        CommentVideo commentVideo = CommentVideo.builder()
+        VideoComment videoComment = VideoComment.builder()
                 .videoId(commentDTO.getVid())
                 .rootId(commentDTO.getRootId())
                 .parentId(commentDTO.getParentId())
@@ -114,13 +113,13 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         if (userId == null) {
             throw new CommentException(MessageConstant.NOT_LOGIN);
         }
-        commentVideo.setUserId(userId).setLove(0L).setBad(0L).setIsTop((byte) 0);
-        baseMapper.insert(commentVideo);
+        videoComment.setUserId(userId).setLove(0L).setBad(0L).setIsTop((byte) 0);
+        baseMapper.insert(videoComment);
 
         // 更新评论数量
         courseClient.updateCommentCount(commentDTO.getVid(), 1);
 
-        return getCommentTree(commentVideo, -1L);
+        return getCommentTree(videoComment, -1L);
 
     }
 
@@ -136,24 +135,24 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         if (userId == null) {
             throw new CommentException(MessageConstant.NOT_LOGIN);
         }
-        CommentVideo commentVideo = baseMapper.selectById(id);
-        if (commentVideo == null) {
+        VideoComment videoComment = baseMapper.selectById(id);
+        if (videoComment == null) {
             throw new CommentException(MessageConstant.COMMENT_NOT_EXIST);
         }
 
-        VideoDTO videoDTO = courseClient.getVideoById(commentVideo.getVideoId()).getData();
-        if (!commentVideo.getUserId().equals(userId) && !Objects.equals(videoDTO.getUserId(), userId)) {
+        VideoDTO videoDTO = courseClient.getVideoById(videoComment.getVideoId()).getData();
+        if (!videoComment.getUserId().equals(userId) && !Objects.equals(videoDTO.getUserId(), userId)) {
             throw new CommentException(MessageConstant.COMMENT_NO_PERMISSION);
         }
 
 
         Integer count;
-        if (commentVideo.getRootId() == 0) {
+        if (videoComment.getRootId() == 0) {
             // 删除根评论及其子评论
             count = baseMapper.deleteById(id);
             count += baseMapper.delete(
-                    new LambdaQueryWrapper<CommentVideo>()
-                            .eq(CommentVideo::getRootId, id)
+                    new LambdaQueryWrapper<VideoComment>()
+                            .eq(VideoComment::getRootId, id)
             );
         } else {
             // 删除该评论并且递归删除子评论
@@ -170,23 +169,23 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
     }
 
 
-    private CommentTreeVO getCommentTree(CommentVideo rootComment, Long limit) {
+    private CommentTreeVO getCommentTree(VideoComment rootComment, Long limit) {
         CommentTreeVO commentTreeVO = BeanUtil.copyProperties(rootComment, CommentTreeVO.class);
         commentTreeVO.setCount(baseMapper.selectCount(
-                new LambdaQueryWrapper<CommentVideo>()
-                        .eq(CommentVideo::getRootId, rootComment.getId())
+                new LambdaQueryWrapper<VideoComment>()
+                        .eq(VideoComment::getRootId, rootComment.getId())
         ));
         commentTreeVO.setUser(userClient.getUserAndCoursesById(rootComment.getUserId()).getData());
         commentTreeVO.setToUser(userClient.getUserAndCoursesById(rootComment.getToUserId()).getData());
 
         if (rootComment.getRootId() == 0) {
-            QueryWrapper<CommentVideo> queryWrapper = new QueryWrapper<CommentVideo>()
+            QueryWrapper<VideoComment> queryWrapper = new QueryWrapper<VideoComment>()
                     .eq("root_id", rootComment.getId())
                     .orderByDesc("love - bad");
             if (limit > 0) {
                 queryWrapper.last("LIMIT " + limit);
             }
-            List<CommentVideo> childComments = baseMapper.selectList(queryWrapper);
+            List<VideoComment> childComments = baseMapper.selectList(queryWrapper);
             commentTreeVO.setReplies(
                     childComments.stream().parallel()
                             .map(childComment -> {

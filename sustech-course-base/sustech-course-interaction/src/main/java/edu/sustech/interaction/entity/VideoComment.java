@@ -2,6 +2,7 @@ package edu.sustech.interaction.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -23,10 +24,11 @@ import lombok.experimental.Accessors;
 @Data
 @Builder
 @Accessors(chain = true)
-@TableName("comment_video")
+@TableName("video_comment")
 @ApiModel(value = "CommentVideo对象", description = "评论")
-public class CommentVideo implements Serializable {
+public class VideoComment implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("评论id")

@@ -2,9 +2,10 @@ package edu.sustech.course.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
-import edu.sustech.common.exception.CommentException;
+import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.UserCourse;
+import edu.sustech.course.entity.enums.JoinEnum;
 import edu.sustech.course.entity.enums.LikeEnum;
 import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.mapper.UserCourseMapper;
@@ -56,22 +57,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
     @Transactional
     @Override
     public UserCourse likeOrNot(Long id, Boolean isLike) {
-        Long userId = checkUser();
-
-        LambdaQueryWrapper<UserCourse> queryWrapper =
-                new LambdaQueryWrapper<UserCourse>()
-                        .eq(UserCourse::getCourseId, id)
-                        .eq(UserCourse::getUserId, userId);
-        UserCourse userCourse = baseMapper.selectOne(queryWrapper);
-        if (userCourse == null) {
-            userCourse = new UserCourse().setCourseId(id).setUserId(userId);
-            boolean saved = this.save(userCourse);
-            if (saved) {
-                userCourse = baseMapper.selectOne(queryWrapper);
-            } else {
-                throw new RuntimeException(MessageConstant.ERROR);
-            }
-        }
+        UserCourse userCourse = checkUserCourse(id);
 
         if (isLike) {
             if (userCourse.getLike() == LikeEnum.LIKE) {
@@ -95,10 +81,53 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
         return userCourse;
     }
 
+    /**
+     * 申请加入课程
+     *
+     * @param id 课程ID
+     * @return 用户课程记录
+     */
+    @Override
+    public UserCourse applyCourse(Long id) {
+        UserCourse userCourse = checkUserCourse(id);
+
+        if (userCourse.getJoinState() == JoinEnum.APPLYING) {
+            userCourse.setJoinState(JoinEnum.NONE);
+            this.updateById(userCourse);
+            return userCourse;
+        }
+        if (userCourse.getJoinState() == JoinEnum.JOINED) {
+            throw new CourseException(MessageConstant.ALREADY_JOINED);
+        }
+        userCourse.setJoinState(JoinEnum.APPLYING);
+        this.updateById(userCourse);
+        return userCourse;
+    }
+
+    private UserCourse checkUserCourse(Long id) {
+        Long userId = checkUser();
+
+        LambdaQueryWrapper<UserCourse> queryWrapper =
+                new LambdaQueryWrapper<UserCourse>()
+                        .eq(UserCourse::getCourseId, id)
+                        .eq(UserCourse::getUserId, userId);
+        UserCourse userCourse = baseMapper.selectOne(queryWrapper);
+        if (userCourse == null) {
+            userCourse = new UserCourse().setCourseId(id).setUserId(userId);
+            boolean saved = this.save(userCourse);
+            if (saved) {
+                userCourse = baseMapper.selectOne(queryWrapper);
+            } else {
+                throw new CourseException(MessageConstant.ERROR);
+            }
+        }
+        return userCourse;
+    }
+
     private Long checkUser() {
         Long userId = UserContext.getUser();
         if (userId == null) {
-            throw new CommentException(MessageConstant.NOT_LOGIN);
+            throw new CourseException(MessageConstant.NOT_LOGIN);
         }
         return userId;
     }

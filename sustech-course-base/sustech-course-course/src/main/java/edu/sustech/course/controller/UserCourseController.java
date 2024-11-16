@@ -45,10 +45,22 @@ public class UserCourseController {
      * @param isLike 设置赞还是踩 true赞 false踩
      * @return 更新后的信息
      */
-    @PutMapping("/like-or-not/{id}")
+    @PostMapping("/like-or-not/{id}")
     @ApiOperation("点赞或点踩")
     public Result<UserCourse> likeOrNot(@PathVariable Long id, @RequestParam Boolean isLike) {
         log.info("用户【{}】设置课程【{}】的【{}】状态", UserContext.getUser(), id, isLike ? "点赞" : "点踩");
         return Result.success(userCourseService.likeOrNot(id, isLike));
+    }
+
+    /**
+     * 申请加入课程
+     * @param id 课程ID
+     * @return 用户课程记录
+     */
+    @PostMapping("/apply/{id}")
+    @ApiOperation("申请加入课程")
+    public Result<UserCourse> applyCourse(@PathVariable Long id) {
+        log.info("用户【{}】申请或取消申请加入课程【{}】", UserContext.getUser(), id);
+        return Result.success(userCourseService.applyCourse(id));
     }
 }

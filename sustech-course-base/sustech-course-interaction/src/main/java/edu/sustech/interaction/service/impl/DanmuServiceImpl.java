@@ -5,7 +5,6 @@ import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
-import edu.sustech.interaction.entity.CommentVideo;
 import edu.sustech.interaction.entity.Danmu;
 import edu.sustech.interaction.mapper.DanmuMapper;
 import edu.sustech.interaction.service.DanmuService;
