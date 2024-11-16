@@ -67,6 +67,7 @@ public class CourseController {
 
     /**
      * 获取课程目录, 如果已经登录，则还会获取用户每一个小节是否学习
+     *
      * @param courseId 课程id
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
@@ -76,5 +77,6 @@ public class CourseController {
         log.info("获取课程目录 courseId:{}", courseId);
         return Result.success(courseService.getCatalog(courseId));
     }
+
 
 }

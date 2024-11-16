@@ -1,6 +1,7 @@
 package edu.sustech.interaction.websocket;
 
 import com.alibaba.fastjson.JSONObject;
+import edu.sustech.api.client.CourseClient;
 import edu.sustech.interaction.entity.Danmu;
 import edu.sustech.interaction.mapper.DanmuMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +36,12 @@ public class WebSocketServer {
 
     private static DanmuMapper danmuMapper;
 
+    private static CourseClient courseClient;
+
     @Autowired
-    public void setDanmuMapper(DanmuMapper danmuMapper) {
+    public void setDanmuMapper(DanmuMapper danmuMapper, CourseClient courseClient) {
         WebSocketServer.danmuMapper = danmuMapper;
+        WebSocketServer.courseClient = courseClient;
     }
 
     /**
@@ -97,8 +101,8 @@ public class WebSocketServer {
                     .state((byte) 1)
                     .isDelete((byte) 0)
                     .build();
-            danmuMapper.insert(danmu);
-            // TODO：是否需要更新视频中的弹幕数量有待考量，可能视频表格不需要弹幕数量字段
+            int count = danmuMapper.insert(danmu);
+            courseClient.updateDanmuCount(Long.parseLong(vid), count);
             sendMessage(vid, JSONObject.toJSONString(danmu));
         } catch (Exception e) {
             e.printStackTrace();

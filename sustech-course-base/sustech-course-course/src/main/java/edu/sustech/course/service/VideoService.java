@@ -22,4 +22,20 @@ public interface VideoService extends IService<Video> {
      * @return 单个视频信息(包含发布用户信息)
      */
     Map<String, Object> getVideoWithDataById(Long id);
+
+    /**
+     * 更新评论数量
+     *
+     * @param id    视频ID
+     * @param count 评论数量
+     */
+    void updateCommentCount(Long id, Integer count);
+
+    /**
+     * 更新弹幕数量
+     *
+     * @param id    视频ID
+     * @param count 弹幕数量
+     */
+    void updateDanmuCount(Long id, Integer count);
 }

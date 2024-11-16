@@ -6,6 +6,8 @@ import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * <p>
@@ -33,4 +35,22 @@ public interface CourseClient {
      */
     @GetMapping("/course/video/info/{id}")
     Result<VideoDTO> getVideoById(@PathVariable Long id);
+
+    /**
+     * 更新评论数量
+     * @param id 视频ID
+     * @param count 评论数量
+     * @return 响应对象
+     */
+    @PostMapping("course/video/comment/{id}")
+    Result<Object> updateCommentCount(@PathVariable Long id, @RequestParam Integer count);
+
+    /**
+     * 更新弹幕数量
+     * @param id 视频ID
+     * @param count 弹幕数量
+     * @return 响应对象
+     */
+    @PostMapping("course/video/danmu/{id}")
+    Result<Object> updateDanmuCount(@PathVariable Long id, @RequestParam Integer count);
 }

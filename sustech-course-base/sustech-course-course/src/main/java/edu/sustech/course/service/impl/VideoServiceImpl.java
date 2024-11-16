@@ -71,4 +71,26 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
                 .eq(Category::getMcId, course.getMcId()).eq(Category::getScId, course.getScId())));
         return map;
     }
+
+    /**
+     * 更新评论数量
+     *
+     * @param id    视频ID
+     * @param count 评论数量
+     */
+    @Override
+    public void updateCommentCount(Long id, Integer count) {
+        baseMapper.updateCommentCount(id, count);
+    }
+
+    /**
+     * 更新弹幕数量
+     *
+     * @param id    视频ID
+     * @param count 弹幕数量
+     */
+    @Override
+    public void updateDanmuCount(Long id, Integer count) {
+        baseMapper.updateDanmuCount(id, count);
+    }
 }

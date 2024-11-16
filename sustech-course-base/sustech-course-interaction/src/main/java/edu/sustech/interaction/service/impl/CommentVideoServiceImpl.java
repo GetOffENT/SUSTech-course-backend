@@ -116,8 +116,9 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         }
         commentVideo.setUserId(userId).setLove(0L).setBad(0L).setIsTop((byte) 0);
         baseMapper.insert(commentVideo);
-        // TODO 更新视频状态
 
+        // 更新评论数量
+        courseClient.updateCommentCount(commentDTO.getVid(), 1);
 
         return getCommentTree(commentVideo, -1L);
 
@@ -163,7 +164,7 @@ public class CommentVideoServiceImpl extends ServiceImpl<CommentVideoMapper, Com
         if (count == 0) {
             throw new CommentException(MessageConstant.COMMENT_DELETE_ERROR);
         }
-        // TODO 更新视频状态， 评论信息
+        courseClient.updateCommentCount(videoDTO.getId(), -count);
 
         log.info("删除评论{}及其{}条子评论", id, count);
     }

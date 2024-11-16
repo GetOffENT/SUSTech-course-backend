@@ -8,10 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -46,7 +43,7 @@ public class VideoController {
     }
 
     /**
-     * 获取单个视频信息
+     * 获取单个视频信息(仅信息)
      *
      * @return 单个视频信息
      */
@@ -55,5 +52,36 @@ public class VideoController {
     public Result<VideoDTO> getVideoById(@PathVariable Long id) {
         log.info("获取单个视频信息...视频ID: {}", id);
         return Result.success(BeanUtil.copyProperties(videoService.getById(id), VideoDTO.class));
+    }
+
+
+    /**
+     * 更新评论数量
+     *
+     * @param id    视频ID
+     * @param count 评论数量
+     * @return 响应对象
+     */
+    @ApiOperation("更新评论数量")
+    @PostMapping("/comment/{id}")
+    public Result<Object> updateCommentCount(@PathVariable Long id, @RequestParam Integer count) {
+        log.info("更新评论数量...视频ID: {}", id);
+        videoService.updateCommentCount(id, count);
+        return Result.success();
+    }
+
+    /**
+     * 更新弹幕数量
+     *
+     * @param id    视频ID
+     * @param count 弹幕数量
+     * @return 响应对象
+     */
+    @ApiOperation("更新弹幕数量")
+    @PostMapping("/danmu/{id}")
+    public Result<Object> updateDanmuCount(@PathVariable Long id, @RequestParam Integer count) {
+        log.info("更新弹幕数量...视频ID: {}", id);
+        videoService.updateDanmuCount(id, count);
+        return Result.success();
     }
 }

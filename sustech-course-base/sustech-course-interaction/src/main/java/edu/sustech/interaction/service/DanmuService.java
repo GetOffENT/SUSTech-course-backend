@@ -13,4 +13,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface DanmuService extends IService<Danmu> {
 
+    /**
+     * 删除弹幕
+     * @param id 弹幕id
+     */
+    void deleteDanmu(Long id);
 }

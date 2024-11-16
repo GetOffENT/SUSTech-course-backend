@@ -37,7 +37,7 @@ public class DanmuController {
      */
     @GetMapping("/{vid}")
     @ApiOperation("获取对应视频的弹幕列表")
-    public Result<List<Danmu>> getDanmuList(@PathVariable("vid") String vid) {
+    public Result<List<Danmu>> getDanmuList(@PathVariable("vid") Long vid) {
         log.info("获取视频{}的弹幕列表", vid);
         List<Danmu> danmuList = danmuService.list(
                 new LambdaQueryWrapper<Danmu>()
@@ -56,7 +56,7 @@ public class DanmuController {
     @ApiOperation("删除弹幕")
     public Result<Object> deleteDanmu(@PathVariable("id") Long id) {
         log.info("删除弹幕{}", id);
-        danmuService.removeById(id);
+        danmuService.deleteDanmu(id);
         return Result.success();
     }
 }
