@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sustech.course.mapper.AttachmentMapper">
+
+    <select id="selectLatestAttachments" resultType="edu.sustech.course.entity.Attachment">
+        WITH ranked_attachments AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY uuid ORDER BY version DESC) AS rn
+                                    FROM attachment
+                                    WHERE video_id = #{videoId})
+        SELECT id,
+               uuid,
+               version,
+               course_id,
+               chapter_id,
+               video_id,
+               file_name,
+               file_url,
+               file_size,
+               file_type,
+               is_lecture,
+               is_download,
+               is_delete,
+               gmt_create,
+               gmt_modified
+        FROM ranked_attachments
+        WHERE rn = 1;
+    </select>
+</mapper>

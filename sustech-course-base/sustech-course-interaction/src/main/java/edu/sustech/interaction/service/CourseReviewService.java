@@ -41,4 +41,10 @@ public interface CourseReviewService extends IService<CourseReview> {
      * @return 课程评价
      */
     CourseReviewVO getCourseReview(Long courseId);
+
+    /**
+     * 删除课程评价
+     * @param reviewId 评价id
+     */
+    void deleteCourseReview(Long reviewId);
 }

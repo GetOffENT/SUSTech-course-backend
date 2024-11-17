@@ -3,6 +3,8 @@ package edu.sustech.course.controller;
 import cn.hutool.core.bean.BeanUtil;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.Result;
+import edu.sustech.course.entity.vo.AttachmentVO;
+import edu.sustech.course.service.AttachmentService;
 import edu.sustech.course.service.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +31,8 @@ import java.util.Map;
 public class VideoController {
 
     private final VideoService videoService;
+
+    private final AttachmentService attachmentService;
 
     /**
      * 获取单个视频信息
@@ -83,5 +88,31 @@ public class VideoController {
         log.info("更新弹幕数量...视频ID: {}", id);
         videoService.updateDanmuCount(id, count);
         return Result.success();
+    }
+
+    /**
+     * 获取视频最新版附件列表
+     *
+     * @param videoId 视频ID
+     * @return 附件列表
+     */
+    @GetMapping("/attachment/list")
+    @ApiOperation("获取视频附件")
+    public Result<List<AttachmentVO>> getAttachments(@RequestParam Long videoId) {
+        log.info("获取视频附件 videoId:{}", videoId);
+        return Result.success(attachmentService.getAttachments(videoId));
+    }
+
+    /**
+     * 获取指定附件历史版本列表
+     *
+     * @param uuid 附件uuid
+     * @return 指定附件历史版本列表
+     */
+    @GetMapping("/attachment/history")
+    @ApiOperation("获取指定附件历史版本")
+    public Result<List<AttachmentVO>> getAttachmentHistory(@RequestParam String uuid) {
+        log.info("获取指定附件历史版本 uuid:{}", uuid);
+        return Result.success(attachmentService.getAttachmentHistory(uuid));
     }
 }

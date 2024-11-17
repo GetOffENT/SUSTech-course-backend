@@ -1,5 +1,6 @@
 package edu.sustech.interaction.controller;
 
+import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.result.Result;
 import edu.sustech.interaction.entity.CourseReview;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
@@ -76,6 +77,20 @@ public class CourseReviewController {
     public Result<CourseReviewVO> getCourseReview(@PathVariable Long courseId) {
         log.info("获取用户对课程{}的评价", courseId);
         return Result.success(courseReviewService.getCourseReview(courseId));
+    }
+
+    /**
+     * 删除用户对课程的评价
+     *
+     * @param reviewId 评价id
+     * @return 成功或失败
+     */
+    @DeleteMapping("/{reviewId}")
+    @ApiOperation("删除用户对课程的评价")
+    public Result<Object> deleteCourseReview(@PathVariable Long reviewId) {
+        log.info("删除用户对课程{}的评价", reviewId);
+        courseReviewService.deleteCourseReview(reviewId);
+        return Result.success();
     }
 
 }

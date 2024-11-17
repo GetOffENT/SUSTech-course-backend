@@ -1,6 +1,7 @@
 package edu.sustech.interaction.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.sustech.api.client.UserClient;
@@ -58,6 +59,9 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
 
         Page<CourseReview> iPage = new Page<>(page, pageSize);
 
+        // 获取课程的平均分（不能使用分页获取课程平均分）
+        Double score = baseMapper.selectAverageScore(courseId);
+
         // 如果登录了就不查自己的评论，因为自己的评论会单独获取
         Long userId = UserContext.getUser();
         LambdaQueryWrapper<CourseReview> queryWrapper = new LambdaQueryWrapper<CourseReview>()
@@ -74,6 +78,15 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
                 new LambdaQueryWrapper<CourseReviewScore>()
                         .eq(CourseReviewScore::getCourseId, courseId)
         );
+
+        if (CollUtil.isEmpty(courseReviewScores)) {
+            return Map.of(
+                    "total", courseReviewPage.getTotal(),
+                    "score", score,
+                    "reviews", courseReviewVOS
+            );
+        }
+
         courseReviewScores.sort((o1, o2) -> {
             String index1 = o1.getIndex();
             String index2 = o2.getIndex();
@@ -99,9 +112,6 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
             });
             courseReviewVO.setIndexScores(courseReviewScoreVOS);
         }
-
-        // 获取所有评论的评分（不能使用分页获取的评论评分）
-        Double score = baseMapper.selectAverageScore(courseId);
 
         return Map.of(
                 "total", courseReviewPage.getTotal(),
@@ -166,6 +176,26 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         List<CourseReviewScoreVO> courseReviewScoreVOS = BeanUtil.copyToList(courseReviewScores, CourseReviewScoreVO.class);
         courseReviewVO.setIndexScores(courseReviewScoreVOS);
         return courseReviewVO;
+    }
+
+    /**
+     * 删除课程评价
+     *
+     * @param reviewId 评价id
+     */
+    @Override
+    @Transactional
+    public void deleteCourseReview(Long reviewId) {
+        int flag = baseMapper.deleteById(reviewId);
+        if (flag == 0) {
+            throw new CourseReviewException(MessageConstant.ERROR);
+        }
+
+        // 删除具体指标评分
+        courseReviewScoreMapper.delete(
+                new LambdaQueryWrapper<CourseReviewScore>()
+                        .eq(CourseReviewScore::getReviewId, reviewId)
+        );
     }
 
     private Long checkUser() {
