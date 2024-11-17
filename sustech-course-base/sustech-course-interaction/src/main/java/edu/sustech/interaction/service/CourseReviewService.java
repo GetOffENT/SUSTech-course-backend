@@ -23,7 +23,22 @@ public interface CourseReviewService extends IService<CourseReview> {
      * @param courseId 课程id
      * @param page     页码
      * @param pageSize 每页大小
-     * @return 课程评价列表("reviews", 课程评价列表, "total", 总数, "score", 全部评价的平均分)
+     * @return 课程评价列表(" reviews ", 课程评价列表, " total ", 总数, " score ", 全部评价的平均分)
      */
     Map<String, Object> getCourseReviewList(Integer courseId, Integer page, Integer pageSize);
+
+    /**
+     * 添加课程评价
+     *
+     * @param courseReviewVO 课程评价
+     * @param courseId       课程id
+     */
+    void addCourseReview(CourseReviewVO courseReviewVO, Long courseId);
+
+    /**
+     * 获取用户对课程评价
+     * @param courseId 课程id
+     * @return 课程评价
+     */
+    CourseReviewVO getCourseReview(Long courseId);
 }

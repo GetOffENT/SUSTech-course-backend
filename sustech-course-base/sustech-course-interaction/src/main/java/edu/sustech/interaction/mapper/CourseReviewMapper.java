@@ -2,6 +2,7 @@ package edu.sustech.interaction.mapper;
 
 import edu.sustech.interaction.entity.CourseReview;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -13,4 +14,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface CourseReviewMapper extends BaseMapper<CourseReview> {
 
+    /**
+     * 获取课程平均分
+     * @param courseId 课程id
+     * @return 课程平均分
+     */
+    @Select("SELECT AVG(score) FROM course_review WHERE course_id = #{courseId}")
+    Double selectAverageScore(Integer courseId);
 }

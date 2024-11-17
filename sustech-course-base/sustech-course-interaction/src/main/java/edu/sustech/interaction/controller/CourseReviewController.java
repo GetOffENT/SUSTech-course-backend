@@ -1,6 +1,7 @@
 package edu.sustech.interaction.controller;
 
 import edu.sustech.common.result.Result;
+import edu.sustech.interaction.entity.CourseReview;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 import edu.sustech.interaction.service.CourseReviewService;
 import io.swagger.annotations.Api;
@@ -36,9 +37,9 @@ public class CourseReviewController {
      * @param courseId 课程id
      * @param page     页码
      * @param pageSize 每页大小
-     * @return 课程评价列表("reviews", 课程评价列表, "total", 总数, "score", 全部评价的平均分)
+     * @return 课程评价列表(" reviews ", 课程评价列表, " total ", 总数, " score ", 全部评价的平均分)
      */
-    @GetMapping("/{courseId}")
+    @GetMapping("/list/{courseId}")
     @ApiOperation("获取课程评价列表")
     public Result<Map<String, Object>> getCourseReviewList(
             @PathVariable Integer courseId,
@@ -46,6 +47,35 @@ public class CourseReviewController {
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
         return Result.success(courseReviewService.getCourseReviewList(courseId, page, pageSize));
+    }
+
+
+    /**
+     * 添加课程评价
+     *
+     * @param courseReviewVO 课程评价
+     * @param courseId       课程id
+     * @return 成功或失败
+     */
+    @PostMapping("/{courseId}")
+    @ApiOperation("添加课程评价")
+    public Result<Object> addCourseReview(@RequestBody CourseReviewVO courseReviewVO, @PathVariable Long courseId) {
+        log.info("添加对课程{}的评价：{}", courseId, courseReviewVO);
+        courseReviewService.addCourseReview(courseReviewVO, courseId);
+        return Result.success();
+    }
+
+    /**
+     * 获取用户对课程的评价
+     *
+     * @param courseId 课程id
+     * @return 课程评价
+     */
+    @GetMapping("/{courseId}")
+    @ApiOperation("获取用户对课程的评价")
+    public Result<CourseReviewVO> getCourseReview(@PathVariable Long courseId) {
+        log.info("获取用户对课程{}的评价", courseId);
+        return Result.success(courseReviewService.getCourseReview(courseId));
     }
 
 }

@@ -2,6 +2,10 @@ package edu.sustech.interaction.mapper;
 
 import edu.sustech.interaction.entity.CourseReviewScore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,4 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2024-11-17
  */
 public interface CourseReviewScoreMapper extends BaseMapper<CourseReviewScore> {
-
 }
