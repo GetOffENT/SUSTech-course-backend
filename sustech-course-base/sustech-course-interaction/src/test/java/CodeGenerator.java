@@ -30,7 +30,7 @@ public class CodeGenerator {
                             .xml("mapper.xml"); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("course_review", "course_review_love")// 设置需要生成的表名
+                    builder.addInclude("course_review_score")// 设置需要生成的表名
                             .entityBuilder()
                             .enableRemoveIsPrefix() // 去除表前缀
                             .idType(IdType.ASSIGN_ID)
