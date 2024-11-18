@@ -1,0 +1,11 @@
+server:
+  port: 8086
+spring:
+  # 解决swagger启动报错问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: ${sustechcourse.servlet.multipart.max-file-size}
+      max-request-size: ${sustechcourse.servlet.multipart.max-request-size}

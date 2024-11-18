@@ -17,6 +17,7 @@
         <module>sustech-course-interaction</module>
         <module>sustech-course-admin</module>
         <module>sustech-course-message</module>
+        <module>sustech-course-resource</module>
     </modules>
 
     <properties>

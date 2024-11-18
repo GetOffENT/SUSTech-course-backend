@@ -1,0 +1,13 @@
+sustechcourse:
+  redis:
+    host: 192.168.101.135
+    port: 6379
+    database: 0
+    #password: redis
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  cloud:
+    nacos:
+      server-addr: 192.168.101.135:8848
