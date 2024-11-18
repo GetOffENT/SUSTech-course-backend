@@ -38,6 +38,10 @@ spring:
             - Path=/ws/**
           filters:
             - Websocket
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+              - Path=/resource/**
       globalcors:
         cors-configurations:
           '[/**]':

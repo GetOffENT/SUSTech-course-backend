@@ -1,6 +1,9 @@
 package edu.sustech.resource.controller;
 
+import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.ResourceUploadException;
 import edu.sustech.common.result.Result;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.resource.service.OssService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.UUID;
+import java.util.List;
 
 /**
  * <p>
@@ -42,7 +44,23 @@ public class OssController {
     @ApiOperation("文件上传")
     public Result<String> upload(@RequestPart("file") MultipartFile file) {
         log.info("文件上传: {}", file);
+        if (UserContext.getUser() == null) {
+            throw new ResourceUploadException(MessageConstant.NOT_LOGIN);
+        }
         return Result.success(ossService.upload(file));
+    }
+
+    /**
+     * 多文件上传
+     *
+     * @param files 文件列表
+     * @return 文件路径列表
+     */
+    @PostMapping("/files")
+    @ApiOperation("多文件上传")
+    public Result<List<String>> uploadFiles(@RequestPart("files") List<MultipartFile> files) {
+        log.info("多文件上传: {}", files);
+        return Result.success(ossService.uploadFiles(files));
     }
 
 }
