@@ -32,6 +32,8 @@ public class MessageConstant {
     public static final String DANMU_DELETE_ERROR = "删除弹幕失败";
     public static final String ALREADY_JOINED = "已加入该课程";
     public static final String COURSE_NOT_EXIST = "课程不存在";
+    public static final String VIDEO_NOT_EXIST = "视频不存在";
+    public static final String VIDEO_NOT_PUBLIC = "视频未公开";
     public static final String PARAM_ERROR = "评分不能为空";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
 }

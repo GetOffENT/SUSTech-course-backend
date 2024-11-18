@@ -190,7 +190,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public Course getCourseById(Long courseId) {
         Course course = baseMapper.selectById(courseId);
         if (course == null) {
-            return null;
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
         }
 
         Long userId = UserContext.getUser();
