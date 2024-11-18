@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import edu.sustech.course.entity.enums.CourseForm;
+import edu.sustech.course.entity.enums.CourseOpenStatus;
+import edu.sustech.course.entity.enums.CourseStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -63,7 +65,7 @@ public class Course implements Serializable {
     private Double duration;
 
     @ApiModelProperty("是否公开 0不公开 1部分公开 2完全公开")
-    private Byte openState;
+    private CourseOpenStatus openState;
 
     @ApiModelProperty("是否是已经认证老师的用户发布的课程 0否 1是")
     private Byte isTeacher;
@@ -101,8 +103,8 @@ public class Course implements Serializable {
     @ApiModelProperty("乐观锁")
     private Long version;
 
-    @ApiModelProperty("状态 0审核中 1已过审 2未过审 3已发布 4已删除")
-    private Byte status;
+    @ApiModelProperty("状态 0审核中 1已过审 2未过审 3已发布 4已删除 5已私密 6编辑中")
+    private CourseStatus status;
 
     @ApiModelProperty("逻辑删除 1（true）已删除， 0（false）未删除")
     private Byte isDelete;

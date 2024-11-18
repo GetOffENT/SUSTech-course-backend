@@ -50,4 +50,11 @@ public interface CourseService extends IService<Course> {
      */
     List<ChapterVO> getCatalog(Long courseId);
 
+    /**
+     * 获取课程信息
+     *
+     * @param courseId 课程id
+     * @return 课程信息
+     */
+    Course getCourseById(Long courseId);
 }

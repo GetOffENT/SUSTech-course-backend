@@ -5,11 +5,16 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
+import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.*;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
+import edu.sustech.course.entity.enums.CourseOpenStatus;
+import edu.sustech.course.entity.enums.CourseStatus;
+import edu.sustech.course.entity.enums.JoinEnum;
 import edu.sustech.course.entity.vo.ChapterVO;
 import edu.sustech.course.entity.vo.VideoVO;
 import edu.sustech.course.mapper.*;
@@ -48,6 +53,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     private final UserVideoRecordMapper userVideoRecordMapper;
 
+    private final UserCourseMapper userCourseMapper;
+
     /**
      * 获取随机推荐课程
      *
@@ -57,7 +64,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public List<Map<String, Object>> getRandomRecommendCourses() {
         // TODO: 查询redis中有无缓存的已发布状态的课程id数据
 
-        // 先从数据库查询所有已发布状态的课程id数据
+        // 先从数据库查询所有已发布状态并 非不公开的课程id数据
         List<Long> ids = baseMapper.selectPublishedCourseIds();
 
         if (CollUtil.isEmpty(ids)) {
@@ -82,7 +89,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public Map<String, Object> getCumulativeCourses(List<Long> courseIds) {
         // TODO: 查询redis中有无缓存的已发布状态的课程id数据
 
-        // 先从数据库查询所有已发布状态的课程id数据
+        // 先从数据库查询所有已发布状态并 非不公开的课程id数据
         List<Long> ids = baseMapper.selectPublishedCourseIds();
 
         if (CollUtil.isEmpty(ids)) {
@@ -174,6 +181,52 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 获取课程信息
+     *
+     * @param courseId 课程id
+     * @return 课程信息
+     */
+    @Override
+    public Course getCourseById(Long courseId) {
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            return null;
+        }
+
+        Long userId = UserContext.getUser();
+
+        // 用户登录了，且用户是课程的发布者
+        if (userId != null && userId.equals(course.getUserId())) {
+            return course;
+        }
+
+        if (course.getStatus() != CourseStatus.PASSED) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+
+        if (course.getOpenState() == CourseOpenStatus.NOT_OPEN) {
+            // 用户未登录
+            if (userId == null) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
+
+            // 已登录的用户是否加入了课程
+            UserCourse userCourse = userCourseMapper.selectOne(
+                    new LambdaQueryWrapper<UserCourse>()
+                            .eq(UserCourse::getUserId, userId)
+                            .eq(UserCourse::getCourseId, courseId)
+            );
+            // 用户加入了课程
+            if (userCourse != null && userCourse.getJoinState() == JoinEnum.JOINED) {
+                return course;
+            }
+
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        return course;
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id
@@ -213,7 +266,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         List<Course> courseList = baseMapper.selectList(
                 new LambdaQueryWrapper<Course>()
                         .in(Course::getId, queryIds)
-                        .eq(Course::getStatus, 1)
         );
 
         if (CollUtil.isEmpty(courseList)) {

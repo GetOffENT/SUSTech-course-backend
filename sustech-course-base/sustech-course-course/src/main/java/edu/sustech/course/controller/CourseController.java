@@ -105,7 +105,7 @@ public class CourseController {
     @ApiOperation("获取课程信息")
     public Result<Course> getCourseById(@PathVariable Long courseId) {
         log.info("获取课程信息 courseId:{}", courseId);
-        return Result.success(courseService.getById(courseId));
+        return Result.success(courseService.getCourseById(courseId));
     }
 
 }
