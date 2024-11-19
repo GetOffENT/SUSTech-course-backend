@@ -61,7 +61,7 @@ public class Course implements Serializable {
     @ApiModelProperty("作者声明 0不声明 1未经允许禁止转载")
     private Byte auth;
 
-    @ApiModelProperty("总课程时长(秒该课程所有视频时长总和)")
+    @ApiModelProperty("总课程时长(秒,该课程所有视频时长总和)")
     private Double duration;
 
     @ApiModelProperty("是否公开 0不公开 1部分公开 2完全公开")

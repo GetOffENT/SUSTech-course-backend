@@ -37,7 +37,7 @@ public class VideoController {
     /**
      * 获取单个视频信息
      *
-     * @return 单个视频信息(包含发布用户信息)
+     * @return 单个视频信息(包含发布用户信息、登录用户和视频所属课程关系信息、视频所属课程信息、登录用户和视频记录信息)
      */
     @ApiOperation("获取单个视频信息")
     @GetMapping("/{id}")

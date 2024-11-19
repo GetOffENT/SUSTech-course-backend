@@ -8,17 +8,11 @@ import edu.sustech.common.exception.VideoException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
 import edu.sustech.common.util.UserContext;
-import edu.sustech.course.entity.Category;
-import edu.sustech.course.entity.Course;
-import edu.sustech.course.entity.UserCourse;
-import edu.sustech.course.entity.Video;
+import edu.sustech.course.entity.*;
 import edu.sustech.course.entity.enums.CourseOpenStatus;
 import edu.sustech.course.entity.enums.CourseStatus;
 import edu.sustech.course.entity.enums.JoinEnum;
-import edu.sustech.course.mapper.CategoryMapper;
-import edu.sustech.course.mapper.CourseMapper;
-import edu.sustech.course.mapper.UserCourseMapper;
-import edu.sustech.course.mapper.VideoMapper;
+import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.VideoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +43,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private final CourseMapper courseMapper;
 
     private final UserCourseMapper userCourseMapper;
+
+    private final UserVideoRecordMapper userVideoRecordMapper;
 
     /**
      * 获取单个视频信息
@@ -110,6 +106,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         Map<String, Object> map = new HashMap<>();
         map.put("video", video);
         map.put("course", course);
+        map.put("userCourse", userCourse);
+        map.put("userVideoRecord", userVideoRecordMapper.selectOne(
+                new LambdaQueryWrapper<UserVideoRecord>()
+                        .eq(UserVideoRecord::getUserId, userId)
+                        .eq(UserVideoRecord::getVideoId, id)
+        ));
 
         // 发布者信息
         Result<UserDTO> userAndCoursesById = userClient.getUserAndCoursesById(video.getUserId());

@@ -2,6 +2,7 @@ package edu.sustech.course.service;
 
 import edu.sustech.course.entity.UserVideoRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.course.entity.dto.UserVideoRecordDTO;
 
 /**
  * <p>
@@ -13,4 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserVideoRecordService extends IService<UserVideoRecord> {
 
+    /**
+     * 添加观看记录
+     * @param recordJSON 观看记录对应JSON
+     */
+    void addRecord(String recordJSON);
 }

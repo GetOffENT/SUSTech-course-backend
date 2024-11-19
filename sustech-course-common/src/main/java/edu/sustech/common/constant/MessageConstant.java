@@ -36,4 +36,6 @@ public class MessageConstant {
     public static final String VIDEO_NOT_PUBLIC = "视频未公开";
     public static final String PARAM_ERROR = "评分不能为空";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
+
+    public static final String INVALID_TIME_POINTS = "时间点列表必须为偶数长度！";
 }

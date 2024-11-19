@@ -4,6 +4,7 @@ import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
+import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.vo.ChapterVO;
 import edu.sustech.course.service.CourseDescriptionService;
 import edu.sustech.course.service.CourseService;
