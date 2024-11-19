@@ -36,6 +36,7 @@ public interface AttachmentService extends IService<Attachment> {
     /**
      * 添加附件
      * @param attachmentDTO 附件DTO
+     * @return 附件ID
      */
-    void addAttachment(AttachmentDTO attachmentDTO);
+    Long addAttachment(AttachmentDTO attachmentDTO);
 }

@@ -27,9 +27,6 @@ public class AttachmentDTO {
     @ApiModelProperty("附件ID")
     private Long id;
 
-    @ApiModelProperty("附件UUID")
-    private String uuid;
-
     @ApiModelProperty("附件版本")
     private Integer version;
 

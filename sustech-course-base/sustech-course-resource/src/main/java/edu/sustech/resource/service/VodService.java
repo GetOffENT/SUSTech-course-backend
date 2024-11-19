@@ -17,5 +17,5 @@ public interface VodService {
      * @param file 视频文件
      * @return 视频播放地址
      */
-    String uploadVideo(MultipartFile file, Long courseId, Long chapterId, Long videoId);
+    String uploadVideo(MultipartFile file, Long id);
 }

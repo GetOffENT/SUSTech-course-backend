@@ -1,6 +1,9 @@
 package edu.sustech.resource.service.impl;
 
+import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.exception.ResourceOperationException;
+import edu.sustech.common.result.Result;
 import edu.sustech.resource.service.VodService;
 import edu.sustech.resource.utils.AliVodUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ public class VodServiceImpl implements VodService {
 
     private final AliVodUtil aliVodUtil;
 
+    private final CourseClient courseClient;
+
     /**
      * 上传视频到阿里云
      *
@@ -30,10 +35,12 @@ public class VodServiceImpl implements VodService {
      * @return 视频播放地址
      */
     @Override
-    public String uploadVideo(MultipartFile file, Long courseId, Long chapterId, Long videoId) {
+    public String uploadVideo(MultipartFile file, Long id) {
         String videoSourceId;
+        String filename;
+        Long size = file.getSize();
         try {
-            String filename = file.getOriginalFilename();
+            filename = file.getOriginalFilename();
             assert filename != null;
             String title = filename.substring(0, filename.lastIndexOf("."));
             videoSourceId = aliVodUtil.uploadStream(title, filename, file.getInputStream());
@@ -41,9 +48,19 @@ public class VodServiceImpl implements VodService {
             log.error("上传视频失败", e);
             throw new ResourceOperationException("上传视频失败");
         }
-
         log.info("上传视频成功，videoSourceId: {}", videoSourceId);
 
+        // 同时更新数据库视频资源信息
+        VideoResourceDTO videoResourceDTO = VideoResourceDTO.builder()
+                .id(id)
+                .videoSourceId(videoSourceId)
+                .videoOriginalName(filename)
+                .size(size)
+                .build();
+        Result<Object> objectResult = courseClient.addVideoResource(videoResourceDTO);
+        if (objectResult.getCode() != 20000) {
+            throw new ResourceOperationException(objectResult.getMessage());
+        }
 
         // 上传时获取一次视频播放地址
         String url;

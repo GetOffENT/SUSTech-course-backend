@@ -63,11 +63,13 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
      * 添加附件
      *
      * @param attachmentDTO 附件DTO
+     * @return 附件ID
      */
     @Override
-    public void addAttachment(AttachmentDTO attachmentDTO) {
+    public Long addAttachment(AttachmentDTO attachmentDTO) {
         Attachment attachment = BeanUtil.copyProperties(attachmentDTO, Attachment.class);
         attachment.setUuid(UUID.randomUUID().toString());
         this.save(attachment);
+        return attachment.getId();
     }
 }

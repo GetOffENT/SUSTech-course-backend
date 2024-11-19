@@ -1,5 +1,6 @@
 package edu.sustech.course.service;
 
+import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.course.entity.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -38,4 +39,11 @@ public interface VideoService extends IService<Video> {
      * @param count 弹幕数量
      */
     void updateDanmuCount(Long id, Integer count);
+
+    /**
+     * 添加视频资源
+     *
+     * @param videoResourceDTO 视频资源信息
+     */
+    void addVideoResource(VideoResourceDTO videoResourceDTO);
 }

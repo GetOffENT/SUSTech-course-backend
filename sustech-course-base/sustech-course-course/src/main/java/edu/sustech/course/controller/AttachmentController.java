@@ -60,13 +60,12 @@ public class AttachmentController {
      * 添加附件
      *
      * @param attachmentDTO 附件DTO
-     * @return 无
+     * @return 附件ID
      */
     @PostMapping
     @ApiOperation("添加附件")
-    public Result<Object> addAttachment(@RequestBody AttachmentDTO attachmentDTO) {
+    public Result<Long> addAttachment(@RequestBody AttachmentDTO attachmentDTO) {
         log.info("添加附件 attachmentDTO:{}", attachmentDTO);
-        attachmentService.addAttachment(attachmentDTO);
-        return Result.success();
+        return Result.success(attachmentService.addAttachment(attachmentDTO));
     }
 }

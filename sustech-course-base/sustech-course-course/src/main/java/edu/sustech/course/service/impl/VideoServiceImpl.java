@@ -1,8 +1,10 @@
 package edu.sustech.course.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
+import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.VideoException;
 import edu.sustech.common.result.Result;
@@ -148,5 +150,20 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     @Override
     public void updateDanmuCount(Long id, Integer count) {
         baseMapper.updateDanmuCount(id, count);
+    }
+
+    /**
+     * 添加视频资源
+     *
+     * @param videoResourceDTO 视频资源信息
+     */
+    @Override
+    public void addVideoResource(VideoResourceDTO videoResourceDTO) {
+        Video video = BeanUtil.copyProperties(videoResourceDTO, Video.class);
+        int row = baseMapper.updateById(video);
+        if (row == 0) {
+            // TODO: 删除阿里云视频
+            throw new VideoException(MessageConstant.ADD_VIDEO_RESOURCE_FAILED);
+        }
     }
 }

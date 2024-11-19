@@ -36,11 +36,9 @@ public class VodController {
     @PostMapping("/video")
     public Result<String> uploadVideo(
             @RequestPart("file") MultipartFile file,
-            @RequestParam Long courseId,
-            @RequestParam Long chapterId,
-            @RequestParam Long videoId
+            @RequestParam Long id
     ) {
         log.info("上传视频: {}", file);
-        return Result.success(vodService.uploadVideo(file, courseId, chapterId, videoId));
+        return Result.success(vodService.uploadVideo(file, id));
     }
 }

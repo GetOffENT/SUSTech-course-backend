@@ -2,6 +2,7 @@ package edu.sustech.course.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import edu.sustech.api.entity.dto.VideoDTO;
+import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.course.service.VideoService;
 import io.swagger.annotations.Api;
@@ -32,7 +33,7 @@ public class VideoController {
     /**
      * 获取单个视频信息
      *
-     * @return 单个视频信息(包含发布用户信息、登录用户和视频所属课程关系信息、视频所属课程信息、登录用户和视频记录信息)
+     * @return 单个视频信息(包含发布用户信息 、 登录用户和视频所属课程关系信息 、 视频所属课程信息 、 登录用户和视频记录信息)
      */
     @ApiOperation("获取单个视频信息")
     @GetMapping("/{id}")
@@ -82,6 +83,20 @@ public class VideoController {
     public Result<Object> updateDanmuCount(@PathVariable Long id, @RequestParam Integer count) {
         log.info("更新弹幕数量...视频ID: {}", id);
         videoService.updateDanmuCount(id, count);
+        return Result.success();
+    }
+
+    /**
+     * 添加已有小节(video表)视频资源
+     *
+     * @param videoResourceDTO 视频资源信息
+     * @return 响应对象
+     */
+    @ApiOperation("添加视频资源")
+    @PostMapping("/resource")
+    public Result<Object> addVideoResource(@RequestBody VideoResourceDTO videoResourceDTO) {
+        log.info("添加视频资源...视频资源信息: {}", videoResourceDTO);
+        videoService.addVideoResource(videoResourceDTO);
         return Result.success();
     }
 }

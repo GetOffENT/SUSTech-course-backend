@@ -3,6 +3,7 @@ package edu.sustech.api.client;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
+import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public interface CourseClient {
 
     /**
      * 根据用户id查询该用户的所有课程信息
+     *
      * @param id 用户id
      * @return 该用户的所有课程信息
      */
@@ -28,6 +30,7 @@ public interface CourseClient {
 
     /**
      * 获取单个视频信息
+     *
      * @param id 视频id
      * @return 单个视频信息
      */
@@ -36,7 +39,8 @@ public interface CourseClient {
 
     /**
      * 更新视频评论数量
-     * @param id 视频ID
+     *
+     * @param id    视频ID
      * @param count 评论数量
      * @return 响应对象
      */
@@ -45,7 +49,8 @@ public interface CourseClient {
 
     /**
      * 更新视频弹幕数量
-     * @param id 视频ID
+     *
+     * @param id    视频ID
      * @param count 弹幕数量
      * @return 响应对象
      */
@@ -53,6 +58,21 @@ public interface CourseClient {
     Result<Object> updateDanmuCount(@PathVariable Long id, @RequestParam Integer count);
 
 
+    /**
+     * 添加附件
+     *
+     * @param attachmentDTO 附件信息
+     * @return 附件ID
+     */
     @PostMapping("/course/attachment")
-    Result<Object> addAttachment(@RequestBody AttachmentDTO attachmentDTO);
+    Result<Long> addAttachment(@RequestBody AttachmentDTO attachmentDTO);
+
+    /**
+     * 添加视频资源
+     *
+     * @param videoResourceDTO 视频资源信息
+     * @return 响应对象
+     */
+    @PostMapping("/course/video/resource")
+    Result<Object> addVideoResource(@RequestBody VideoResourceDTO videoResourceDTO);
 }

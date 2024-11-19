@@ -39,6 +39,7 @@ public class MessageConstant {
     public static final String COURSE_ADD_FAILED = "课程添加失败，请稍后再试！";
     public static final String CHAPTER_ADD_FAILED = "章节添加失败，请稍后再试！";
     public static final String VIDEO_ADD_FAILED = "小节添加失败，请稍后再试！";
+    public static final String ADD_VIDEO_RESOURCE_FAILED = "添加视频资源失败，请稍后再试！";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
     public static final String SERVER_ERROR = "妮小可出错了！请稍后再试(¯﹃¯)";
 
