@@ -30,4 +30,15 @@ public interface OssService {
      * @return 文件路径列表
      */
     List<String> uploadFiles(List<MultipartFile> files);
+
+    /**
+     * 上传附件
+     *
+     * @param file      文件
+     * @param courseId  课程ID
+     * @param chapterId 章节ID
+     * @param videoId   视频(小节)ID
+     * @return 文件路径
+     */
+    String uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId);
 }

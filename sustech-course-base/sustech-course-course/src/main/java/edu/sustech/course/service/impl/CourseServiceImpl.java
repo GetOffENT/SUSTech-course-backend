@@ -340,7 +340,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             }
         }
 
-        List<AttachmentDTO> attachments = courseDetailDTO.getAttachments();
+        List<AttachmentDetailDTO> attachments = courseDetailDTO.getAttachments();
         BeanUtil.copyToList(attachments, Attachment.class)
                 .forEach(attachmentMapper::updateById);
     }

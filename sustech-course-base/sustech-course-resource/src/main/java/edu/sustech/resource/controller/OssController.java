@@ -9,10 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -63,4 +60,24 @@ public class OssController {
         return Result.success(ossService.uploadFiles(files));
     }
 
+    /**
+     * 上传附件
+     *
+     * @param file      文件
+     * @param courseId  课程ID
+     * @param chapterId 章节ID
+     * @param videoId   视频(小节)ID
+     * @return 文件路径
+     */
+    @PostMapping("/attachment")
+    @ApiOperation("上传附件")
+    public Result<String> uploadAttachment(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam Long courseId,
+            @RequestParam Long chapterId,
+            @RequestParam Long videoId
+    ) {
+        log.info("视频附件上传: {}", file);
+        return Result.success(ossService.uploadAttachment(file, courseId, chapterId, videoId));
+    }
 }

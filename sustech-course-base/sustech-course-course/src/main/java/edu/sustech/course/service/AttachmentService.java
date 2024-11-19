@@ -1,5 +1,6 @@
 package edu.sustech.course.service;
 
+import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.course.entity.Attachment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.course.entity.vo.AttachmentVO;
@@ -31,4 +32,10 @@ public interface AttachmentService extends IService<Attachment> {
      * @return 附件历史版本
      */
     List<AttachmentVO> getAttachmentHistory(String uuid);
+
+    /**
+     * 添加附件
+     * @param attachmentDTO 附件DTO
+     */
+    void addAttachment(AttachmentDTO attachmentDTO);
 }

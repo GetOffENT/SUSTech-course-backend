@@ -1,5 +1,6 @@
 package edu.sustech.course.controller;
 
+import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.course.entity.vo.AttachmentVO;
 import edu.sustech.course.service.AttachmentService;
@@ -7,10 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,5 +54,19 @@ public class AttachmentController {
     public Result<List<AttachmentVO>> getAttachmentHistory(@RequestParam String uuid) {
         log.info("获取指定附件历史版本 uuid:{}", uuid);
         return Result.success(attachmentService.getAttachmentHistory(uuid));
+    }
+
+    /**
+     * 添加附件
+     *
+     * @param attachmentDTO 附件DTO
+     * @return 无
+     */
+    @PostMapping
+    @ApiOperation("添加附件")
+    public Result<Object> addAttachment(@RequestBody AttachmentDTO attachmentDTO) {
+        log.info("添加附件 attachmentDTO:{}", attachmentDTO);
+        attachmentService.addAttachment(attachmentDTO);
+        return Result.success();
     }
 }

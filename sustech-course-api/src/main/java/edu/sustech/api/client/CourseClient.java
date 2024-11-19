@@ -1,13 +1,11 @@
 package edu.sustech.api.client;
 
+import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -53,4 +51,8 @@ public interface CourseClient {
      */
     @PostMapping("course/video/danmu/{id}")
     Result<Object> updateDanmuCount(@PathVariable Long id, @RequestParam Integer count);
+
+
+    @PostMapping("/course/attachment")
+    Result<Object> addAttachment(@RequestBody AttachmentDTO attachmentDTO);
 }

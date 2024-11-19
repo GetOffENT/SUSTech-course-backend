@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "附件(或课件)详细信息")
-public class AttachmentDTO {
+public class AttachmentDetailDTO {
 
     @ApiModelProperty("附件ID")
     private Long id;

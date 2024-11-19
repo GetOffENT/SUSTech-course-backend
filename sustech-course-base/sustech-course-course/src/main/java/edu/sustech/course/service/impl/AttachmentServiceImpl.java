@@ -3,6 +3,7 @@ package edu.sustech.course.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.course.entity.Attachment;
 import edu.sustech.course.entity.vo.AttachmentVO;
 import edu.sustech.course.mapper.AttachmentMapper;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>
@@ -55,5 +57,17 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
             return BeanUtil.copyToList(attachments, AttachmentVO.class);
         }
         return List.of();
+    }
+
+    /**
+     * 添加附件
+     *
+     * @param attachmentDTO 附件DTO
+     */
+    @Override
+    public void addAttachment(AttachmentDTO attachmentDTO) {
+        Attachment attachment = BeanUtil.copyProperties(attachmentDTO, Attachment.class);
+        attachment.setUuid(UUID.randomUUID().toString());
+        this.save(attachment);
     }
 }

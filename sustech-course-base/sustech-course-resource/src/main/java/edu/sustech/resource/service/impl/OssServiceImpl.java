@@ -1,5 +1,7 @@
 package edu.sustech.resource.service.impl;
 
+import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.ResourceUploadException;
 import edu.sustech.common.util.UserContext;
@@ -29,6 +31,8 @@ import java.util.UUID;
 public class OssServiceImpl implements OssService {
 
     private final AliOssUtil aliOssUtil;
+
+    private final CourseClient courseClient;
 
     /**
      * 文件上传
@@ -71,6 +75,61 @@ public class OssServiceImpl implements OssService {
             result.add(upload(file));
         }
         return result;
+    }
+
+    /**
+     * 上传附件
+     *
+     * @param file      文件
+     * @param courseId  课程ID
+     * @param chapterId 章节ID
+     * @param videoId   视频(小节)ID
+     * @return 文件路径
+     */
+    @Override
+    public String uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId) {
+        checkUser();
+        String fileName = null;
+        String file_url = null;
+        Long file_size = null;
+        String file_type = null;
+        try {
+            // 原始文件名
+            fileName = file.getOriginalFilename();
+            // 文件大小
+            file_size = file.getSize();
+            // 文件类型
+            // 截取原始文件名的后缀
+            assert fileName != null;
+            int index = fileName.lastIndexOf(".");
+            String extension = "";
+            if (index != -1) {
+                file_type = fileName.substring(index + 1);
+                extension = fileName.substring(index);
+            } else {
+                file_type = "";
+            }
+            // 构造新文件名称
+            String objectName = courseId + "/" +
+                    chapterId + "/" +
+                    videoId + "/" +
+                    UUID.randomUUID() + extension;
+            file_url = aliOssUtil.upload(file.getBytes(), objectName, fileName);
+        } catch (IOException e) {
+            log.error("文件上传失败: ", e);
+            throw new RuntimeException("文件上传失败");
+        }
+        AttachmentDTO attachmentDTO = AttachmentDTO.builder()
+                .courseId(courseId)
+                .chapterId(chapterId)
+                .videoId(videoId)
+                .fileName(fileName)
+                .fileUrl(file_url)
+                .fileSize(file_size)
+                .fileType(file_type)
+                .build();
+        courseClient.addAttachment(attachmentDTO);
+        return file_url;
     }
 
     private void checkUser() {

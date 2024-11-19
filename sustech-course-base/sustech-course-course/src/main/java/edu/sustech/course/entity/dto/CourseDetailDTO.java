@@ -63,5 +63,5 @@ public class CourseDetailDTO {
     private List<ChapterDetailDTO> chapters;
 
     @ApiModelProperty("所有视频(小节)附件列表")
-    private List<AttachmentDTO> attachments;
+    private List<AttachmentDetailDTO> attachments;
 }
