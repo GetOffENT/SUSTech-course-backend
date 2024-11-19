@@ -3,7 +3,7 @@ package edu.sustech.resource.service.impl;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
-import edu.sustech.common.exception.ResourceUploadException;
+import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.resource.service.OssService;
 import edu.sustech.resource.utils.AliOssUtil;
@@ -57,7 +57,7 @@ public class OssServiceImpl implements OssService {
             return aliOssUtil.upload(file.getBytes(), objectName, originalFilename);
         } catch (IOException e) {
             log.error("文件上传失败: {}", e);
-            throw new RuntimeException("文件上传失败");
+            throw new ResourceOperationException("文件上传失败");
         }
     }
 
@@ -117,7 +117,7 @@ public class OssServiceImpl implements OssService {
             file_url = aliOssUtil.upload(file.getBytes(), objectName, fileName);
         } catch (IOException e) {
             log.error("文件上传失败: ", e);
-            throw new RuntimeException("文件上传失败");
+            throw new ResourceOperationException("文件上传失败");
         }
         AttachmentDTO attachmentDTO = AttachmentDTO.builder()
                 .courseId(courseId)
@@ -134,7 +134,7 @@ public class OssServiceImpl implements OssService {
 
     private void checkUser() {
         if (UserContext.getUser() == null) {
-            throw new ResourceUploadException(MessageConstant.NOT_LOGIN);
+            throw new ResourceOperationException(MessageConstant.NOT_LOGIN);
         }
     }
 }

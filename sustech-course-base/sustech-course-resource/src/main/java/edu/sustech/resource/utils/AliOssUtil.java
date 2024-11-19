@@ -15,6 +15,7 @@ import java.util.Base64;
 
 /**
  * <p>
+ * 阿里云OSS工具类
  * </p>
  *
  * @author Yuxian Wu

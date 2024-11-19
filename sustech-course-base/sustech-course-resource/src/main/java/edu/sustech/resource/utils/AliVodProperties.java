@@ -10,14 +10,15 @@ import org.springframework.stereotype.Component;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-18 4:19
+ * @since 2024-11-19 23:43
  */
 @Component
-@ConfigurationProperties(prefix = "aliyun.oss")
+@ConfigurationProperties(prefix = "aliyun.vod")
 @Data
-public class AliOssProperties {
-    private String endpoint;
+public class AliVodProperties {
     private String accessKeyId;
     private String accessKeySecret;
-    private String bucketName;
+    private String regionId;
+    private String endpoint;
+    private String templateGroupId;
 }

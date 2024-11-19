@@ -1,7 +1,7 @@
 package edu.sustech.resource.controller;
 
 import edu.sustech.common.constant.MessageConstant;
-import edu.sustech.common.exception.ResourceUploadException;
+import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.resource.service.OssService;
@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * <p>
+ * 阿里云OSS相关接口
  * </p>
  *
  * @author Yuxian Wu
@@ -42,7 +43,7 @@ public class OssController {
     public Result<String> upload(@RequestPart("file") MultipartFile file) {
         log.info("文件上传: {}", file);
         if (UserContext.getUser() == null) {
-            throw new ResourceUploadException(MessageConstant.NOT_LOGIN);
+            throw new ResourceOperationException(MessageConstant.NOT_LOGIN);
         }
         return Result.success(ossService.upload(file));
     }

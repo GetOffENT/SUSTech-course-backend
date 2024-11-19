@@ -8,11 +8,11 @@ package edu.sustech.common.exception;
  * @version 1.0
  * @since 2024-11-18 13:27
  */
-public class ResourceUploadException extends BaseException {
-    public ResourceUploadException() {
+public class ResourceOperationException extends BaseException {
+    public ResourceOperationException() {
     }
 
-    public ResourceUploadException(String message) {
+    public ResourceOperationException(String message) {
         super(message);
     }
 }
