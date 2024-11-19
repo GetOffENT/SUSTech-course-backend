@@ -35,7 +35,12 @@ public class MessageConstant {
     public static final String VIDEO_NOT_EXIST = "视频不存在";
     public static final String VIDEO_NOT_PUBLIC = "视频未公开";
     public static final String PARAM_ERROR = "评分不能为空";
+    public static final String NOT_TEACHER = "您不是老师,无法发布课程";
+    public static final String COURSE_ADD_FAILED = "课程添加失败，请稍后再试！";
+    public static final String CHAPTER_ADD_FAILED = "章节添加失败，请稍后再试！";
+    public static final String VIDEO_ADD_FAILED = "小节添加失败，请稍后再试！";
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
+    public static final String SERVER_ERROR = "妮小可出错了！请稍后再试(¯﹃¯)";
 
     public static final String INVALID_TIME_POINTS = "时间点列表必须为偶数长度！";
 }

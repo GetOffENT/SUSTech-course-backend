@@ -17,14 +17,17 @@ import java.util.List;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-19 20:11
+ * @since 2024-11-19 21:25
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "新增课程")
-public class CourseDTO {
+@ApiModel(description = "课程所有信息")
+public class CourseDetailDTO {
+
+    @ApiModelProperty("课程ID")
+    private Long id;
 
     @ApiModelProperty("主分类ID")
     private String mcId;
@@ -55,4 +58,10 @@ public class CourseDTO {
 
     @ApiModelProperty("课程简介")
     private String courseDescription;
+
+    @ApiModelProperty("课程章节列表")
+    private List<ChapterDetailDTO> chapters;
+
+    @ApiModelProperty("所有视频(小节)附件列表")
+    private List<AttachmentDTO> attachments;
 }

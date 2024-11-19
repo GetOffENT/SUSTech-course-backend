@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,10 +19,11 @@ import lombok.experimental.Accessors;
  * @author Yuxian Wu
  * @since 2024-11-16
  */
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
 @Accessors(chain = true)
-@TableName("course_description")
 @ApiModel(value = "CourseDescription对象", description = "课程简介")
 public class CourseDescription implements Serializable {
 
@@ -32,7 +32,7 @@ public class CourseDescription implements Serializable {
 
     @ApiModelProperty("课程ID")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    private Long id;
 
     @ApiModelProperty("课程简介")
     private String description;

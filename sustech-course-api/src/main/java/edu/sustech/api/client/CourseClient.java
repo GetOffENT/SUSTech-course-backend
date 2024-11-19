@@ -37,7 +37,7 @@ public interface CourseClient {
     Result<VideoDTO> getVideoById(@PathVariable Long id);
 
     /**
-     * 更新评论数量
+     * 更新视频评论数量
      * @param id 视频ID
      * @param count 评论数量
      * @return 响应对象
@@ -46,7 +46,7 @@ public interface CourseClient {
     Result<Object> updateCommentCount(@PathVariable Long id, @RequestParam Integer count);
 
     /**
-     * 更新弹幕数量
+     * 更新视频弹幕数量
      * @param id 视频ID
      * @param count 弹幕数量
      * @return 响应对象

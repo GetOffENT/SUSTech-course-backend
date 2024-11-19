@@ -1,10 +1,13 @@
 package edu.sustech.course.controller;
 
+import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
+import edu.sustech.course.entity.dto.ChapterDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
+import edu.sustech.course.entity.dto.CourseDetailDTO;
 import edu.sustech.course.entity.vo.ChapterVO;
 import edu.sustech.course.service.CourseDescriptionService;
 import edu.sustech.course.service.CourseService;
@@ -109,4 +112,57 @@ public class CourseController {
         return Result.success(courseService.getCourseById(courseId));
     }
 
+    /**
+     * 新增课程(添加课程基本信息)
+     *
+     * @param courseDTO 课程信息
+     * @return 课程id
+     */
+    @PostMapping
+    @ApiOperation("新增课程")
+    public Result<Map<String, Long>> addCourse(@RequestBody CourseDTO courseDTO) {
+        log.info("新增课程 courseDTO:{}", courseDTO);
+        return Result.success(courseService.addCourse(courseDTO));
+    }
+
+    /**
+     * 新增章节
+     *
+     * @param chapterDTO 章节信息
+     * @return 章节id
+     */
+    @PostMapping("/chapter")
+    @ApiOperation("新增章节")
+    public Result<Map<String, Long>> addChapter(@RequestBody ChapterDTO chapterDTO) {
+        log.info("新增章节 chapterDTO:{}", chapterDTO);
+        return Result.success(courseService.addChapter(chapterDTO));
+    }
+
+
+    /**
+     * 新增视频(小节)
+     *
+     * @param videoDTO 视频(小节)信息
+     * @return 视频(小节)id
+     */
+    @PostMapping("/video")
+    @ApiOperation("新增视频")
+    public Result<Map<String,Long>> addVideo(@RequestBody VideoDTO videoDTO){
+        log.info("新增视频 videoDTO:{}",videoDTO);
+        return Result.success(courseService.addVideo(videoDTO));
+    }
+
+    /**
+     * 新增课程详情
+     *
+     * @param courseDetailDTO 课程详情
+     * @return 课程详情
+     */
+    @PostMapping("/detail")
+    @ApiOperation("新增课程详情")
+    public Result<Object> addCourseDetail(@RequestBody CourseDetailDTO courseDetailDTO){
+        log.info("新增课程详情 courseDetailDTO:{}",courseDetailDTO);
+        courseService.addCourseDetail(courseDetailDTO);
+        return Result.success();
+    }
 }

@@ -52,13 +52,6 @@ public class UserDTO implements Serializable {
     @ApiModelProperty("角色类型 0普通用户 1学生 2教师")
     private Byte role;
 
-    // 以下为教师特有信息
-    @ApiModelProperty("教师头像url")
-    private String teacherAvatar;
-
-    @ApiModelProperty("教师简介")
-    private String teacher;
-
     @ApiModelProperty("总发布课程数")
     private Integer courseCount;
 
