@@ -40,5 +40,5 @@ public interface OssService {
      * @param videoId   视频(小节)ID
      * @return 文件路径
      */
-    String uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId);
+    Long uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId);
 }

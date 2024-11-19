@@ -4,6 +4,7 @@ import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.ResourceOperationException;
+import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.resource.service.OssService;
 import edu.sustech.resource.utils.AliOssUtil;
@@ -87,7 +88,7 @@ public class OssServiceImpl implements OssService {
      * @return 文件路径
      */
     @Override
-    public String uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId) {
+    public Long uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId) {
         checkUser();
         String fileName = null;
         String file_url = null;
@@ -128,8 +129,12 @@ public class OssServiceImpl implements OssService {
                 .fileSize(file_size)
                 .fileType(file_type)
                 .build();
-        courseClient.addAttachment(attachmentDTO);
-        return file_url;
+        Result<Long> longResult = courseClient.addAttachment(attachmentDTO);
+        if (longResult.getCode() != 20000) {
+            throw new ResourceOperationException(longResult.getMessage());
+        } else {
+            return longResult.getData();
+        }
     }
 
     private void checkUser() {

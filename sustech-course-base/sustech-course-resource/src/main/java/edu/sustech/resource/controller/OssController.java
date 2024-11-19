@@ -72,7 +72,7 @@ public class OssController {
      */
     @PostMapping("/attachment")
     @ApiOperation("上传附件")
-    public Result<String> uploadAttachment(
+    public Result<Long> uploadAttachment(
             @RequestPart("file") MultipartFile file,
             @RequestParam Long courseId,
             @RequestParam Long chapterId,
