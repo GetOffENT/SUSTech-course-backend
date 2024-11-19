@@ -2,6 +2,7 @@ package edu.sustech.course.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.api.entity.dto.VideoResourceDTO;
@@ -47,6 +48,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private final UserCourseMapper userCourseMapper;
 
     private final UserVideoRecordMapper userVideoRecordMapper;
+
+    private final ResourceClient resourceClient;
 
     /**
      * 获取单个视频信息
@@ -162,7 +165,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         Video video = BeanUtil.copyProperties(videoResourceDTO, Video.class);
         int row = baseMapper.updateById(video);
         if (row == 0) {
-            // TODO: 删除阿里云视频
+            // 删除阿里云视频
+            resourceClient.removeAlyVideo(videoResourceDTO.getVideoSourceId());
             throw new VideoException(MessageConstant.ADD_VIDEO_RESOURCE_FAILED);
         }
     }

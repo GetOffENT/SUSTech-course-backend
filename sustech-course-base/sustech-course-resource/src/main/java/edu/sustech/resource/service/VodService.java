@@ -2,6 +2,8 @@ package edu.sustech.resource.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * <p>
  * </p>
@@ -18,4 +20,18 @@ public interface VodService {
      * @return 视频播放地址
      */
     String uploadVideo(MultipartFile file, Long id);
+
+    /**
+     * 删除视频
+     *
+     * @param id 视频阿里云id
+     */
+    void removeVideo(String id);
+
+    /**
+     * 批量删除视频
+     *
+     * @param videoIdList 视频阿里云id列表
+     */
+    void removeVideoBatch(List<String> videoIdList);
 }

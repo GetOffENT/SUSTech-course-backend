@@ -1,15 +1,20 @@
 package edu.sustech.resource.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.VideoResourceDTO;
+import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.result.Result;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.resource.service.VodService;
 import edu.sustech.resource.utils.AliVodUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,6 +41,8 @@ public class VodServiceImpl implements VodService {
      */
     @Override
     public String uploadVideo(MultipartFile file, Long id) {
+        checkUser();
+
         String videoSourceId;
         String filename;
         Long size = file.getSize();
@@ -46,7 +53,7 @@ public class VodServiceImpl implements VodService {
             videoSourceId = aliVodUtil.uploadStream(title, filename, file.getInputStream());
         } catch (Exception e) {
             log.error("上传视频失败", e);
-            throw new ResourceOperationException("上传视频失败");
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         }
         log.info("上传视频成功，videoSourceId: {}", videoSourceId);
 
@@ -67,8 +74,46 @@ public class VodServiceImpl implements VodService {
         try {
             url = aliVodUtil.getPlayInfo(videoSourceId);
         } catch (Exception e) {
-            throw new ResourceOperationException("获取视频失败");
+            throw new ResourceOperationException(MessageConstant.GET_VIDEO_URL_FAILED);
         }
         return url;
+    }
+
+    /**
+     * 删除视频
+     *
+     * @param id 视频阿里云id
+     */
+    @Override
+    public void removeVideo(String id) {
+        try {
+            aliVodUtil.deleteVideo(id);
+            log.info("删除视频成功");
+        }catch(Exception e) {
+            log.error("删除视频失败", e);
+            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+        }
+    }
+
+    /**
+     * 批量删除视频
+     *
+     * @param videoIdList 视频阿里云id列表
+     */
+    @Override
+    public void removeVideoBatch(List<String> videoIdList) {
+        try {
+            aliVodUtil.deleteVideo(StrUtil.join(",", videoIdList));
+            log.info("批量删除视频成功");
+        } catch (Exception e) {
+            log.error("批量删除视频失败", e);
+            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+        }
+    }
+
+    private void checkUser() {
+        if (UserContext.getUser() == null) {
+            throw new ResourceOperationException(MessageConstant.NOT_LOGIN);
+        }
     }
 }
