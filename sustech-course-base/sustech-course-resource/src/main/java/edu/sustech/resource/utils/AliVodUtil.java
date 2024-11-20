@@ -11,6 +11,7 @@ import com.aliyun.vod20170321.models.GetPlayInfoResponse;
 import com.aliyun.vod20170321.models.GetPlayInfoResponseBody;
 import com.aliyun.vod20170321.models.GetVideoPlayAuthResponse;
 import com.google.gson.Gson;
+import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.ResourceOperationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -87,6 +88,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         } catch (Exception _error) {
             TeaException error = new TeaException(_error.getMessage(), _error);
             // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
@@ -95,6 +97,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         }
         return playUrl;
     }
@@ -121,6 +124,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         } catch (Exception _error) {
             TeaException error = new TeaException(_error.getMessage(), _error);
             // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
@@ -129,6 +133,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         }
         return playAuth;
     }
@@ -151,7 +156,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
-            throw new ResourceOperationException("删除视频失败");
+            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
         } catch (Exception _error) {
             TeaException error = new TeaException(_error.getMessage(), _error);
             // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
@@ -160,7 +165,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
-            throw new ResourceOperationException("删除视频失败");
+            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
         }
     }
 
@@ -224,6 +229,7 @@ public class AliVodUtil {
             System.out.print("VideoId=" + response.getVideoId() + "\n");
             System.out.print("ErrorCode=" + response.getCode() + "\n");
             System.out.print("ErrorMessage=" + response.getMessage() + "\n");
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         }
         return videoId;
     }
@@ -276,6 +282,7 @@ public class AliVodUtil {
             System.out.print("VideoId=" + response.getVideoId() + "\n");
             System.out.print("ErrorCode=" + response.getCode() + "\n");
             System.out.print("ErrorMessage=" + response.getMessage() + "\n");
+            throw new ResourceOperationException(MessageConstant.UPLOAD_VIDEO_FAILED);
         }
 
         return videoId;
