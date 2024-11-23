@@ -9,3 +9,6 @@ spring:
     multipart:
       max-file-size: ${sustechcourse.servlet.multipart.max-file-size}
       max-request-size: ${sustechcourse.servlet.multipart.max-request-size}
+feign:
+  okhttp:
+    enabled: true
