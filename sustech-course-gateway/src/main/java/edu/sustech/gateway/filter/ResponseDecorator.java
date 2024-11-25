@@ -74,7 +74,7 @@ public class ResponseDecorator extends ServerHttpResponseDecorator {
             return json.toString();
         }
 
-        Long id = (Long) data.getJSONObject("user").get("id");
+        Long id = Long.parseLong(String.valueOf(data.getJSONObject("user").get("id")));
         String token = jwtTool.createToken(id, jwtProperties.getTokenTTL());
 
 
