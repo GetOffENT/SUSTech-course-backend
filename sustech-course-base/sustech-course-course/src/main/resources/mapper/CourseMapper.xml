@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.sustech.course.mapper.CourseMapper">
 
+    <select id="selectCourseIds" resultType="java.lang.Long">
+        SELECT id
+        FROM course
+        WHERE 1=1
+        <if test="statusList != null and statusList.size > 0">
+            AND status IN
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="openStateList != null and openStateList.size > 0">
+            AND open_state IN
+            <foreach collection="openStateList" item="openState" open="(" separator="," close=")">
+                #{openState}
+            </foreach>
+        </if>
+    </select>
 </mapper>

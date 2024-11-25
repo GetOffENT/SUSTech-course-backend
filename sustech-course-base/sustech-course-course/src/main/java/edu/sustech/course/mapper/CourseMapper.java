@@ -2,7 +2,7 @@ package edu.sustech.course.mapper;
 
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -17,12 +17,12 @@ import java.util.List;
  */
 public interface CourseMapper extends BaseMapper<Course> {
     /**
-     * 获取已发布且公开或半公开的课程id列表
+     * 根据条件动态查询课程ID列表
      *
-     * @return 已发布且公开或半公开的课程id列表
+     * @return 课程ID列表
      */
-    @Select("select id from course where status = 1 and open_state != 0")
-    List<Long> selectPublishedCourseIds();
+    List<Long> selectCourseIds(@Param("statusList") List<Integer> statusList,
+                               @Param("openStateList") List<Integer> openStateList);
 
     /**
      * 更新课程的点赞数

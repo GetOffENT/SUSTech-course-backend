@@ -71,7 +71,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         // TODO: 查询redis中有无缓存的已发布状态的课程id数据
 
         // 先从数据库查询所有已发布状态并 非不公开的课程id数据
-        List<Long> ids = baseMapper.selectPublishedCourseIds();
+        List<Long> ids = baseMapper.selectCourseIds(
+                List.of(CourseStatus.PASSED.getCode()),
+                List.of(CourseOpenStatus.FULL_OPEN.getValue(), CourseOpenStatus.PART_OPEN.getValue())
+        );
 
         if (CollUtil.isEmpty(ids)) {
             return List.of();
@@ -96,7 +99,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         // TODO: 查询redis中有无缓存的已发布状态的课程id数据
 
         // 先从数据库查询所有已发布状态并 非不公开的课程id数据
-        List<Long> ids = baseMapper.selectPublishedCourseIds();
+        List<Long> ids = baseMapper.selectCourseIds(
+                List.of(CourseStatus.PASSED.getCode()),
+                List.of(CourseOpenStatus.FULL_OPEN.getValue(), CourseOpenStatus.PART_OPEN.getValue())
+        );
 
         if (CollUtil.isEmpty(ids)) {
             return Map.of(

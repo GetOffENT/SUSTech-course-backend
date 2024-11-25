@@ -68,3 +68,4 @@ sustechcourse:
       - /interaction/**
       - /ws/**
       - /hi
+      - /resource/**
