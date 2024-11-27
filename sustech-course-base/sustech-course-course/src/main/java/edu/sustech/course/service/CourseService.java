@@ -99,7 +99,7 @@ public interface CourseService extends IService<Course> {
      * 根据条件获取课程
      *
      * @param coursePageQueryDTO 查询条件
-     * @return 总数以及课程列表
+     * @return 课程列表
      */
     PageResult<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO);
 }

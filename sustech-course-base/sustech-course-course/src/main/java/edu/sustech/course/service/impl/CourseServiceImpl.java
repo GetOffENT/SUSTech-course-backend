@@ -3,6 +3,7 @@ package edu.sustech.course.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.UserDTO;
@@ -362,34 +363,53 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     /**
      * 根据条件获取课程
      *
-     * @param coursePageQueryDTO 查询条件
-     * @return 总数以及课程列表
+     * @param coursePageQueryDTO 课程动态查询条件
+     * @return 课程信息
      */
     @Override
     public PageResult<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO) {
-        // TODO： 考虑redis缓存
+        Page<Course> coursePage = new Page<>(coursePageQueryDTO.getPage(), coursePageQueryDTO.getPageSize());
 
-        List<Integer> status;
-        if (CollUtil.isEmpty(coursePageQueryDTO.getStatus())) {
-            status = new ArrayList<>(Arrays.stream(CourseStatus.values()).map(CourseStatus::getCode).toList());
-        } else {
-            status = coursePageQueryDTO.getStatus().stream().map(CourseStatus::getCode).toList();
+        LambdaQueryWrapper<Course> queryWrapper = new LambdaQueryWrapper<>();
+        if (coursePageQueryDTO.getMcId() != null) {
+            queryWrapper.eq(Course::getMcId, coursePageQueryDTO.getMcId());
+        }
+        if (coursePageQueryDTO.getScId() != null) {
+            queryWrapper.eq(Course::getScId, coursePageQueryDTO.getScId());
+        }
+        if (coursePageQueryDTO.getTitle() != null) {
+            queryWrapper.like(Course::getTitle, coursePageQueryDTO.getTitle());
+        }
+        if (coursePageQueryDTO.getForm() != null) {
+            queryWrapper.eq(Course::getForm, coursePageQueryDTO.getForm().getCode());
+        }
+        if (coursePageQueryDTO.getType() != null) {
+            queryWrapper.eq(Course::getType, coursePageQueryDTO.getType());
+        }
+        if (coursePageQueryDTO.getAuth() != null) {
+            queryWrapper.eq(Course::getAuth, coursePageQueryDTO.getAuth());
+        }
+        if (CollUtil.isNotEmpty(coursePageQueryDTO.getDuration())) {
+            queryWrapper.between(Course::getDuration, coursePageQueryDTO.getDuration().get(0), coursePageQueryDTO.getDuration().get(1));
+        }
+        if (CollUtil.isNotEmpty(coursePageQueryDTO.getTags())) {
+            queryWrapper.in(Course::getTags, coursePageQueryDTO.getTags());
+        }
+        if (!CollUtil.isEmpty(coursePageQueryDTO.getStatus())) {
+            queryWrapper.in(Course::getStatus, coursePageQueryDTO.getStatus().stream().map(CourseStatus::getCode).toList());
+        }
+        if (!CollUtil.isEmpty(coursePageQueryDTO.getOpenState())) {
+            queryWrapper.in(Course::getOpenState, coursePageQueryDTO.getOpenState().stream().map(CourseOpenStatus::getValue).toList());
         }
 
-        List<Integer> openState;
-        if (CollUtil.isEmpty(coursePageQueryDTO.getOpenState())) {
-            openState = new ArrayList<>(Arrays.stream(CourseOpenStatus.values()).map(CourseOpenStatus::getValue).toList());
-        } else {
-            openState = coursePageQueryDTO.getOpenState().stream().map(CourseOpenStatus::getValue).toList();
-        }
+        baseMapper.selectPage(coursePage, queryWrapper);
 
-        List<Long> ids = baseMapper.selectCourseIds(status, openState);
-
-        if (CollUtil.isEmpty(ids)) {
+        List<Course> records = coursePage.getRecords();
+        if (CollUtil.isEmpty(records)) {
             return new PageResult<>(0L, null);
         }
-        List<Map<String, Object>> records = page(ids, coursePageQueryDTO);
-        return new PageResult<>((long) ids.size(), records);
+
+        return new PageResult<>(coursePage.getTotal(), getCourseDetail(records));
     }
 
     /**
@@ -430,40 +450,19 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         }
 
         List<Long> queryIds = new ArrayList<>(ids).subList(start, Math.min(end, ids.size()));
-        LambdaQueryWrapper<Course> queryWrapper = new LambdaQueryWrapper<Course>()
-                .in(Course::getId, queryIds);
-
-        if (coursePageQueryDTO.getMcId() != null) {
-            queryWrapper.eq(Course::getMcId, coursePageQueryDTO.getMcId());
-        }
-        if (coursePageQueryDTO.getScId() != null) {
-            queryWrapper.eq(Course::getScId, coursePageQueryDTO.getScId());
-        }
-        if (coursePageQueryDTO.getTitle() != null) {
-            queryWrapper.like(Course::getTitle, coursePageQueryDTO.getTitle());
-        }
-        if (coursePageQueryDTO.getForm() != null) {
-            queryWrapper.eq(Course::getForm, coursePageQueryDTO.getForm().getCode());
-        }
-        if (coursePageQueryDTO.getType() != null) {
-            queryWrapper.eq(Course::getType, coursePageQueryDTO.getType());
-        }
-        if (coursePageQueryDTO.getAuth() != null) {
-            queryWrapper.eq(Course::getAuth, coursePageQueryDTO.getAuth());
-        }
-        if (CollUtil.isNotEmpty(coursePageQueryDTO.getDuration())) {
-            queryWrapper.between(Course::getDuration, coursePageQueryDTO.getDuration().get(0), coursePageQueryDTO.getDuration().get(1));
-        }
-        if (CollUtil.isNotEmpty(coursePageQueryDTO.getTags())) {
-            queryWrapper.in(Course::getTags, coursePageQueryDTO.getTags());
-        }
-
-        List<Course> courseList = baseMapper.selectList(queryWrapper);
+        List<Course> courseList = baseMapper.selectList(
+                new LambdaQueryWrapper<Course>()
+                        .in(Course::getId, queryIds)
+        );
 
         if (CollUtil.isEmpty(courseList)) {
             return List.of();
         }
 
+        return getCourseDetail(courseList);
+    }
+
+    public List<Map<String, Object>> getCourseDetail(List<Course> courseList) {
         return courseList.stream().parallel()
                 .map(course -> {
                     Map<String, Object> map = new HashMap<>();

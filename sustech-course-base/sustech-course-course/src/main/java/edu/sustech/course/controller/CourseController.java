@@ -169,12 +169,12 @@ public class CourseController {
     }
 
     /**
-     * 根据动态条件获取课程(伪分页)
+     * 根据动态条件获取课程
      *
-     * @param coursePageQueryDTO 查询条件
-     * @return 总数以及课程列表
+     * @param coursePageQueryDTO 动态条件
+     * @return 课程列表
      */
-    @ApiOperation("根据动态条件获取课程(伪分页)")
+    @ApiOperation("根据动态条件获取课程")
     @PostMapping("/condition")
     public Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
         log.info("获取课程列表 coursePageQueryDTO:{}", coursePageQueryDTO);
