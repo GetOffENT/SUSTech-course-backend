@@ -98,7 +98,8 @@ public class CourseController {
     @ApiOperation("获取课程简介")
     public Result<String> getCourseDescription(@PathVariable Long courseId) {
         log.info("获取课程简介 courseId:{}", courseId);
-        return Result.success(courseDescriptionService.getById(courseId).getDescription());
+        String description = courseDescriptionService.getById(courseId).getDescription();
+        return Result.success(description == null ? "" : description);
     }
 
     /**

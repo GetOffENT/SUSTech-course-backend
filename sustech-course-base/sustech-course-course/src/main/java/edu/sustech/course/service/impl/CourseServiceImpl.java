@@ -408,6 +408,16 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 获取课程详情
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    @Override
+    public void updateCourseStatus(CourseStatusDTO courseStatusDTO) {
+        baseMapper.updateById(BeanUtil.copyProperties(courseStatusDTO, Course.class));
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id

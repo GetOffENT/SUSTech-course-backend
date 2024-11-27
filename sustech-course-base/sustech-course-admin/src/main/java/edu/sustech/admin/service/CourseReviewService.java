@@ -1,7 +1,9 @@
 package edu.sustech.admin.service;
 
+import edu.sustech.admin.entity.dto.CourseStatusDTO;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.result.PageResult;
 
 import java.util.List;
@@ -39,4 +41,11 @@ public interface CourseReviewService {
      * @return 视频播放地址
      */
     String getPlayInfo(String videoSourceId);
+
+    /**
+     * 审核课程
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    void reviewCourse(CourseStatusDTO courseStatusDTO);
 }

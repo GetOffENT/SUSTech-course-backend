@@ -53,4 +53,19 @@ public enum CourseStatus {
         this.code = code;
         this.description = description;
     }
+
+    /**
+     * 根据 code 获取对应的 CourseStatus
+     *
+     * @param code 整数状态码
+     * @return 对应的 CourseStatus，若没有匹配项则返回 null
+     */
+    public static CourseStatus getInstance(int code) {
+        for (CourseStatus status : CourseStatus.values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        return null;
+    }
 }

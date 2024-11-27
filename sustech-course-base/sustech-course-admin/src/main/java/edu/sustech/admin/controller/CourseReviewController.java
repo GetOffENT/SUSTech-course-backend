@@ -1,8 +1,10 @@
 package edu.sustech.admin.controller;
 
+import edu.sustech.admin.entity.dto.CourseStatusDTO;
 import edu.sustech.admin.service.CourseReviewService;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import io.swagger.annotations.Api;
@@ -69,5 +71,19 @@ public class CourseReviewController {
     public Result<String> getVideoUrl(@PathVariable String videoSourceId) {
         log.info("获取课程视频地址 courseId: {}", videoSourceId);
         return Result.success(courseReviewService.getPlayInfo(videoSourceId));
+    }
+
+    /**
+     * 审核课程
+     *
+     * @param courseStatusDTO 课程状态信息
+     * @return 审核结果
+     */
+    @PostMapping("/review")
+    @ApiOperation("审核课程")
+    public Result<Object> reviewCourse(@RequestBody CourseStatusDTO courseStatusDTO) {
+        log.info("审核课程 courseStatusDTO: {}", courseStatusDTO);
+        courseReviewService.reviewCourse(courseStatusDTO);
+        return Result.success();
     }
 }

@@ -3,6 +3,7 @@ package edu.sustech.course.service;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -10,6 +11,7 @@ import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.dto.ChapterInfoDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
+import edu.sustech.course.entity.dto.CourseStatusDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -102,4 +104,11 @@ public interface CourseService extends IService<Course> {
      * @return 课程列表
      */
     PageResult<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO);
+
+    /**
+     * 更新课程状态
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    void updateCourseStatus(CourseStatusDTO courseStatusDTO);
 }

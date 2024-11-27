@@ -1,13 +1,17 @@
 package edu.sustech.admin.service.impl;
 
+import edu.sustech.admin.entity.dto.CourseStatusDTO;
 import edu.sustech.admin.service.CourseReviewService;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +26,15 @@ import java.util.Map;
  * @since 2024-11-27 11:28
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CourseReviewServiceImpl implements CourseReviewService {
 
     private final CourseClient courseClient;
 
     private final ResourceClient resourceClient;
+
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 分页动态条件获取课程列表
@@ -69,5 +76,20 @@ public class CourseReviewServiceImpl implements CourseReviewService {
             return videoUrl.getData();
         }
         return null;
+    }
+
+    /**
+     * 审核课程
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    @Override
+    public void reviewCourse(CourseStatusDTO courseStatusDTO) {
+        try {
+            rabbitTemplate.convertAndSend("course.status.direct", "course.status", courseStatusDTO);
+        } catch (Exception e) {
+            log.error("审核失败", e);
+            throw new RuntimeException("审核失败");
+        }
     }
 }
