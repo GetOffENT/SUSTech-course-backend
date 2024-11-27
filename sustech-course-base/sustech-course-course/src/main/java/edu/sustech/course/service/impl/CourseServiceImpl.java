@@ -9,6 +9,7 @@ import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
+import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
 import edu.sustech.common.util.UserContext;
@@ -362,21 +363,33 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * 根据条件获取课程
      *
      * @param coursePageQueryDTO 查询条件
-     * @return 课程列表
+     * @return 总数以及课程列表
      */
     @Override
-    public List<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO) {
+    public PageResult<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO) {
         // TODO： 考虑redis缓存
-        List<Long> ids = baseMapper.selectCourseIds(
-                coursePageQueryDTO.getStatus().stream().map(CourseStatus::getCode).toList(),
-                coursePageQueryDTO.getOpenState().stream().map(CourseOpenStatus::getValue).toList()
-        );
 
-        if (CollUtil.isEmpty(ids)) {
-            return List.of();
+        List<Integer> status;
+        if (CollUtil.isEmpty(coursePageQueryDTO.getStatus())) {
+            status = new ArrayList<>(Arrays.stream(CourseStatus.values()).map(CourseStatus::getCode).toList());
+        } else {
+            status = coursePageQueryDTO.getStatus().stream().map(CourseStatus::getCode).toList();
         }
 
-        return page(ids, coursePageQueryDTO);
+        List<Integer> openState;
+        if (CollUtil.isEmpty(coursePageQueryDTO.getOpenState())) {
+            openState = new ArrayList<>(Arrays.stream(CourseOpenStatus.values()).map(CourseOpenStatus::getValue).toList());
+        } else {
+            openState = coursePageQueryDTO.getOpenState().stream().map(CourseOpenStatus::getValue).toList();
+        }
+
+        List<Long> ids = baseMapper.selectCourseIds(status, openState);
+
+        if (CollUtil.isEmpty(ids)) {
+            return new PageResult<>(0L, null);
+        }
+        List<Map<String, Object>> records = page(ids, coursePageQueryDTO);
+        return new PageResult<>((long) ids.size(), records);
     }
 
     /**

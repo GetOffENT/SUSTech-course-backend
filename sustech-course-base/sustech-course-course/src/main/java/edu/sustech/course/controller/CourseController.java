@@ -3,6 +3,7 @@ package edu.sustech.course.controller;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.MapResult;
+import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
@@ -171,11 +172,11 @@ public class CourseController {
      * 根据动态条件获取课程(伪分页)
      *
      * @param coursePageQueryDTO 查询条件
-     * @return 课程列表
+     * @return 总数以及课程列表
      */
     @ApiOperation("根据动态条件获取课程(伪分页)")
     @PostMapping("/condition")
-    public Result<List<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
+    public Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
         log.info("获取课程列表 coursePageQueryDTO:{}", coursePageQueryDTO);
         return Result.success(courseService.getCoursesByCondition(coursePageQueryDTO));
     }

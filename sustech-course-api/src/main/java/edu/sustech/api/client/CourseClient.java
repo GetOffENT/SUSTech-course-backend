@@ -1,6 +1,7 @@
 package edu.sustech.api.client;
 
 import edu.sustech.api.entity.dto.*;
+import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -84,5 +85,5 @@ public interface CourseClient {
      * @return 课程信息
      */
     @PostMapping("/course/course/condition")
-    Result<List<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO);
+    Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO);
 }
