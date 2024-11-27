@@ -1,5 +1,6 @@
 package edu.sustech.course.service;
 
+import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -92,4 +93,12 @@ public interface CourseService extends IService<Course> {
      * @param courseDetailDTO 课程详细信息
      */
     void addCourseDetail(CourseDetailDTO courseDetailDTO);
+
+    /**
+     * 根据条件获取课程
+     *
+     * @param coursePageQueryDTO 查询条件
+     * @return 课程列表
+     */
+    List<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO);
 }

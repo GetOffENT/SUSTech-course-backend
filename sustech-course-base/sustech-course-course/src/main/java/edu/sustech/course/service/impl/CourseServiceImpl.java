@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.UserClient;
+import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
@@ -14,8 +15,8 @@ import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.*;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.dto.*;
-import edu.sustech.course.entity.enums.CourseOpenStatus;
-import edu.sustech.course.entity.enums.CourseStatus;
+import edu.sustech.api.entity.enums.CourseOpenStatus;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.course.entity.enums.JoinEnum;
 import edu.sustech.course.entity.vo.ChapterVO;
 import edu.sustech.course.entity.vo.VideoVO;
@@ -68,8 +69,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<Map<String, Object>> getRandomRecommendCourses() {
-        // TODO: 查询redis中有无缓存的已发布状态的课程id数据
-
         // 先从数据库查询所有已发布状态并 非不公开的课程id数据
         List<Long> ids = baseMapper.selectCourseIds(
                 List.of(CourseStatus.PASSED.getCode()),
@@ -80,7 +79,11 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return List.of();
         }
 
-        List<Map<String, Object>> courseList = page(ids, 1, 11);
+        CoursePageQueryDTO coursePageQueryDTO = CoursePageQueryDTO.builder()
+                .page(1)
+                .pageSize(11)
+                .build();
+        List<Map<String, Object>> courseList = page(ids, coursePageQueryDTO);
         // copy
         List<Map<String, Object>> courseListCopy = new ArrayList<>(courseList);
         // 使用hutool工具把courseList随机排序
@@ -96,8 +99,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public Map<String, Object> getCumulativeCourses(List<Long> courseIds) {
-        // TODO: 查询redis中有无缓存的已发布状态的课程id数据
-
         // 先从数据库查询所有已发布状态并 非不公开的课程id数据
         List<Long> ids = baseMapper.selectCourseIds(
                 List.of(CourseStatus.PASSED.getCode()),
@@ -117,7 +118,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         // 从ids中随机选取10条记录
         List<Long> randomIds = getRandomElements(ids, 10);
-        List<Map<String, Object>> courseList = page(randomIds, 1, 10);
+
+        CoursePageQueryDTO coursePageQueryDTO = CoursePageQueryDTO.builder()
+                .page(1)
+                .pageSize(10)
+                .build();
+        List<Map<String, Object>> courseList = page(randomIds, coursePageQueryDTO);
         // copy
         List<Map<String, Object>> courseListCopy = new ArrayList<>(courseList);
         // 使用hutool工具把courseList随机排序
@@ -353,6 +359,27 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 根据条件获取课程
+     *
+     * @param coursePageQueryDTO 查询条件
+     * @return 课程列表
+     */
+    @Override
+    public List<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO) {
+        // TODO： 考虑redis缓存
+        List<Long> ids = baseMapper.selectCourseIds(
+                coursePageQueryDTO.getStatus().stream().map(CourseStatus::getCode).toList(),
+                coursePageQueryDTO.getOpenState().stream().map(CourseOpenStatus::getValue).toList()
+        );
+
+        if (CollUtil.isEmpty(ids)) {
+            return List.of();
+        }
+
+        return page(ids, coursePageQueryDTO);
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id
@@ -366,14 +393,15 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
 
     /**
-     * 分页查询课程信息
+     * 分页查询课程信息(伪分页)
      *
-     * @param ids      课程id集合
-     * @param page     页码
-     * @param pageSize 每页数量
+     * @param ids                课程id集合
+     * @param coursePageQueryDTO 课程动态查询条件
      * @return 课程信息
      */
-    public List<Map<String, Object>> page(List<Long> ids, Integer page, Integer pageSize) {
+    public List<Map<String, Object>> page(List<Long> ids, CoursePageQueryDTO coursePageQueryDTO) {
+        Integer page = coursePageQueryDTO.getPage();
+        Integer pageSize = coursePageQueryDTO.getPageSize();
         if (page == null || page < 1) {
             page = 1;
         }
@@ -389,10 +417,35 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         }
 
         List<Long> queryIds = new ArrayList<>(ids).subList(start, Math.min(end, ids.size()));
-        List<Course> courseList = baseMapper.selectList(
-                new LambdaQueryWrapper<Course>()
-                        .in(Course::getId, queryIds)
-        );
+        LambdaQueryWrapper<Course> queryWrapper = new LambdaQueryWrapper<Course>()
+                .in(Course::getId, queryIds);
+
+        if (coursePageQueryDTO.getMcId() != null) {
+            queryWrapper.eq(Course::getMcId, coursePageQueryDTO.getMcId());
+        }
+        if (coursePageQueryDTO.getScId() != null) {
+            queryWrapper.eq(Course::getScId, coursePageQueryDTO.getScId());
+        }
+        if (coursePageQueryDTO.getTitle() != null) {
+            queryWrapper.like(Course::getTitle, coursePageQueryDTO.getTitle());
+        }
+        if (coursePageQueryDTO.getForm() != null) {
+            queryWrapper.eq(Course::getForm, coursePageQueryDTO.getForm().getCode());
+        }
+        if (coursePageQueryDTO.getType() != null) {
+            queryWrapper.eq(Course::getType, coursePageQueryDTO.getType());
+        }
+        if (coursePageQueryDTO.getAuth() != null) {
+            queryWrapper.eq(Course::getAuth, coursePageQueryDTO.getAuth());
+        }
+        if (CollUtil.isNotEmpty(coursePageQueryDTO.getDuration())) {
+            queryWrapper.between(Course::getDuration, coursePageQueryDTO.getDuration().get(0), coursePageQueryDTO.getDuration().get(1));
+        }
+        if (CollUtil.isNotEmpty(coursePageQueryDTO.getTags())) {
+            queryWrapper.in(Course::getTags, coursePageQueryDTO.getTags());
+        }
+
+        List<Course> courseList = baseMapper.selectList(queryWrapper);
 
         if (CollUtil.isEmpty(courseList)) {
             return List.of();

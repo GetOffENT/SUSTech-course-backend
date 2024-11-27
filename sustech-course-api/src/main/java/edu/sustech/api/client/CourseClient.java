@@ -1,12 +1,12 @@
 package edu.sustech.api.client;
 
-import edu.sustech.api.entity.dto.AttachmentDTO;
-import edu.sustech.api.entity.dto.UserCourseInfoDTO;
-import edu.sustech.api.entity.dto.VideoDTO;
-import edu.sustech.api.entity.dto.VideoResourceDTO;
+import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -75,4 +75,14 @@ public interface CourseClient {
      */
     @PostMapping("/course/video/resource")
     Result<Object> addVideoResource(@RequestBody VideoResourceDTO videoResourceDTO);
+
+
+    /**
+     * 根据条件查询课程信息
+     *
+     * @param coursePageQueryDTO 查询条件
+     * @return 课程信息
+     */
+    @PostMapping("/course/course/condition")
+    Result<List<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO);
 }

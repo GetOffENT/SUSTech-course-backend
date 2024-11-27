@@ -1,7 +1,7 @@
 package edu.sustech.course.entity.dto;
 
-import edu.sustech.course.entity.enums.CourseForm;
-import edu.sustech.course.entity.enums.CourseOpenStatus;
+import edu.sustech.api.entity.enums.CourseForm;
+import edu.sustech.api.entity.enums.CourseOpenStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

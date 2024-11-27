@@ -1,7 +1,8 @@
-package edu.sustech.course.entity.dto;
+package edu.sustech.api.entity.dto;
 
 import edu.sustech.api.entity.enums.CourseForm;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
+import edu.sustech.api.entity.enums.CourseStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -17,17 +18,20 @@ import java.util.List;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-19 21:25
+ * @since 2024-11-19 20:11
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "课程所有信息")
-public class CourseDetailDTO {
+@ApiModel(description = "新增课程")
+public class CoursePageQueryDTO {
 
-    @ApiModelProperty("课程ID")
-    private Long id;
+    @ApiModelProperty("页码")
+    private Integer page;
+
+    @ApiModelProperty("每页大小")
+    private Integer pageSize;
 
     @ApiModelProperty("主分类ID")
     private String mcId;
@@ -47,21 +51,15 @@ public class CourseDetailDTO {
     @ApiModelProperty("作者声明 0不声明 1未经允许禁止转载")
     private Byte auth;
 
+    @ApiModelProperty("课程总时长")
+    private List<Double> duration;
+
     @ApiModelProperty("是否公开 0不公开 1部分公开 2完全公开")
-    private CourseOpenStatus openState;
+    private List<CourseOpenStatus> openState;
 
     @ApiModelProperty("标签 回车分隔")
     private List<String> tags;
 
-    @ApiModelProperty("课程封面图片路径")
-    private String coverUrl;
-
-    @ApiModelProperty("课程简介")
-    private String courseDescription;
-
-    @ApiModelProperty("课程章节列表")
-    private List<ChapterDetailDTO> chapters;
-
-    @ApiModelProperty("所有视频(小节)附件列表")
-    private List<AttachmentDetailDTO> attachments;
+    @ApiModelProperty("课程状态 0审核中 1已过审 2未过审 3已删除 5已私密 6编辑中")
+    private List<CourseStatus> status;
 }

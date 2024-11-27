@@ -1,5 +1,6 @@
 package edu.sustech.course.controller;
 
+import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
@@ -147,8 +148,8 @@ public class CourseController {
      */
     @PostMapping("/video")
     @ApiOperation("新增视频")
-    public Result<Map<String,Long>> addVideo(@RequestBody VideoDTO videoDTO){
-        log.info("新增视频 videoDTO:{}",videoDTO);
+    public Result<Map<String, Long>> addVideo(@RequestBody VideoDTO videoDTO) {
+        log.info("新增视频 videoDTO:{}", videoDTO);
         return Result.success(courseService.addVideo(videoDTO));
     }
 
@@ -160,9 +161,22 @@ public class CourseController {
      */
     @PostMapping("/detail")
     @ApiOperation("新增课程详情")
-    public Result<Object> addCourseDetail(@RequestBody CourseDetailDTO courseDetailDTO){
-        log.info("新增课程详情 courseDetailDTO:{}",courseDetailDTO);
+    public Result<Object> addCourseDetail(@RequestBody CourseDetailDTO courseDetailDTO) {
+        log.info("新增课程详情 courseDetailDTO:{}", courseDetailDTO);
         courseService.addCourseDetail(courseDetailDTO);
         return Result.success();
+    }
+
+    /**
+     * 根据动态条件获取课程(伪分页)
+     *
+     * @param coursePageQueryDTO 查询条件
+     * @return 课程列表
+     */
+    @ApiOperation("根据动态条件获取课程(伪分页)")
+    @PostMapping("/condition")
+    public Result<List<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
+        log.info("获取课程列表 coursePageQueryDTO:{}", coursePageQueryDTO);
+        return Result.success(courseService.getCoursesByCondition(coursePageQueryDTO));
     }
 }
