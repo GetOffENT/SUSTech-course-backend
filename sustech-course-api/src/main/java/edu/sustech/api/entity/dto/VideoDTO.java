@@ -38,4 +38,16 @@ public class VideoDTO {
 
     @ApiModelProperty("小节名称")
     private String title;
+
+    @ApiModelProperty("视频时长（秒）")
+    private Double duration;
+
+    @ApiModelProperty("是否公开 0不公开 1公开")
+    private Byte isPublic;
+
+    @ApiModelProperty("是否已经学习 0未学习 1已学习")
+    private Byte isLearned;
+
+    @ApiModelProperty("视频源ID")
+    private String videoSourceId;
 }

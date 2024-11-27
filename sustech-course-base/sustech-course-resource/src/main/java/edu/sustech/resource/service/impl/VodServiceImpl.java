@@ -111,6 +111,22 @@ public class VodServiceImpl implements VodService {
         }
     }
 
+    /**
+     * 获取视频播放信息
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    @Override
+    public String getPlayInfo(String videoSourceId) {
+        try {
+            return aliVodUtil.getPlayInfo(videoSourceId);
+        } catch (Exception e) {
+            log.error("获取视频播放地址失败", e);
+            throw new ResourceOperationException(MessageConstant.GET_VIDEO_URL_FAILED);
+        }
+    }
+
     private void checkUser() {
         if (UserContext.getUser() == null) {
             throw new ResourceOperationException(MessageConstant.NOT_LOGIN);

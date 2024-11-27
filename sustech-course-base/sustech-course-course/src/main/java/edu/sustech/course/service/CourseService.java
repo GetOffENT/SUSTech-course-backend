@@ -1,15 +1,15 @@
 package edu.sustech.course.service;
 
+import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
-import edu.sustech.course.entity.dto.ChapterDTO;
+import edu.sustech.course.entity.dto.ChapterInfoDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
-import edu.sustech.course.entity.vo.ChapterVO;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public interface CourseService extends IService<Course> {
      * @param courseId 课程id
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
-    List<ChapterVO> getCatalog(Long courseId);
+    List<ChapterDTO> getCatalog(Long courseId);
 
     /**
      * 获取课程信息
@@ -75,10 +75,10 @@ public interface CourseService extends IService<Course> {
     /**
      * 新增课程章节
      *
-     * @param chapterDTO 章节信息
+     * @param chapterInfoDTO 章节信息
      * @return 章节id
      */
-    Map<String, Long> addChapter(ChapterDTO chapterDTO);
+    Map<String, Long> addChapter(ChapterInfoDTO chapterInfoDTO);
 
     /**
      * 新增视频(小节)

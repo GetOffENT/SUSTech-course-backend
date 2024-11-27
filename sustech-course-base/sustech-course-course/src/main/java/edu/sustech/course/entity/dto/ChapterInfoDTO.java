@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "章节信息")
-public class ChapterDTO {
+public class ChapterInfoDTO {
 
     @ApiModelProperty("课程ID")
     private Long courseId;

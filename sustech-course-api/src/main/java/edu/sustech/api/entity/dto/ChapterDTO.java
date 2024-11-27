@@ -1,4 +1,4 @@
-package edu.sustech.course.entity.vo;
+package edu.sustech.api.entity.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,11 +22,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "章节(包括章节下的小节)")
-public class ChapterVO {
+public class ChapterDTO {
 
     @ApiModelProperty("章节名称")
     private String title;
 
     @ApiModelProperty("章节下的小节")
-    private List<VideoVO> videos;
+    private List<VideoDTO> videos;
 }

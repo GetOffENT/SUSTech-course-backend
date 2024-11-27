@@ -5,9 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.sustech.api.client.UserClient;
-import edu.sustech.api.entity.dto.CoursePageQueryDTO;
-import edu.sustech.api.entity.dto.UserDTO;
-import edu.sustech.api.entity.dto.VideoDTO;
+import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.result.PageResult;
@@ -15,13 +13,10 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.*;
-import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.dto.*;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
 import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.course.entity.enums.JoinEnum;
-import edu.sustech.course.entity.vo.ChapterVO;
-import edu.sustech.course.entity.vo.VideoVO;
 import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;
@@ -145,7 +140,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
     @Override
-    public List<ChapterVO> getCatalog(Long courseId) {
+    public List<ChapterDTO> getCatalog(Long courseId) {
 
         // 查询课程的章节信息
         List<Chapter> chapters = chapterMapper.selectList(new LambdaQueryWrapper<Chapter>()
@@ -158,7 +153,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                 .eq(Video::getCourseId, courseId)
                 .orderByAsc(Video::getSort)
         );
-        List<VideoVO> videoVOs = BeanUtil.copyToList(videos, VideoVO.class);
+        List<VideoDTO> videoDTOS = BeanUtil.copyToList(videos, VideoDTO.class);
 
         // 如果用户登录了，则查询是否已经学习
         Long user = UserContext.getUser();
@@ -171,10 +166,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                             .eq(UserVideoRecord::getCourseId, courseId)
             );
 
-            for (VideoVO videoVO : videoVOs) {
+            for (VideoDTO videoDTO : videoDTOS) {
                 for (UserVideoRecord userVideoRecord : userVideoRecords) {
-                    if (videoVO.getId().equals(userVideoRecord.getVideoId())) {
-                        videoVO.setIsLearned(userVideoRecord.getIsLearned());
+                    if (videoDTO.getId().equals(userVideoRecord.getVideoId())) {
+                        videoDTO.setIsLearned(userVideoRecord.getIsLearned());
                         break;
                     }
                 }
@@ -185,19 +180,19 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return List.of();
         }
 
-        List<ChapterVO> chapterVOList = new ArrayList<>();
+        List<ChapterDTO> chapterDTOList = new ArrayList<>();
         for (Chapter chapter : chapters) {
-            ChapterVO chapterVO = BeanUtil.copyProperties(chapter, ChapterVO.class);
-            List<VideoVO> videoVOList = new ArrayList<>();
-            for (VideoVO video : videoVOs) {
+            ChapterDTO chapterDTO = BeanUtil.copyProperties(chapter, ChapterDTO.class);
+            List<VideoDTO> videoDTOList = new ArrayList<>();
+            for (VideoDTO video : videoDTOS) {
                 if (video.getChapterId().equals(chapter.getId())) {
-                    videoVOList.add(video);
+                    videoDTOList.add(video);
                 }
             }
-            chapterVO.setVideos(videoVOList);
-            chapterVOList.add(chapterVO);
+            chapterDTO.setVideos(videoDTOList);
+            chapterDTOList.add(chapterDTO);
         }
-        return chapterVOList;
+        return chapterDTOList;
     }
 
     /**
@@ -284,14 +279,14 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     /**
      * 新增课程章节
      *
-     * @param chapterDTO 章节信息
+     * @param chapterInfoDTO 章节信息
      * @return 章节id
      */
     @Override
-    public Map<String, Long> addChapter(ChapterDTO chapterDTO) {
+    public Map<String, Long> addChapter(ChapterInfoDTO chapterInfoDTO) {
         checkTeacher();
 
-        Chapter chapter = BeanUtil.copyProperties(chapterDTO, Chapter.class);
+        Chapter chapter = BeanUtil.copyProperties(chapterInfoDTO, Chapter.class);
         int insert = chapterMapper.insert(chapter);
         if (insert == 0) {
             throw new CourseException(MessageConstant.CHAPTER_ADD_FAILED);
@@ -306,7 +301,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * @return 视频(小节)id
      */
     @Override
-    public Map<String, Long> addVideo(VideoDTO videoDTO) {
+    public Map<String, Long> addVideo(edu.sustech.api.entity.dto.VideoDTO videoDTO) {
         Long userId = checkTeacher();
 
         Video video = BeanUtil.copyProperties(videoDTO, Video.class)

@@ -72,4 +72,17 @@ public class VodController {
         vodService.removeVideoBatch(videoIdList);
         return Result.success();
     }
+
+    /**
+     * 获取视频播放地址
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    @GetMapping("/playInfo/{videoSourceId}")
+    @ApiOperation("获取视频播放地址")
+    public Result<String> getPlayInfo(@PathVariable String videoSourceId) {
+        log.info("获取视频播放地址: {}", videoSourceId);
+        return Result.success(vodService.getPlayInfo(videoSourceId));
+    }
 }

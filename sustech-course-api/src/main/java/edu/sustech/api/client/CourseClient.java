@@ -86,4 +86,13 @@ public interface CourseClient {
      */
     @PostMapping("/course/course/condition")
     Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO);
+
+    /**
+     * 管理端获取课程目录
+     *
+     * @param courseId 课程id
+     * @return 课程目录(包括小节 : title id isLearned isPublic)
+     */
+    @GetMapping("/course/course/catalog/{courseId}")
+    Result<List<ChapterDTO>> getCatalog(@PathVariable Long courseId);
 }

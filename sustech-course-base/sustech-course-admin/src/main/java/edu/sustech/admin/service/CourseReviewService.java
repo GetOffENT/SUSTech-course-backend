@@ -1,5 +1,6 @@
 package edu.sustech.admin.service;
 
+import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.common.result.PageResult;
 
@@ -22,4 +23,20 @@ public interface CourseReviewService {
      * @return 课程列表
      */
     PageResult<Map<String, Object>> getCourseList(CoursePageQueryDTO coursePageQueryDTO);
+
+    /**
+     * 获取课程目录
+     *
+     * @param courseId 课程id
+     * @return 课程目录
+     */
+    List<ChapterDTO> getCatalog(Long courseId);
+
+    /**
+     * 获取视频播放地址
+     *
+     * @param videoSourceId 课程id
+     * @return 视频播放地址
+     */
+    String getPlayInfo(String videoSourceId);
 }

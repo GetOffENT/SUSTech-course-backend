@@ -34,4 +34,12 @@ public interface VodService {
      * @param videoIdList 视频阿里云id列表
      */
     void removeVideoBatch(List<String> videoIdList);
+
+    /**
+     * 获取视频播放信息
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    String getPlayInfo(String videoSourceId);
 }

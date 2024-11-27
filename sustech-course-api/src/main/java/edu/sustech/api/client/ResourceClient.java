@@ -3,6 +3,7 @@ package edu.sustech.api.client;
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -36,4 +37,13 @@ public interface ResourceClient {
      */
     @DeleteMapping("/resource/vod/batch")
     Result<Object> removeAlyVideoBatch(@RequestParam List<String> videoIdList);
+
+    /**
+     * 获取视频播放信息
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    @GetMapping("/resource/vod/play/{videoSourceId}")
+    Result<String> getPlayInfo(@PathVariable String videoSourceId);
 }
