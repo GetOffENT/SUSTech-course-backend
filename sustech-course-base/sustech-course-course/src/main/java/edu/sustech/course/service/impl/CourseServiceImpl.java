@@ -434,6 +434,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             );
             // 删除课程的课程描述信息
             courseDescriptionMapper.deleteById(courseStatusDTO.getId());
+            // 删除课程
+            baseMapper.deleteById(courseStatusDTO.getId());
         }
     }
 
