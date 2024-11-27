@@ -415,6 +415,26 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Override
     public void updateCourseStatus(CourseStatusDTO courseStatusDTO) {
         baseMapper.updateById(BeanUtil.copyProperties(courseStatusDTO, Course.class));
+        if (courseStatusDTO.getStatus() == CourseStatus.DELETED) {
+            // 删除课程的章节信息
+            chapterMapper.delete(new LambdaQueryWrapper<Chapter>()
+                    .eq(Chapter::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的视频信息
+            videoMapper.delete(new LambdaQueryWrapper<Video>()
+                    .eq(Video::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的附件信息
+            attachmentMapper.delete(new LambdaQueryWrapper<Attachment>()
+                    .eq(Attachment::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的用户课程信息
+            userCourseMapper.delete(new LambdaQueryWrapper<UserCourse>()
+                    .eq(UserCourse::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的课程描述信息
+            courseDescriptionMapper.deleteById(courseStatusDTO.getId());
+        }
     }
 
     /**
