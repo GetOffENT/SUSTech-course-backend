@@ -1,4 +1,4 @@
-package edu.sustech.admin.entity.dto;
+package edu.sustech.message.entity.dto;
 
 import edu.sustech.api.entity.enums.CourseStatus;
 import io.swagger.annotations.ApiModel;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-27 23:55
+ * @since 2024-11-28 1:11
  */
 @Data
 @Builder

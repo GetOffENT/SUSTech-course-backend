@@ -1,9 +1,12 @@
 package edu.sustech.message.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.constant.CaptchaConstant;
+import edu.sustech.common.constant.MailNotificationConstant;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CaptchaException;
+import edu.sustech.message.entity.dto.CourseStatusDTO;
 import edu.sustech.message.service.MailService;
 import edu.sustech.message.util.EmailUtil;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +88,39 @@ public class MailServiceImpl implements MailService {
             throw new CaptchaException(MessageConstant.CAPTCHA_TYPE_NOT_SUPPORTED);
         }
         log.info("已发送到邮箱：{}, 验证码：{}", email, captcha);
+    }
+
+    /**
+     * 发送课程状态邮件
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    @Override
+    public void sendCourseStatusMail(CourseStatusDTO courseStatusDTO) {
+        if (courseStatusDTO.getStatus() == CourseStatus.PASSED) {
+            String content = MailNotificationConstant.COURSE_PASSED_MAIL_TEMPLATE.formatted(courseStatusDTO.getTitle());
+            emailUtil.sendHtmlMail(
+                    courseStatusDTO.getEmail(),
+                    CaptchaConstant.DEFAULT_SENDER,
+                    MailNotificationConstant.COURSE_STATUS_MAIL_SUBJECT,
+                    content
+            );
+        } else if (courseStatusDTO.getStatus() == CourseStatus.NOT_PASSED) {
+            String content = MailNotificationConstant.COURSE_REJECTED_MAIL_TEMPLATE.formatted(courseStatusDTO.getTitle(), courseStatusDTO.getReason());
+            emailUtil.sendHtmlMail(
+                    courseStatusDTO.getEmail(),
+                    CaptchaConstant.DEFAULT_SENDER,
+                    MailNotificationConstant.COURSE_STATUS_MAIL_SUBJECT,
+                    content
+            );
+        } else if (courseStatusDTO.getStatus() == CourseStatus.DELETED) {
+            String content = MailNotificationConstant.COURSE_DELETE_MAIL_TEMPLATE.formatted(courseStatusDTO.getTitle(), courseStatusDTO.getReason());
+            emailUtil.sendHtmlMail(
+                    courseStatusDTO.getEmail(),
+                    CaptchaConstant.DEFAULT_SENDER,
+                    MailNotificationConstant.COURSE_STATUS_MAIL_SUBJECT,
+                    content
+            );
+        }
     }
 }

@@ -1,14 +1,14 @@
-package edu.sustech.course.listener;
+package edu.sustech.message.listener;
 
-import edu.sustech.course.entity.dto.CourseStatusDTO;
-import edu.sustech.course.service.CourseService;
+import edu.sustech.message.entity.dto.CourseStatusDTO;
+import edu.sustech.message.service.MailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
-
 
 /**
  * <p>
@@ -16,21 +16,27 @@ import org.springframework.stereotype.Component;
  *
  * @author Yuxian Wu
  * @version 1.0
- * @since 2024-11-27 22:48
+ * @since 2024-11-28 1:17
  */
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class CourseStatusListener {
 
-    private final CourseService courseService;
+    private final MailService mailService;
 
+    /**
+     * 监听课程状态变更, 发送邮件通知
+     *
+     * @param courseStatusDTO 课程状态DTO
+     */
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(name = "course.status.update.queue", durable = "true"),
+            value = @Queue(name = "course.status.notify.queue", durable = "true"),
             exchange = @Exchange(name = "course.status.direct"),
-            key = "course.status.update"
+            key = "course.status.notify"
     ))
     public void listenCourseStatus(CourseStatusDTO courseStatusDTO) {
-        System.out.println("courseStatusDTO = " + courseStatusDTO);
-        courseService.updateCourseStatus(courseStatusDTO);
+        log.info("监听到课程状态变更，发送邮件通知: {}", courseStatusDTO);
+        mailService.sendCourseStatusMail(courseStatusDTO);
     }
 }

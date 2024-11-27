@@ -85,11 +85,23 @@ public class CourseReviewServiceImpl implements CourseReviewService {
      */
     @Override
     public void reviewCourse(CourseStatusDTO courseStatusDTO) {
+        // 发送消息到课程服务更新课程状态
         try {
-            rabbitTemplate.convertAndSend("course.status.direct", "course.status", courseStatusDTO);
+            log.info("发送消息到课程服务更新课程状态 courseStatusDTO:{}", courseStatusDTO);
+            rabbitTemplate.convertAndSend("course.status.direct", "course.status.update", courseStatusDTO);
         } catch (Exception e) {
             log.error("审核失败", e);
             throw new RuntimeException("审核失败");
         }
+
+        // 发送消息到通知服务通知用户
+        try {
+            log.info("发送消息到通知服务通知用户 courseStatusDTO:{}", courseStatusDTO);
+            rabbitTemplate.convertAndSend("course.status.direct", "course.status.notify", courseStatusDTO);
+        } catch (Exception e) {
+            log.error("审核失败", e);
+            throw new RuntimeException("审核失败");
+        }
+
     }
 }

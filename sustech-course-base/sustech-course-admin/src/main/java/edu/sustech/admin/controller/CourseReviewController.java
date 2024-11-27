@@ -77,7 +77,7 @@ public class CourseReviewController {
      * 审核课程
      *
      * @param courseStatusDTO 课程状态信息
-     * @return 审核结果
+     * @return 无
      */
     @PostMapping("/review")
     @ApiOperation("审核课程")

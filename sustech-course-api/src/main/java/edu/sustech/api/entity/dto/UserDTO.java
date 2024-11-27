@@ -28,6 +28,9 @@ public class UserDTO implements Serializable {
     @ApiModelProperty("用户ID")
     private Long id;
 
+    @ApiModelProperty("用户邮箱")
+    private String email;
+
     @ApiModelProperty("用户昵称")
     private String nickname;
 
