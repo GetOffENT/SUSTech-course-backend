@@ -183,7 +183,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
      */
     @Override
     public String getPlayInfo(String videoSourceId) {
-        if (!(videoSourceId.startsWith("http") || videoSourceId.startsWith("https"))) {
+        if (videoSourceId.startsWith("http") || videoSourceId.startsWith("https")) {
             return videoSourceId;
         }
         Result<String> playInfo = resourceClient.getPlayInfo(videoSourceId);
