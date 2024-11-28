@@ -51,7 +51,7 @@ public class CourseDetailDTO {
     private CourseOpenStatus openState;
 
     @ApiModelProperty("标签 回车分隔")
-    private List<String> tags;
+    private String tags;
 
     @ApiModelProperty("课程封面图片路径")
     private String coverUrl;

@@ -260,7 +260,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         Course course = BeanUtil.copyProperties(courseDTO, Course.class)
                 .setUserId(userId)
                 .setIsTeacher((byte) 1)
-                .setTags(CollUtil.join(courseDTO.getTags(), "\n"))
                 .setStatus(CourseStatus.EDITING);
 
         int insert = baseMapper.insert(course);

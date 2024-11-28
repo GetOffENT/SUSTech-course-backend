@@ -79,7 +79,7 @@ public class VodController {
      * @param videoSourceId 视频源id
      * @return 视频播放地址
      */
-    @GetMapping("/playInfo/{videoSourceId}")
+    @GetMapping("/play/{videoSourceId}")
     @ApiOperation("获取视频播放地址")
     public Result<String> getPlayInfo(@PathVariable String videoSourceId) {
         log.info("获取视频播放地址: {}", videoSourceId);
