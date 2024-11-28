@@ -3,7 +3,6 @@ package edu.sustech.course.service;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
 import edu.sustech.api.entity.dto.VideoDTO;
-import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,7 +50,7 @@ public interface CourseService extends IService<Course> {
 
 
     /**
-     * 获取课程目录, 如果已经登录，则还会获取用户每一个小节是否学习
+     * 获取课程目录, 如果课程已经发布且用户已经登录，则还会获取用户每一个小节是否学习
      *
      * @param courseId 课程id
      * @return 课程目录(包括小节 : title id isLearned isPublic)

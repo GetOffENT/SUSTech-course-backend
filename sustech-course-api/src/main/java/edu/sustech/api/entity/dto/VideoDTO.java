@@ -42,6 +42,12 @@ public class VideoDTO {
     @ApiModelProperty("视频时长（秒）")
     private Double duration;
 
+    @ApiModelProperty("至少观看时长（秒）")
+    private Double minWatchTime;
+
+    @ApiModelProperty("显示排序")
+    private Integer sort;
+
     @ApiModelProperty("是否公开 0不公开 1公开")
     private Byte isPublic;
 

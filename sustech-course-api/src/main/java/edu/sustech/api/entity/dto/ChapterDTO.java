@@ -24,8 +24,14 @@ import java.util.List;
 @ApiModel(description = "章节(包括章节下的小节)")
 public class ChapterDTO {
 
+    @ApiModelProperty("章节ID")
+    private Long id;
+
     @ApiModelProperty("章节名称")
     private String title;
+
+    @ApiModelProperty("显示排序")
+    private Integer sort;
 
     @ApiModelProperty("章节下的小节")
     private List<VideoDTO> videos;

@@ -134,13 +134,17 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
-     * 获取课程目录, 如果已经登录，则还会获取用户每一个小节是否学习
+     * 获取课程目录, 如果课程已经发布且用户已经登录，则还会获取用户每一个小节是否学习
      *
      * @param courseId 课程id
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
     @Override
     public List<ChapterDTO> getCatalog(Long courseId) {
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
 
         // 查询课程的章节信息
         List<Chapter> chapters = chapterMapper.selectList(new LambdaQueryWrapper<Chapter>()
@@ -157,8 +161,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         // 如果用户登录了，则查询是否已经学习
         Long user = UserContext.getUser();
-        if (user != null) {
-            log.info("用户已登录，查询用户的视频学习记录");
+        if (user != null && course.getStatus() == CourseStatus.PASSED) {
+            log.info("课程已经发布且用户已登录，查询用户的视频学习记录");
+
             // 查询用户的视频学习记录
             List<UserVideoRecord> userVideoRecords = userVideoRecordMapper.selectList(
                     new LambdaQueryWrapper<UserVideoRecord>()
