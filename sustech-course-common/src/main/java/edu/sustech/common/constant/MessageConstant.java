@@ -36,9 +36,13 @@ public class MessageConstant {
     public static final String VIDEO_NOT_PUBLIC = "视频未公开";
     public static final String PARAM_ERROR = "评分不能为空";
     public static final String NOT_TEACHER = "您不是老师,无法发布课程";
+    public static final String NO_PERMISSION = "无权限操作";
     public static final String COURSE_ADD_FAILED = "课程添加失败，请稍后再试！";
     public static final String CHAPTER_ADD_FAILED = "章节添加失败，请稍后再试！";
     public static final String VIDEO_ADD_FAILED = "小节添加失败，请稍后再试！";
+    public static final String ATTACHMENT_ADD_FAILED = "附件添加失败，请稍后再试！";
+    public static final String ATTACHMENT_DELETE_FAILED = "附件删除失败，请稍后再试！";
+    public static final String ATTACHMENT_NOT_EXIST = "附件不存在";
     public static final String UPLOAD_VIDEO_FAILED = "上传视频失败，请稍后再试！";
     public static final String ADD_VIDEO_RESOURCE_FAILED = "添加视频资源失败，请稍后再试！";
     public static final String GET_VIDEO_URL_FAILED = "获取视频地址失败，请稍后再试！";

@@ -68,4 +68,18 @@ public class AttachmentController {
         log.info("添加附件 attachmentDTO:{}", attachmentDTO);
         return Result.success(attachmentService.addAttachment(attachmentDTO));
     }
+
+    /**
+     * 删除附件
+     *
+     * @param attachmentId 附件ID
+     * @return 响应对象
+     */
+    @DeleteMapping("/{attachmentId}")
+    @ApiOperation("删除附件")
+    public Result<Object> deleteAttachment(@PathVariable Long attachmentId) {
+        log.info("删除附件 attachmentId:{}", attachmentId);
+        attachmentService.deleteAttachment(attachmentId);
+        return Result.success();
+    }
 }

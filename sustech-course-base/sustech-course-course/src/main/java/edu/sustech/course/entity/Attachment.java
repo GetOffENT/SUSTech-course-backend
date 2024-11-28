@@ -43,6 +43,9 @@ public class Attachment implements Serializable {
     @ApiModelProperty("附件版本")
     private Integer version;
 
+    @ApiModelProperty("用户ID")
+    private Long userId;
+
     @ApiModelProperty("课程ID")
     private Long courseId;
 

@@ -4,11 +4,17 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.entity.dto.AttachmentDTO;
+import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.ResourceOperationException;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.Attachment;
+import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.vo.AttachmentVO;
 import edu.sustech.course.mapper.AttachmentMapper;
+import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.service.AttachmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +29,10 @@ import java.util.UUID;
  * @since 2024-11-18
  */
 @Service
+@RequiredArgsConstructor
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachment> implements AttachmentService {
+
+    private final CourseMapper courseMapper;
 
     /**
      * 获取视频最新版附件列表
@@ -67,9 +76,47 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
      */
     @Override
     public Long addAttachment(AttachmentDTO attachmentDTO) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new ResourceOperationException(MessageConstant.NOT_LOGIN);
+        }
+
+        Long courseId = attachmentDTO.getCourseId();
+        Course course = courseMapper.selectById(courseId);
+        if (course == null) {
+            throw new ResourceOperationException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        if (!course.getUserId().equals(userId)) {
+            throw new ResourceOperationException(MessageConstant.NO_PERMISSION);
+        }
+
         Attachment attachment = BeanUtil.copyProperties(attachmentDTO, Attachment.class);
-        attachment.setUuid(UUID.randomUUID().toString());
-        this.save(attachment);
+        attachment.setUuid(UUID.randomUUID().toString()).setUserId(userId);
+        boolean saved = this.save(attachment);
+        if (!saved) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_ADD_FAILED);
+        }
         return attachment.getId();
+    }
+
+    /**
+     * 删除附件
+     *
+     * @param attachmentId 附件ID
+     */
+    @Override
+    public void deleteAttachment(Long attachmentId) {
+        Long userId = UserContext.getUser();
+        Attachment attachment = this.getById(attachmentId);
+        if (attachment == null) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_NOT_EXIST);
+        }
+        if (!attachment.getUserId().equals(userId)) {
+            throw new ResourceOperationException(MessageConstant.NO_PERMISSION);
+        }
+        boolean removeById = this.removeById(attachmentId);
+        if (!removeById) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_DELETE_FAILED);
+        }
     }
 }
