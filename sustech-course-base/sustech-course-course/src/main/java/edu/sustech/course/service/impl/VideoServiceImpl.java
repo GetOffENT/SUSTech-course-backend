@@ -66,12 +66,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         Video video = baseMapper.selectById(id);
         String videoSourceId = video.getVideoSourceId();
         if (!(videoSourceId.startsWith("http") || videoSourceId.startsWith("https"))) {
-            Result<String> playInfo = resourceClient.getPlayInfo(video.getVideoSourceId());
-            if (Objects.equals(playInfo.getCode(), ResultCode.SUCCESS.code())) {
-                video.setVideoSourceId(playInfo.getData());
-            } else {
-                throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
-            }
+            video.setVideoSourceId(getPlayInfo(videoSourceId));
         }
 
         // 先查询课程公开状态和审核状态
@@ -177,6 +172,25 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             // 删除阿里云视频
             resourceClient.removeAlyVideo(videoResourceDTO.getVideoSourceId());
             throw new VideoException(MessageConstant.ADD_VIDEO_RESOURCE_FAILED);
+        }
+    }
+
+    /**
+     * 获取视频播放信息
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    @Override
+    public String getPlayInfo(String videoSourceId) {
+        if (!(videoSourceId.startsWith("http") || videoSourceId.startsWith("https"))) {
+            return videoSourceId;
+        }
+        Result<String> playInfo = resourceClient.getPlayInfo(videoSourceId);
+        if (Objects.equals(playInfo.getCode(), ResultCode.SUCCESS.code())) {
+            return playInfo.getData();
+        } else {
+            throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
         }
     }
 }

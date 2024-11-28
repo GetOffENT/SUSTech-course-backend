@@ -99,4 +99,16 @@ public class VideoController {
         videoService.addVideoResource(videoResourceDTO);
         return Result.success();
     }
+
+    /**
+     * 获取视频播放url
+     *
+     * @return 视频播放url
+     */
+    @ApiOperation("获取视频播放url")
+    @GetMapping("/play/{videoSourceId}")
+    public Result<String> getPlayInfo(@PathVariable String videoSourceId) {
+        log.info("获取视频播放url...视频源ID: {}", videoSourceId);
+        return Result.success(videoService.getPlayInfo(videoSourceId));
+    }
 }

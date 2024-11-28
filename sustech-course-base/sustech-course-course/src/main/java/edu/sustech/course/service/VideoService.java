@@ -46,4 +46,12 @@ public interface VideoService extends IService<Video> {
      * @param videoResourceDTO 视频资源信息
      */
     void addVideoResource(VideoResourceDTO videoResourceDTO);
+
+    /**
+     * 获取视频播放信息
+     *
+     * @param videoSourceId 视频源id
+     * @return 视频播放地址
+     */
+    String getPlayInfo(String videoSourceId);
 }
