@@ -29,6 +29,9 @@ public class AttachmentVO {
     @ApiModelProperty("附件版本")
     private Integer version;
 
+    @ApiModelProperty("章节ID")
+    private Long chapterId;
+
     @ApiModelProperty("视频ID")
     private Long videoId;
 
@@ -46,6 +49,9 @@ public class AttachmentVO {
 
     @ApiModelProperty("是否是课件 0否 1是")
     private Byte isLecture;
+
+    @ApiModelProperty("是否可以下载 0否 1是")
+    private Byte isDownload;
 
     @ApiModelProperty("创建时间")
     private LocalDateTime gmtCreate;
