@@ -64,6 +64,15 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
 
 
         Video video = baseMapper.selectById(id);
+        String videoSourceId = video.getVideoSourceId();
+        if (!(videoSourceId.startsWith("http") || videoSourceId.startsWith("https"))) {
+            Result<String> playInfo = resourceClient.getPlayInfo(video.getVideoSourceId());
+            if (Objects.equals(playInfo.getCode(), ResultCode.SUCCESS.code())) {
+                video.setVideoSourceId(playInfo.getData());
+            } else {
+                throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
+            }
+        }
 
         // 先查询课程公开状态和审核状态
         Course course = courseMapper.selectOne(

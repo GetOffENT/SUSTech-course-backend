@@ -39,6 +39,9 @@ public class VideoDTO {
     @ApiModelProperty("小节名称")
     private String title;
 
+    @ApiModelProperty("备注")
+    private String note;
+
     @ApiModelProperty("视频时长（秒）")
     private Double duration;
 
