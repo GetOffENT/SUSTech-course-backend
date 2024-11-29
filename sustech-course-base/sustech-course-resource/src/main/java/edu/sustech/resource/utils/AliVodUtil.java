@@ -156,7 +156,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
-            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new ResourceOperationException(MessageConstant.VIDEO_DELETE_FAILED);
         } catch (Exception _error) {
             TeaException error = new TeaException(_error.getMessage(), _error);
             // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
@@ -165,7 +165,7 @@ public class AliVodUtil {
             // 诊断地址
             System.out.println(error.getData().get("Recommend"));
             com.aliyun.teautil.Common.assertAsString(error.message);
-            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new ResourceOperationException(MessageConstant.VIDEO_DELETE_FAILED);
         }
     }
 

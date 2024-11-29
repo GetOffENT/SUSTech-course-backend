@@ -2,7 +2,10 @@ package edu.sustech.course.mapper;
 
 import edu.sustech.course.entity.Video;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 /**
  * <p>
@@ -32,4 +35,13 @@ public interface VideoMapper extends BaseMapper<Video> {
      */
     @Update("update video set danmu = danmu + #{count}, gmt_modified = now() where id = #{id}")
     void updateDanmuCount(Long id, Integer count);
+
+    /**
+     * 根据章节id查询视频资源id列表
+     *
+     * @param chapterId 章节id
+     * @return 视频资源id列表
+     */
+    @Select("select video_source_id from video where chapter_id = #{chapterId}")
+    List<String> selectVideoSourceIdListByChapterId(Long chapterId);
 }

@@ -249,7 +249,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", video.getVideoSourceId());
         } catch (Exception e) {
             log.error("向消息队列发送删除视频消息失败", e);
-            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
         }
     }
 
@@ -281,7 +281,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
                 .setMinWatchTime(0.0);
         int row = baseMapper.updateById(video);
         if (row == 0) {
-            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
         }
 
         try {
@@ -289,7 +289,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", videoSourceId);
         } catch (Exception e) {
             log.error("向消息队列发送删除视频消息失败", e);
-            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
         }
     }
 }

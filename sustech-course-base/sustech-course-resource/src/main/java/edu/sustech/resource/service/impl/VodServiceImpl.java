@@ -91,7 +91,7 @@ public class VodServiceImpl implements VodService {
             log.info("删除视频成功");
         }catch(Exception e) {
             log.error("删除视频失败", e);
-            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new ResourceOperationException(MessageConstant.VIDEO_DELETE_FAILED);
         }
     }
 
@@ -107,7 +107,7 @@ public class VodServiceImpl implements VodService {
             log.info("批量删除视频成功");
         } catch (Exception e) {
             log.error("批量删除视频失败", e);
-            throw new ResourceOperationException(MessageConstant.DELETE_VIDEO_FAILED);
+            throw new ResourceOperationException(MessageConstant.VIDEO_DELETE_FAILED);
         }
     }
 

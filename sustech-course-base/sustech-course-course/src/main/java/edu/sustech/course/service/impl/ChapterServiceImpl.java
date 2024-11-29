@@ -1,17 +1,25 @@
 package edu.sustech.course.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.course.entity.Chapter;
+import edu.sustech.course.entity.Course;
+import edu.sustech.course.entity.Video;
 import edu.sustech.course.entity.dto.ChapterInfoDTO;
 import edu.sustech.course.mapper.ChapterMapper;
+import edu.sustech.course.mapper.CourseMapper;
+import edu.sustech.course.mapper.VideoMapper;
 import edu.sustech.course.service.ChapterService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +34,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter> implements ChapterService {
 
+    private final CourseMapper courseMapper;
+
+    private final VideoMapper videoMapper;
+
     private final CommonUtil commonUtil;
+
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 新增课程章节
@@ -53,6 +67,34 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter> impl
      */
     @Override
     public void deleteChapter(Long chapterId) {
-        // TODO
+        Long userId = commonUtil.checkTeacher();
+
+        Chapter chapter = baseMapper.selectById(chapterId);
+        if (chapter == null) {
+            throw new CourseException(MessageConstant.CHAPTER_NOT_FOUND);
+        }
+
+        Course course = courseMapper.selectById(chapter.getCourseId());
+        if (!course.getUserId().equals(userId)) {
+            throw new CourseException(MessageConstant.NO_PERMISSION);
+        }
+
+        // 获取章节下的所有视频源ID列表
+        List<String> videoSourceIdList = videoMapper.selectVideoSourceIdListByChapterId(chapterId);
+
+        // 删除视频
+        int delete = videoMapper.delete(new LambdaQueryWrapper<Video>().eq(Video::getChapterId, chapterId));
+        if (delete == 0) {
+            throw new CourseException(MessageConstant.CHAPTER_DELETE_FAILED);
+        }
+
+        // 删除章节
+        int deleteChapter = baseMapper.deleteById(chapterId);
+        if (deleteChapter == 0) {
+            throw new CourseException(MessageConstant.CHAPTER_DELETE_FAILED);
+        }
+
+        // 消息队列通知云端删除视频
+        rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", CollUtil.join(videoSourceIdList, ","));
     }
 }

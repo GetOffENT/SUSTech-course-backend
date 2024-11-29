@@ -3,6 +3,7 @@ package edu.sustech.course.util;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.Role;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.util.UserContext;
 import lombok.RequiredArgsConstructor;
