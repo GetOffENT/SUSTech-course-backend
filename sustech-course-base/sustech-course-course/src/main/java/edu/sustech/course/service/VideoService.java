@@ -63,4 +63,18 @@ public interface VideoService extends IService<Video> {
      * @return 视频(小节)id
      */
     Map<String, Long> addVideo(VideoDTO videoDTO);
+
+    /**
+     * 删除视频
+     *
+     * @param videoId 视频id
+     */
+    void deleteVideo(Long videoId);
+
+    /**
+     * 删除视频资源
+     *
+     * @param videoId 视频id
+     */
+    void removeVideoResource(Long videoId);
 }

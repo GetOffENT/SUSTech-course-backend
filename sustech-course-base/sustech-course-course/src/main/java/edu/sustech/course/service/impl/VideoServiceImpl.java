@@ -218,4 +218,24 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }
         return Map.of("videoId", video.getId());
     }
+
+    /**
+     * 删除视频
+     *
+     * @param videoId 视频id
+     */
+    @Override
+    public void deleteVideo(Long videoId) {
+        // TODO
+    }
+
+    /**
+     * 删除视频资源
+     *
+     * @param videoId 视频id
+     */
+    @Override
+    public void removeVideoResource(Long videoId) {
+        // TODO
+    }
 }

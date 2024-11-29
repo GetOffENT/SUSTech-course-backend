@@ -23,4 +23,11 @@ public interface ChapterService extends IService<Chapter> {
      * @return 章节id
      */
     Map<String, Long> addChapter(ChapterInfoDTO chapterInfoDTO);
+
+    /**
+     * 删除课程章节
+     *
+     * @param chapterId 章节id
+     */
+    void deleteChapter(Long chapterId);
 }

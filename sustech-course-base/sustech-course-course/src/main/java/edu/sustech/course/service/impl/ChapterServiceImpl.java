@@ -45,4 +45,14 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter> impl
         }
         return Map.of("chapterId", chapter.getId());
     }
+
+    /**
+     * 删除课程章节
+     *
+     * @param chapterId 章节id
+     */
+    @Override
+    public void deleteChapter(Long chapterId) {
+        // TODO
+    }
 }

@@ -124,4 +124,34 @@ public class VideoController {
         log.info("新增视频 videoDTO:{}", videoDTO);
         return Result.success(videoService.addVideo(videoDTO));
     }
+
+    /**
+     * 删除视频(小节)
+     *
+     * @param videoId 视频(小节)id
+     * @return 无
+     */
+    @DeleteMapping("/{videoId}")
+    @ApiOperation("删除小节")
+    public Result<Object> deleteVideo(@PathVariable Long videoId) {
+        // TODO
+        log.info("删除小节 videoId:{}", videoId);
+        videoService.deleteVideo(videoId);
+        return Result.success();
+    }
+
+    /**
+     * 删除小节中的视频资源
+     *
+     * @param videoId 视频(小节)id
+     * @return 无
+     */
+    @DeleteMapping("/resource/{videoId}")
+    @ApiOperation("删除小节中的视频资源")
+    public Result<Object> removeVideoResource(@PathVariable Long videoId) {
+        // TODO
+        log.info("删除小节中的视频资源 videoId:{}", videoId);
+        videoService.removeVideoResource(videoId);
+        return Result.success();
+    }
 }
