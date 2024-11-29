@@ -34,6 +34,7 @@ public class MessageConstant {
     public static final String COURSE_NOT_EXIST = "课程不存在";
     public static final String VIDEO_NOT_EXIST = "视频不存在";
     public static final String VIDEO_NOT_PUBLIC = "视频未公开";
+    public static final String VIDEO_DELETE_FAILED = "删除视频失败";
     public static final String PARAM_ERROR = "评分不能为空";
     public static final String NOT_TEACHER = "您不是老师,无法发布课程";
     public static final String NO_PERMISSION = "无权限操作";

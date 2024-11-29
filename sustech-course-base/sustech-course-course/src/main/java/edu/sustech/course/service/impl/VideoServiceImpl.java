@@ -23,7 +23,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private final ResourceClient resourceClient;
 
     private final CommonUtil commonUtil;
+
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 获取单个视频信息
@@ -225,8 +229,28 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
      * @param videoId 视频id
      */
     @Override
+    @Transactional
     public void deleteVideo(Long videoId) {
-        // TODO
+        Long userId = commonUtil.checkTeacher();
+
+        Video video = baseMapper.selectById(videoId);
+
+        if (!userId.equals(video.getUserId())) {
+            throw new VideoException(MessageConstant.NO_PERMISSION);
+        }
+
+        int delete = baseMapper.deleteById(videoId);
+        if (delete == 0) {
+            throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
+        }
+
+        try {
+            // 消息队列通知云端删除视频
+            rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", video.getVideoSourceId());
+        } catch (Exception e) {
+            log.error("向消息队列发送删除视频消息失败", e);
+            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+        }
     }
 
     /**
@@ -236,6 +260,36 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
      */
     @Override
     public void removeVideoResource(Long videoId) {
-        // TODO
+        Long userId = commonUtil.checkTeacher();
+
+        Video video = baseMapper.selectById(videoId);
+
+        if (video == null) {
+            throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
+        }
+
+        if (!userId.equals(video.getUserId())) {
+            throw new VideoException(MessageConstant.NO_PERMISSION);
+        }
+
+        String videoSourceId = video.getVideoSourceId();
+
+        video.setVideoSourceId("")
+                .setVideoOriginalName("")
+                .setSize(0L)
+                .setDuration(0.0)
+                .setMinWatchTime(0.0);
+        int row = baseMapper.updateById(video);
+        if (row == 0) {
+            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+        }
+
+        try {
+            // 消息队列通知云端删除视频
+            rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", videoSourceId);
+        } catch (Exception e) {
+            log.error("向消息队列发送删除视频消息失败", e);
+            throw new VideoException(MessageConstant.DELETE_VIDEO_FAILED);
+        }
     }
 }

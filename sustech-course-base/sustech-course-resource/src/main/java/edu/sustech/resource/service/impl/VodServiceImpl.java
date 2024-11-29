@@ -80,14 +80,14 @@ public class VodServiceImpl implements VodService {
     }
 
     /**
-     * 删除视频
+     * 批量删除视频
      *
-     * @param id 视频阿里云id
+     * @param ids 视频阿里云id列表，逗号分隔
      */
     @Override
-    public void removeVideo(String id) {
+    public void removeVideo(String ids) {
         try {
-            aliVodUtil.deleteVideo(id);
+            aliVodUtil.deleteVideo(ids);
             log.info("删除视频成功");
         }catch(Exception e) {
             log.error("删除视频失败", e);
