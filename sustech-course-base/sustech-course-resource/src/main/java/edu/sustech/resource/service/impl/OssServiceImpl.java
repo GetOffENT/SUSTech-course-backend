@@ -3,6 +3,7 @@ package edu.sustech.resource.service.impl;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -130,7 +132,7 @@ public class OssServiceImpl implements OssService {
                 .fileType(file_type)
                 .build();
         Result<Long> longResult = courseClient.addAttachment(attachmentDTO);
-        if (longResult.getCode() != 20000) {
+        if (!Objects.equals(longResult.getCode(), ResultCode.SUCCESS.code())) {
             throw new ResourceOperationException(longResult.getMessage());
         } else {
             return longResult.getData();

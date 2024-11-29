@@ -88,3 +88,23 @@ docker run -d \
 --network sustech-course-net \
 redis:7 redis-server /etc/redis/redis.conf
 ```
+
+
+## 2024-11-27
+RabbitMQ安装
+```bash
+docker run \
+ -e RABBITMQ_DEFAULT_USER=sustech \
+ -e RABBITMQ_DEFAULT_PASS=sustech \
+ -v mq-plugins:/plugins \
+ --name mq \
+ --hostname mq \
+ -p 15672:15672 \
+ -p 5672:5672 \
+ --restart=always \
+ --network sustech-course-net \
+ -d \
+ rabbitmq:3.8-management
+```
+sustech_course
+sustech

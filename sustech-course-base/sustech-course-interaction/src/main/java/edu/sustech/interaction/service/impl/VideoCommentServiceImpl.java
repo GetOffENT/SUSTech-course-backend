@@ -117,6 +117,7 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         baseMapper.insert(videoComment);
 
         // 更新评论数量
+        // TODO 改为消息队列异步更新评论数量
         courseClient.updateCommentCount(commentDTO.getVid(), 1);
 
         return getCommentTree(videoComment, -1L);
@@ -163,6 +164,8 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         if (count == 0) {
             throw new CommentException(MessageConstant.COMMENT_DELETE_ERROR);
         }
+
+        // 改为消息队列异步更新评论数量
         courseClient.updateCommentCount(videoDTO.getId(), -count);
 
         log.info("删除评论{}及其{}条子评论", id, count);

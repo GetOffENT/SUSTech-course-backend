@@ -6,7 +6,9 @@ import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
-import edu.sustech.api.entity.enums.CourseStatus;
+import edu.sustech.common.enums.ResultCode;
+import edu.sustech.common.exception.CourseException;
+import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -45,6 +48,9 @@ public class CourseReviewServiceImpl implements CourseReviewService {
     @Override
     public PageResult<Map<String, Object>> getCourseList(CoursePageQueryDTO coursePageQueryDTO) {
         Result<PageResult<Map<String, Object>>> coursesByCondition = courseClient.getCoursesByCondition(coursePageQueryDTO);
+        if (!Objects.equals(coursesByCondition.getCode(), ResultCode.SUCCESS.code())) {
+            throw new CourseException(coursesByCondition.getMessage());
+        }
         return coursesByCondition.getData();
     }
 
@@ -57,10 +63,10 @@ public class CourseReviewServiceImpl implements CourseReviewService {
     @Override
     public List<ChapterDTO> getCatalog(Long courseId) {
         Result<List<ChapterDTO>> catalog = courseClient.getCatalog(courseId);
-        if (catalog.getCode() == 20000) {
-            return catalog.getData();
+        if (!Objects.equals(catalog.getCode(), ResultCode.SUCCESS.code())) {
+            throw new CourseException(catalog.getMessage());
         }
-        return null;
+        return catalog.getData();
     }
 
     /**
@@ -72,10 +78,10 @@ public class CourseReviewServiceImpl implements CourseReviewService {
     @Override
     public String getPlayInfo(String videoSourceId) {
         Result<String> videoUrl = resourceClient.getPlayInfo(videoSourceId);
-        if (videoUrl.getCode() == 20000) {
-            return videoUrl.getData();
+        if (!Objects.equals(videoUrl.getCode(), ResultCode.SUCCESS.code())) {
+            throw new ResourceOperationException(videoUrl.getMessage());
         }
-        return null;
+        return videoUrl.getData();
     }
 
     /**

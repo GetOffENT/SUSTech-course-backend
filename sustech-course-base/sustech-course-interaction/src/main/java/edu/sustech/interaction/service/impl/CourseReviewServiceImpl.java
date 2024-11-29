@@ -100,9 +100,10 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         for (CourseReviewVO courseReviewVO : courseReviewVOS) {
             // 获取发布用户信息
             Result<UserDTO> userAndCoursesById = userClient.getUserAndCoursesById(courseReviewVO.getUserId());
-            if (Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
-                courseReviewVO.setUser(userAndCoursesById.getData());
+            if (!Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
+                throw new CourseReviewException(userAndCoursesById.getMessage());
             }
+            courseReviewVO.setUser(userAndCoursesById.getData());
             // 获取具体指标评分
             List<CourseReviewScoreVO> courseReviewScoreVOS = new ArrayList<>();
             courseReviewScores.forEach(courseReviewScore -> {

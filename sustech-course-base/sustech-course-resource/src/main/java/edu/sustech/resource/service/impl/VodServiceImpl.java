@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -58,6 +60,7 @@ public class VodServiceImpl implements VodService {
         log.info("上传视频成功，videoSourceId: {}", videoSourceId);
 
         // 同时更新数据库视频资源信息
+        // TODO : 或许可以用消息队列来异步处理
         VideoResourceDTO videoResourceDTO = VideoResourceDTO.builder()
                 .id(id)
                 .videoSourceId(videoSourceId)
@@ -65,7 +68,7 @@ public class VodServiceImpl implements VodService {
                 .size(size)
                 .build();
         Result<Object> objectResult = courseClient.addVideoResource(videoResourceDTO);
-        if (objectResult.getCode() != 20000) {
+        if (!Objects.equals(objectResult.getCode(), ResultCode.SUCCESS.code())) {
             throw new ResourceOperationException(objectResult.getMessage());
         }
 

@@ -134,9 +134,10 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         // 发布者信息
         Result<UserDTO> userAndCoursesById = userClient.getUserAndCoursesById(video.getUserId());
 
-        if (Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
-            map.put("user", userAndCoursesById.getData());
+        if (!Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
+            throw new VideoException(userAndCoursesById.getMessage());
         }
+        map.put("user", userAndCoursesById.getData());
 
 
         // 查询视频分类信息

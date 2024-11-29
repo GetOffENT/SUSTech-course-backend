@@ -476,6 +476,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                                     .setLike(userCoursesInfoByUserId.getLike())
                                     .setPlay(userCoursesInfoByUserId.getPlay());
                             map.put("user", data);
+                        } else {
+                            throw new CourseException(userAndCoursesById.getMessage());
                         }
                         // map.put("user", userService.getUserById(course.getUid()));
                     }, dbExecutor);

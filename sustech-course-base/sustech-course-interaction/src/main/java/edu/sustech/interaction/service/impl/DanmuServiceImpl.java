@@ -3,7 +3,9 @@ package edu.sustech.interaction.service.impl;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.exception.CommentException;
+import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.Danmu;
 import edu.sustech.interaction.mapper.DanmuMapper;
@@ -47,7 +49,12 @@ public class DanmuServiceImpl extends ServiceImpl<DanmuMapper, Danmu> implements
             throw new CommentException(MessageConstant.DANMU_NOT_EXIST);
         }
 
-        VideoDTO videoDTO = courseClient.getVideoById(danmu.getVideoId()).getData();
+        Result<VideoDTO> videoById = courseClient.getVideoById(danmu.getVideoId());
+        if (!Objects.equals(videoById.getCode(), ResultCode.SUCCESS.code())) {
+            throw new CommentException(videoById.getMessage());
+        }
+
+        VideoDTO videoDTO = videoById.getData();
         if (!danmu.getUserId().equals(userId) && !Objects.equals(videoDTO.getUserId(), userId)) {
             throw new CommentException(MessageConstant.DANMU_NO_PERMISSION);
         }
