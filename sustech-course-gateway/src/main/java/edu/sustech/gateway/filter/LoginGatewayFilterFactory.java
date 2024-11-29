@@ -1,6 +1,7 @@
 package edu.sustech.gateway.filter;
 
 import cn.hutool.core.text.AntPathMatcher;
+import edu.sustech.common.enums.Role;
 import edu.sustech.gateway.properties.JwtProperties;
 import edu.sustech.gateway.util.JwtTool;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,12 @@ public class LoginGatewayFilterFactory extends AbstractGatewayFilterFactory<Obje
                     return chain.filter(exchange);
                 }
 
-                ResponseDecorator decorator = new ResponseDecorator(exchange.getResponse(), jwtTool, jwtProperties);
+                ResponseDecorator decorator;
+                if (antPathMatcher.match("/user/**/login", path)) {
+                    decorator = new ResponseDecorator(exchange.getResponse(), jwtTool, jwtProperties, Role.USER);
+                } else {
+                    decorator = new ResponseDecorator(exchange.getResponse(), jwtTool, jwtProperties, Role.ADMIN);
+                }
                 return chain.filter(exchange.mutate().response(decorator).build());
             }
         }, -1000);

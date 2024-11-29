@@ -2,6 +2,7 @@ package edu.sustech.gateway.filter;
 
 import cn.hutool.core.collection.CollUtil;
 import edu.sustech.common.constant.AuthorizationConstant;
+import edu.sustech.common.enums.Role;
 import edu.sustech.common.exception.UnauthorizedException;
 import edu.sustech.gateway.properties.AuthProperties;
 import edu.sustech.gateway.util.JwtTool;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -49,8 +51,11 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         if (token != null) {
             Long userId;
+            Role role;
             try {
-                userId = jwtTool.parseToken(token);
+                Map<String, Object> map = jwtTool.parseToken(token);
+                userId = (Long) map.get("user");
+                role = (Role) map.get("role");
             } catch (UnauthorizedException e) {
                 ServerHttpResponse response = exchange.getResponse();
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -58,7 +63,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             }
 
             ServerWebExchange swe = exchange.mutate()
-                    .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()))
+                    .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()).header(AuthorizationConstant.ROLE, role.toString()))
                     .build();
 
             return chain.filter(swe);
@@ -70,8 +75,11 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         Long userId;
+        Role role;
         try {
-            userId = jwtTool.parseToken(token);
+            Map<String, Object> map = jwtTool.parseToken(token);
+            userId = (Long) map.get("user");
+            role = (Role) map.get("role");
         } catch (UnauthorizedException e) {
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -79,7 +87,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         ServerWebExchange swe = exchange.mutate()
-                .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()))
+                .request(builder -> builder.header(AuthorizationConstant.USER_ID, userId.toString()).header(AuthorizationConstant.ROLE, role.toString()))
                 .build();
 
         return chain.filter(swe);

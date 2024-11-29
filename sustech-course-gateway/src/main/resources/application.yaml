@@ -24,6 +24,8 @@ spring:
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
+          filters:
+            - Login
         - id: course-service
           uri: lb://course-service
           predicates:
@@ -41,7 +43,7 @@ spring:
         - id: resource-service
           uri: lb://resource-service
           predicates:
-              - Path=/resource/**
+            - Path=/resource/**
       globalcors:
         cors-configurations:
           '[/**]':

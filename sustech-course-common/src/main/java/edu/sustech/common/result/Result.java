@@ -1,5 +1,6 @@
 package edu.sustech.common.result;
 
+import edu.sustech.common.enums.ResultCode;
 import lombok.Data;
 
 import java.io.Serializable;

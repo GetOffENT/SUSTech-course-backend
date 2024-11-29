@@ -43,15 +43,15 @@ public class ChapterController {
 
 
     /**
-     * 删除章节
+     * 删除章节及其下所有小节
      *
      * @param chapterId 章节id
      * @return 无
      */
     @DeleteMapping("/{chapterId}")
-    @ApiOperation("删除章节")
+    @ApiOperation("删除章节及其下所有小节")
     public Result<Object> deleteChapter(@PathVariable Long chapterId) {
-        log.info("删除章节 chapterId:{}", chapterId);
+        log.info("删除章节及其下所有小节 chapterId:{}", chapterId);
         chapterService.deleteChapter(chapterId);
         return Result.success(null);
     }

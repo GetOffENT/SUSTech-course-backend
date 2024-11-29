@@ -2,11 +2,13 @@ package edu.sustech.common.interceptor;
 
 import cn.hutool.core.util.StrUtil;
 import edu.sustech.common.constant.AuthorizationConstant;
+import edu.sustech.common.enums.Role;
 import edu.sustech.common.util.UserContext;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,7 +25,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         // 如果userId不为空，设置到UserContext中
         if (StrUtil.isNotBlank(userId)) {
-            UserContext.setUser(Long.valueOf(userId));
+            UserContext.setUser(Map.of(
+                    "userId", Long.valueOf(userId),
+                    "role", Role.valueOf(request.getHeader(AuthorizationConstant.ROLE))
+            ));
         }
         return true;
     }

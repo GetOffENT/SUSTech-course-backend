@@ -1,6 +1,7 @@
 package edu.sustech.gateway.filter;
 
 import cn.hutool.json.JSONObject;
+import edu.sustech.common.enums.Role;
 import edu.sustech.gateway.properties.JwtProperties;
 import edu.sustech.gateway.util.JwtTool;
 import org.reactivestreams.Publisher;
@@ -30,10 +31,13 @@ public class ResponseDecorator extends ServerHttpResponseDecorator {
 
     private final JwtProperties jwtProperties;
 
-    public ResponseDecorator(ServerHttpResponse delegate, JwtTool jwtTool, JwtProperties jwtProperties) {
+    private final Role role;
+
+    public ResponseDecorator(ServerHttpResponse delegate, JwtTool jwtTool, JwtProperties jwtProperties, Role role) {
         super(delegate);
         this.jwtTool = jwtTool;
         this.jwtProperties = jwtProperties;
+        this.role = role;
     }
 
     @Override
@@ -63,10 +67,8 @@ public class ResponseDecorator extends ServerHttpResponseDecorator {
         return super.writeWith(body);
     }
 
-    //重写这个函数即可
     private String modifyBody(String jsonStr) {
         JSONObject json = new JSONObject(jsonStr);
-        //TODO...修改响应体
 
         JSONObject data = json.getJSONObject("data");
 
@@ -75,7 +77,7 @@ public class ResponseDecorator extends ServerHttpResponseDecorator {
         }
 
         Long id = Long.parseLong(String.valueOf(data.getJSONObject("user").get("id")));
-        String token = jwtTool.createToken(id, jwtProperties.getTokenTTL());
+        String token = jwtTool.createToken(id, role, jwtProperties.getTokenTTL());
 
 
         data.set("token", token);

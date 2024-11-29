@@ -11,7 +11,7 @@ import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.exception.VideoException;
 import edu.sustech.common.result.Result;
-import edu.sustech.common.result.ResultCode;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.*;
 import edu.sustech.api.entity.enums.CourseOpenStatus;

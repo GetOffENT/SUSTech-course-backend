@@ -7,9 +7,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -39,7 +37,7 @@ public class WebsocketGatewayFilterFactory extends AbstractGatewayFilterFactory<
                 if (token != null) {
                     Long userId;
                     try {
-                        userId = jwtTool.parseToken(token);
+                        userId = (Long) jwtTool.parseToken(token).get("user");
                     } catch (Exception ignored) {
                         userId = null;
                         ServerHttpRequest mutatedRequest = request.mutate()

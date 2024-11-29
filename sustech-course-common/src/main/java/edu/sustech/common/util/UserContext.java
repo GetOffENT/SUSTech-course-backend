@@ -1,14 +1,18 @@
 package edu.sustech.common.util;
 
+import edu.sustech.common.enums.Role;
+
+import java.util.Map;
+
 public class UserContext {
-    private static final ThreadLocal<Long> tl = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, Object>> tl = new ThreadLocal<>();
 
     /**
      * 保存当前登录用户信息到ThreadLocal
-     * @param userId 用户id
+     * @param user 用户id和角色
      */
-    public static void setUser(Long userId) {
-        tl.set(userId);
+    public static void setUser(Map<String, Object> user) {
+        tl.set(user);
     }
 
     /**
@@ -16,7 +20,17 @@ public class UserContext {
      * @return 用户id
      */
     public static Long getUser() {
-        return tl.get();
+        if (tl.get() == null) {
+            return null;
+        }
+        return (Long) tl.get().get("userId");
+    }
+
+    public static Role getRole() {
+        if (tl.get() == null) {
+            return null;
+        }
+        return (Role) tl.get().get("role");
     }
 
     /**

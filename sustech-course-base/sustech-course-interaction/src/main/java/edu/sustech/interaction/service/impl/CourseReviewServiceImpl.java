@@ -9,7 +9,7 @@ import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseReviewException;
 import edu.sustech.common.result.Result;
-import edu.sustech.common.result.ResultCode;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.CourseReview;
 import edu.sustech.interaction.entity.CourseReviewScore;

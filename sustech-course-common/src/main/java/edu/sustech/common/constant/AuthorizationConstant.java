@@ -11,4 +11,5 @@ package edu.sustech.common.constant;
 public class AuthorizationConstant {
     public static final String AUTHORIZATION = "authorization";
     public static final String USER_ID = "userId";
+    public static final String ROLE = "role";
 }

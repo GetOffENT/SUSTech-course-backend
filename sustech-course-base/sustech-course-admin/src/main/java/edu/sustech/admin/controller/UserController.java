@@ -2,7 +2,6 @@ package edu.sustech.admin.controller;
 
 import edu.sustech.admin.entity.dto.UserLoginDTO;
 import edu.sustech.admin.entity.vo.UserVO;
-import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,9 +34,9 @@ public class UserController {
      */
     @PostMapping("/login")
     @ApiOperation("登录")
-    public MapResult login(@RequestBody UserLoginDTO userLoginDTO) {
+    public Result<Map<String, Object>> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("登录, userLoginDTO: {}", userLoginDTO);
-        return MapResult.success().data("token", "admin-token");
+        return Result.success(Map.of("user", Map.of("id", 1)));
     }
 
     /**

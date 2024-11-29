@@ -1,4 +1,4 @@
-package edu.sustech.common.result;
+package edu.sustech.common.enums;
 
 /**
  * <p>

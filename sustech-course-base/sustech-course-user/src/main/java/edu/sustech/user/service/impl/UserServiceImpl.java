@@ -13,7 +13,7 @@ import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.RegisterException;
 import edu.sustech.common.result.Result;
-import edu.sustech.common.result.ResultCode;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.user.entity.User;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;

@@ -93,7 +93,7 @@ public class CarouselController {
      */
     @ApiOperation("删除轮播图")
     @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Long id) {
+    public Result<Object> delete(@PathVariable Long id) {
         log.info("删除轮播图 {}", id);
         carouselService.removeById(id);
         return Result.success();

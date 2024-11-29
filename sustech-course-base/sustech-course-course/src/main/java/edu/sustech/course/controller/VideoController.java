@@ -126,16 +126,15 @@ public class VideoController {
     }
 
     /**
-     * 删除视频(小节)
+     * 删除小节及其视频资源
      *
      * @param videoId 视频(小节)id
      * @return 无
      */
     @DeleteMapping("/{videoId}")
-    @ApiOperation("删除小节")
+    @ApiOperation("删除小节及其视频资源")
     public Result<Object> deleteVideo(@PathVariable Long videoId) {
-        // TODO
-        log.info("删除小节 videoId:{}", videoId);
+        log.info("删除小节及其视频资源 videoId:{}", videoId);
         videoService.deleteVideo(videoId);
         return Result.success();
     }
@@ -149,7 +148,6 @@ public class VideoController {
     @DeleteMapping("/resource/{videoId}")
     @ApiOperation("删除小节中的视频资源")
     public Result<Object> removeVideoResource(@PathVariable Long videoId) {
-        // TODO
         log.info("删除小节中的视频资源 videoId:{}", videoId);
         videoService.removeVideoResource(videoId);
         return Result.success();
