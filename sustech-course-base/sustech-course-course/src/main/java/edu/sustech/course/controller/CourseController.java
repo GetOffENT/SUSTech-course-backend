@@ -2,13 +2,11 @@ package edu.sustech.course.controller;
 
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
-import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
-import edu.sustech.course.entity.dto.ChapterInfoDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
 import edu.sustech.course.service.CourseDescriptionService;
@@ -126,33 +124,6 @@ public class CourseController {
     public Result<Map<String, Long>> addCourse(@RequestBody CourseDTO courseDTO) {
         log.info("新增课程 courseDTO:{}", courseDTO);
         return Result.success(courseService.addCourse(courseDTO));
-    }
-
-    /**
-     * 新增章节
-     *
-     * @param chapterInfoDTO 章节信息
-     * @return 章节id
-     */
-    @PostMapping("/chapter")
-    @ApiOperation("新增章节")
-    public Result<Map<String, Long>> addChapter(@RequestBody ChapterInfoDTO chapterInfoDTO) {
-        log.info("新增章节 chapterInfoDTO:{}", chapterInfoDTO);
-        return Result.success(courseService.addChapter(chapterInfoDTO));
-    }
-
-
-    /**
-     * 新增视频(小节)
-     *
-     * @param videoDTO 视频(小节)信息
-     * @return 视频(小节)id
-     */
-    @PostMapping("/video")
-    @ApiOperation("新增视频")
-    public Result<Map<String, Long>> addVideo(@RequestBody VideoDTO videoDTO) {
-        log.info("新增视频 videoDTO:{}", videoDTO);
-        return Result.success(courseService.addVideo(videoDTO));
     }
 
     /**

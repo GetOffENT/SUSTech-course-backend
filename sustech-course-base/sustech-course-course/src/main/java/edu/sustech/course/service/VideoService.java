@@ -1,5 +1,6 @@
 package edu.sustech.course.service;
 
+import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.course.entity.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -54,4 +55,12 @@ public interface VideoService extends IService<Video> {
      * @return 视频播放地址
      */
     String getPlayInfo(String videoSourceId);
+
+    /**
+     * 新增视频(小节)
+     *
+     * @param videoDTO 视频(小节)信息
+     * @return 视频(小节)id
+     */
+    Map<String, Long> addVideo(VideoDTO videoDTO);
 }

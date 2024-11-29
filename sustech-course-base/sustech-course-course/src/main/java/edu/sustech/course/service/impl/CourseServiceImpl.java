@@ -21,6 +21,7 @@ import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private final UserCourseMapper userCourseMapper;
 
     private final CourseDescriptionMapper courseDescriptionMapper;
+
     private final AttachmentMapper attachmentMapper;
+
+    private final CommonUtil commonUtil;
 
     /**
      * 获取随机推荐课程
@@ -255,7 +259,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Transactional
     @Override
     public Map<String, Long> addCourse(CourseDTO courseDTO) {
-        Long userId = checkTeacher();
+        Long userId = commonUtil.checkTeacher();
 
         Course course = BeanUtil.copyProperties(courseDTO, Course.class)
                 .setUserId(userId)
@@ -281,44 +285,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
-     * 新增课程章节
-     *
-     * @param chapterInfoDTO 章节信息
-     * @return 章节id
-     */
-    @Override
-    public Map<String, Long> addChapter(ChapterInfoDTO chapterInfoDTO) {
-        checkTeacher();
-
-        Chapter chapter = BeanUtil.copyProperties(chapterInfoDTO, Chapter.class);
-        int insert = chapterMapper.insert(chapter);
-        if (insert == 0) {
-            throw new CourseException(MessageConstant.CHAPTER_ADD_FAILED);
-        }
-        return Map.of("chapterId", chapter.getId());
-    }
-
-    /**
-     * 新增视频(小节)
-     *
-     * @param videoDTO 视频(小节)信息
-     * @return 视频(小节)id
-     */
-    @Override
-    public Map<String, Long> addVideo(edu.sustech.api.entity.dto.VideoDTO videoDTO) {
-        Long userId = checkTeacher();
-
-        Video video = BeanUtil.copyProperties(videoDTO, Video.class)
-                .setUserId(userId);
-
-        int insert = videoMapper.insert(video);
-        if (insert == 0) {
-            throw new CourseException(MessageConstant.VIDEO_ADD_FAILED);
-        }
-        return Map.of("videoId", video.getId());
-    }
-
-    /**
      * 新增课程详细信息
      *
      * @param courseDetailDTO 课程详细信息
@@ -326,7 +292,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Transactional
     @Override
     public void addCourseDetail(CourseDetailDTO courseDetailDTO) {
-        checkTeacher();
+        commonUtil.checkTeacher();
 
         Course course = BeanUtil.copyProperties(courseDetailDTO, Course.class)
                 .setStatus(CourseStatus.PENDING);
@@ -529,19 +495,5 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public <T> List<T> getRandomElements(List<T> list, int n) {
         Collections.shuffle(list);
         return new ArrayList<>(list.subList(0, Math.min(n, list.size())));
-    }
-
-    private Long checkTeacher() {
-        Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new CourseException(MessageConstant.NOT_LOGIN);
-        }
-
-        // TODO: redis缓存用户
-        UserDTO user = userClient.getUserById(userId).getData();
-        if (user.getRole() != 2) {
-            throw new CourseException(MessageConstant.NOT_TEACHER);
-        }
-        return userId;
     }
 }

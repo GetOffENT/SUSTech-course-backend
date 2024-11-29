@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
+import edu.sustech.api.entity.dto.VideoDTO;
 import edu.sustech.api.entity.dto.VideoResourceDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.exception.VideoException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.result.ResultCode;
@@ -18,6 +20,7 @@ import edu.sustech.course.entity.enums.JoinEnum;
 import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.VideoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,8 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     private final UserVideoRecordMapper userVideoRecordMapper;
 
     private final ResourceClient resourceClient;
+
+    private final CommonUtil commonUtil;
 
     /**
      * 获取单个视频信息
@@ -192,5 +197,25 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         } else {
             throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
         }
+    }
+
+    /**
+     * 新增视频(小节)
+     *
+     * @param videoDTO 视频(小节)信息
+     * @return 视频(小节)id
+     */
+    @Override
+    public Map<String, Long> addVideo(VideoDTO videoDTO) {
+        Long userId = commonUtil.checkTeacher();
+
+        Video video = BeanUtil.copyProperties(videoDTO, Video.class)
+                .setUserId(userId);
+
+        int insert = baseMapper.insert(video);
+        if (insert == 0) {
+            throw new CourseException(MessageConstant.VIDEO_ADD_FAILED);
+        }
+        return Map.of("videoId", video.getId());
     }
 }

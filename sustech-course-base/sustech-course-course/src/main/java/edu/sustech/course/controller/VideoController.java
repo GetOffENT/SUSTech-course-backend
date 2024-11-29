@@ -111,4 +111,17 @@ public class VideoController {
         log.info("获取视频播放url...视频源ID: {}", videoSourceId);
         return Result.success(videoService.getPlayInfo(videoSourceId));
     }
+
+    /**
+     * 新增视频(小节)
+     *
+     * @param videoDTO 视频(小节)信息
+     * @return 视频(小节)id
+     */
+    @PostMapping
+    @ApiOperation("新增视频")
+    public Result<Map<String, Long>> addVideo(@RequestBody VideoDTO videoDTO) {
+        log.info("新增视频 videoDTO:{}", videoDTO);
+        return Result.success(videoService.addVideo(videoDTO));
+    }
 }
