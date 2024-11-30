@@ -17,7 +17,7 @@ import edu.sustech.course.entity.*;
 import edu.sustech.course.entity.dto.*;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
 import edu.sustech.api.entity.enums.CourseStatus;
-import edu.sustech.course.entity.enums.JoinEnum;
+import edu.sustech.common.enums.JoinEnum;
 import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;

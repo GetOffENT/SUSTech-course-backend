@@ -3,8 +3,10 @@ package edu.sustech.course.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
+import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.UserCourse;
-import edu.sustech.course.entity.enums.JoinEnum;
+import edu.sustech.course.entity.dto.CourseJoinStatusDTO;
+import edu.sustech.common.enums.JoinEnum;
 import edu.sustech.course.entity.enums.LikeEnum;
 import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.mapper.UserCourseMapper;
@@ -13,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,8 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
     private final CourseMapper courseMapper;
 
     private final CommonUtil commonUtil;
+
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 获取用户课程记录
@@ -59,7 +64,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
     @Transactional
     @Override
     public UserCourse likeOrNot(Long id, Boolean isLike) {
-        UserCourse userCourse = checkUserCourse(id);
+        UserCourse userCourse = checkUserCourse(id, null);
 
         if (isLike) {
             if (userCourse.getLike() == LikeEnum.LIKE) {
@@ -91,7 +96,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
      */
     @Override
     public UserCourse applyCourse(Long id) {
-        UserCourse userCourse = checkUserCourse(id);
+        UserCourse userCourse = checkUserCourse(id, null);
 
         if (userCourse.getJoinState() == JoinEnum.APPLYING) {
             userCourse.setJoinState(JoinEnum.NONE);
@@ -106,9 +111,53 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
         return userCourse;
     }
 
-    private UserCourse checkUserCourse(Long id) {
-        Long userId = commonUtil.checkUser();
+    /**
+     * 更新加入状态
+     *
+     * @param courseJoinStatusDTO 课程加入状态DTO
+     */
+    @Override
+    public void updateJoinStatus(CourseJoinStatusDTO courseJoinStatusDTO) {
+        Course course = courseMapper.selectById(courseJoinStatusDTO.getCourseId());
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        // 检查是否是自己的课程
+        if (!course.getUserId().equals(commonUtil.checkUser())) {
+            throw new CourseException(MessageConstant.NO_PERMISSION);
+        }
 
+        UserCourse userCourse = checkUserCourse(courseJoinStatusDTO.getCourseId(), courseJoinStatusDTO.getUserId());
+        userCourse.setJoinState(courseJoinStatusDTO.getStatus());
+        boolean updateById = this.updateById(userCourse);
+        if (!updateById) {
+            throw new CourseException(MessageConstant.ERROR);
+        }
+
+        // 消息队列通知消息服务 推送邮件
+        try {
+            courseJoinStatusDTO.setTitle(course.getTitle());
+            rabbitTemplate.convertAndSend(
+                    "course.joinStatus.direct", "course.joinStatus.notify",
+                    courseJoinStatusDTO
+            );
+        } catch (Exception e) {
+            log.error("发送邮件失败", e);
+            throw new CourseException(MessageConstant.ERROR);
+        }
+    }
+
+    /**
+     * 检查数据库是否存在用户课程记录, 不存在则创建
+     *
+     * @param id     课程ID
+     * @param userId 被检查用户ID(如果为null则检查当前用户)
+     * @return 用户课程记录
+     */
+    private UserCourse checkUserCourse(Long id, Long userId) {
+        if (userId == null) {
+            userId = commonUtil.checkUser();
+        }
         LambdaQueryWrapper<UserCourse> queryWrapper =
                 new LambdaQueryWrapper<UserCourse>()
                         .eq(UserCourse::getCourseId, id)

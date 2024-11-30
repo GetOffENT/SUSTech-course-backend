@@ -2,6 +2,7 @@ package edu.sustech.course.service;
 
 import edu.sustech.course.entity.UserCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.course.entity.dto.CourseJoinStatusDTO;
 
 /**
  * <p>
@@ -37,4 +38,11 @@ public interface UserCourseService extends IService<UserCourse> {
      * @return 用户课程记录
      */
     UserCourse applyCourse(Long id);
+
+    /**
+     * 更新加入状态
+     *
+     * @param courseJoinStatusDTO 课程加入状态DTO
+     */
+    void updateJoinStatus(CourseJoinStatusDTO courseJoinStatusDTO);
 }

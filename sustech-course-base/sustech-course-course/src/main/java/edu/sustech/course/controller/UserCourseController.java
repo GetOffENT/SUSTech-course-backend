@@ -3,6 +3,7 @@ package edu.sustech.course.controller;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.UserCourse;
+import edu.sustech.course.entity.dto.CourseJoinStatusDTO;
 import edu.sustech.course.service.UserCourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,19 +30,21 @@ public class UserCourseController {
 
     /**
      * 获取用户课程记录
+     *
      * @param id 课程ID
      * @return 用户课程记录
      */
     @GetMapping("/{id}")
     @ApiOperation("获取用户课程记录")
-    public Result<UserCourse> getUserCourse(@PathVariable Long id){
+    public Result<UserCourse> getUserCourse(@PathVariable Long id) {
         log.info("获取用户【{}】的课程记录", id);
         return Result.success(userCourseService.getUserCourse(id));
     }
 
     /**
      * 点赞或点踩，返回更新后的信息
-     * @param id 课程ID
+     *
+     * @param id     课程ID
      * @param isLike 设置赞还是踩 true赞 false踩
      * @return 更新后的信息
      */
@@ -54,6 +57,7 @@ public class UserCourseController {
 
     /**
      * 申请加入课程
+     *
      * @param id 课程ID
      * @return 用户课程记录
      */
@@ -62,5 +66,20 @@ public class UserCourseController {
     public Result<UserCourse> applyCourse(@PathVariable Long id) {
         log.info("用户【{}】申请或取消申请加入课程【{}】", UserContext.getUser(), id);
         return Result.success(userCourseService.applyCourse(id));
+    }
+
+
+    /**
+     * 更新加入状态
+     *
+     * @param courseJoinStatusDTO 课程加入状态DTO
+     * @return 无
+     */
+    @PostMapping("/update")
+    @ApiOperation("更新加入状态")
+    public Result<Object> updateJoinStatus(@RequestBody CourseJoinStatusDTO courseJoinStatusDTO) {
+        log.info("教师【{}】更新课程【{}】学生【{}】的加入状态为【{}】", UserContext.getUser(), courseJoinStatusDTO.getCourseId(), courseJoinStatusDTO.getUserId(), courseJoinStatusDTO.getStatus());
+        userCourseService.updateJoinStatus(courseJoinStatusDTO);
+        return Result.success();
     }
 }

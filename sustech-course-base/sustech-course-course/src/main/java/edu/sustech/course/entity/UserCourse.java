@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import edu.sustech.course.entity.enums.JoinEnum;
+import edu.sustech.common.enums.JoinEnum;
 import edu.sustech.course.entity.enums.LikeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

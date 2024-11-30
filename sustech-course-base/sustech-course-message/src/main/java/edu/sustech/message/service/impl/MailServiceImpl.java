@@ -8,10 +8,12 @@ import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MailNotificationConstant;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.JoinEnum;
 import edu.sustech.common.exception.CaptchaException;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.message.entity.dto.BulkEmailDTO;
+import edu.sustech.message.entity.dto.CourseJoinStatusDTO;
 import edu.sustech.message.entity.dto.CourseStatusDTO;
 import edu.sustech.message.service.MailService;
 import edu.sustech.message.util.EmailUtil;
@@ -167,4 +169,38 @@ public class MailServiceImpl implements MailService {
                 bulkEmailDTO.getAttachments()
         );
     }
+
+    /**
+     * 发送课程加入状态邮件
+     *
+     * @param courseJoinStatusDTO 课程加入状态信息
+     */
+    @Override
+    public void sendCourseJoinStatusMail(CourseJoinStatusDTO courseJoinStatusDTO) {
+        if (courseJoinStatusDTO.getStatus() == JoinEnum.JOINED) {
+            String content;
+            if (courseJoinStatusDTO.getInviteOrApply() == 0) {
+                content = MailNotificationConstant.COURSE_JOIN_INVITE_MAIL_TEMPLATE.formatted(courseJoinStatusDTO.getTitle());
+
+            } else {
+                content = MailNotificationConstant.COURSE_JOIN_PASSED_MAIL_TEMPLATE.formatted(courseJoinStatusDTO.getTitle());
+            }
+            emailUtil.sendHtmlMail(
+                    courseJoinStatusDTO.getEmail(),
+                    CaptchaConstant.DEFAULT_SENDER,
+                    MailNotificationConstant.COURSE_JOIN_STATUS_MAIL_SUBJECT,
+                    content
+            );
+        } else if (courseJoinStatusDTO.getStatus() == JoinEnum.REJECTED) {
+            String content = MailNotificationConstant.COURSE_JOIN_REJECTED_MAIL_TEMPLATE.formatted(courseJoinStatusDTO.getTitle(), courseJoinStatusDTO.getReason());
+            emailUtil.sendHtmlMail(
+                    courseJoinStatusDTO.getEmail(),
+                    CaptchaConstant.DEFAULT_SENDER,
+                    MailNotificationConstant.COURSE_JOIN_STATUS_MAIL_SUBJECT,
+                    content
+            );
+        }
+    }
+
+
 }

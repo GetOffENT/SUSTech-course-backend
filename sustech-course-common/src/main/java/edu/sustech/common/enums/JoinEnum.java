@@ -1,4 +1,4 @@
-package edu.sustech.course.entity.enums;
+package edu.sustech.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
