@@ -14,6 +14,7 @@ import edu.sustech.course.mapper.AttachmentMapper;
 import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.service.AttachmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,8 @@ import java.util.UUID;
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachment> implements AttachmentService {
 
     private final CourseMapper courseMapper;
+
+    private final CommonUtil commonUtil;
 
     /**
      * 获取视频最新版附件列表
@@ -106,7 +109,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
      */
     @Override
     public void deleteAttachment(Long attachmentId) {
-        Long userId = UserContext.getUser();
+        Long userId = commonUtil.checkUser();
         Attachment attachment = this.getById(attachmentId);
         if (attachment == null) {
             throw new ResourceOperationException(MessageConstant.ATTACHMENT_NOT_EXIST);

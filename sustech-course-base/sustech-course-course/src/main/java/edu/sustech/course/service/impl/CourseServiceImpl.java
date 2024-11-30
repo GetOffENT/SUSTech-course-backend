@@ -419,6 +419,35 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 获取课程学生 (根据加入状态)
+     *
+     * @param courseId 课程id
+     * @return 课程学生
+     */
+    @Override
+    public List<StudentDTO> getCourseStudentList(Long courseId, Integer joinState) {
+        commonUtil.checkTeacher();
+
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        if (!course.getUserId().equals(UserContext.getUser())) {
+            throw new CourseException(MessageConstant.NO_PERMISSION);
+        }
+
+        List<Long> userIds = userCourseMapper.selectUserIdsByCourseId(courseId, joinState);
+        if (CollUtil.isEmpty(userIds)) {
+            return List.of();
+        }
+        Result<List<StudentDTO>> studentList = userClient.getStudentList(userIds);
+        if (!Objects.equals(studentList.getCode(), ResultCode.SUCCESS.code())) {
+            throw new CourseException(studentList.getMessage());
+        }
+        return studentList.getData();
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id

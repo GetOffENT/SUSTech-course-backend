@@ -8,6 +8,7 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MessageConstant;
@@ -29,6 +30,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -230,6 +232,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userDTO.setFansCount(0).setFollowsCount(0);
 
         return userDTO;
+    }
+
+    /**
+     * 获取学生信息
+     *
+     * @param studentIds 学生id列表
+     * @return 学生信息列表
+     */
+    @Override
+    public List<StudentDTO> getStudentList(List<Long> studentIds) {
+        List<User> users = baseMapper.selectBatchIds(studentIds);
+        return BeanUtil.copyToList(users, StudentDTO.class);
     }
 
     // 检查redis中的验证码

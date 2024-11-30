@@ -2,6 +2,7 @@ package edu.sustech.course.controller;
 
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
+import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
@@ -151,5 +152,18 @@ public class CourseController {
     public Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
         log.info("获取课程列表 coursePageQueryDTO:{}", coursePageQueryDTO);
         return Result.success(courseService.getCoursesByCondition(coursePageQueryDTO));
+    }
+
+    /**
+     * 获取课程学生 (根据加入状态)
+     *
+     * @param courseId 课程id
+     * @return 课程学生
+     */
+    @GetMapping("/student/{courseId}")
+    @ApiOperation("获取课程学生")
+    public Result<List<StudentDTO>> getCourseStudentList(@PathVariable Long courseId, @RequestParam Integer joinState) {
+        log.info("获取课程学生 courseId:{}", courseId);
+        return Result.success(courseService.getCourseStudentList(courseId, joinState));
     }
 }

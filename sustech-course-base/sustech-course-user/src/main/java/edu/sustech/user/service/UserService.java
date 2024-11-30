@@ -1,5 +1,6 @@
 package edu.sustech.user.service;
 
+import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -8,6 +9,7 @@ import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,4 +68,12 @@ public interface UserService extends IService<User> {
      * @return 用户信息
      */
     UserDTO getUserById(Long uid);
+
+    /**
+     * 获取学生信息
+     *
+     * @param studentIds 学生id列表
+     * @return 学生信息列表
+     */
+    List<StudentDTO> getStudentList(List<Long> studentIds);
 }

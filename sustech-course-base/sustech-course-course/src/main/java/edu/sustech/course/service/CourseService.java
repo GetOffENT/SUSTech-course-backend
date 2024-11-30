@@ -2,6 +2,7 @@ package edu.sustech.course.service;
 
 import edu.sustech.api.entity.dto.ChapterDTO;
 import edu.sustech.api.entity.dto.CoursePageQueryDTO;
+import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -92,4 +93,12 @@ public interface CourseService extends IService<Course> {
      * @param courseStatusDTO 课程状态信息
      */
     void updateCourseStatus(CourseStatusDTO courseStatusDTO);
+
+    /**
+     * 获取课程学生 (根据加入状态)
+     *
+     * @param courseId 课程id
+     * @return 课程学生
+     */
+    List<StudentDTO> getCourseStudentList(Long courseId, Integer joinState);
 }

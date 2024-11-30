@@ -1,5 +1,6 @@
 package edu.sustech.user.controller;
 
+import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,7 +70,7 @@ public class UserController {
      */
     @ApiOperation("用户登录")
     @PostMapping("/login")
-        public Result<Map<String, Object>> login(@RequestBody LoginByEmailDTO loginByEmailDTO) {
+    public Result<Map<String, Object>> login(@RequestBody LoginByEmailDTO loginByEmailDTO) {
         log.info("用户登录: {}", loginByEmailDTO);
         return Result.success(userService.login(loginByEmailDTO));
     }
@@ -116,13 +118,27 @@ public class UserController {
 
     /**
      * 获取当前登录用户信息
+     *
      * @return 用户信息
      */
     @ApiOperation("获取当前登录用户信息")
     @GetMapping
-    public Result<UserDTO> getUserInfo(){
+    public Result<UserDTO> getUserInfo() {
         log.info("根据token获取用户信息");
         return Result.success(userService.getUserById(UserContext.getUser()));
+    }
+
+    /**
+     * 获取学生信息
+     *
+     * @param studentIds 学生id列表
+     * @return 学生信息列表
+     */
+    @ApiOperation("获取学生信息")
+    @GetMapping("/student")
+    public Result<List<StudentDTO>> getStudentList(@RequestParam List<Long> studentIds) {
+        log.info("获取学生信息: {}", studentIds);
+        return Result.success(userService.getStudentList(studentIds));
     }
 
 }
