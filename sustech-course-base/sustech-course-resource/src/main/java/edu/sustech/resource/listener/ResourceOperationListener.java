@@ -1,5 +1,6 @@
 package edu.sustech.resource.listener;
 
+import cn.hutool.core.util.StrUtil;
 import edu.sustech.resource.service.VodService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class ResourceOperationListener {
     ))
     public void listenVideoRemove(String videoIds) {
         log.info("收到删除视频消息: {}", videoIds);
-        vodService.removeVideo(videoIds);
+        if (StrUtil.isNotBlank(videoIds)) {
+            vodService.removeVideo(videoIds);
+        }
     }
 }

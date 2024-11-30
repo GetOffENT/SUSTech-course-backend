@@ -2,6 +2,7 @@ package edu.sustech.course.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
@@ -80,12 +81,21 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter> impl
         }
 
         // 获取章节下的所有视频源ID列表
-        List<String> videoSourceIdList = videoMapper.selectVideoSourceIdListByChapterId(chapterId);
+        List<String> videoSourceIdList =
+                videoMapper.selectVideoSourceIdListByChapterId(chapterId)
+                        .stream().filter(StrUtil::isNotBlank).toList();
 
-        // 删除视频
-        int delete = videoMapper.delete(new LambdaQueryWrapper<Video>().eq(Video::getChapterId, chapterId));
-        if (delete == 0) {
-            throw new CourseException(MessageConstant.CHAPTER_DELETE_FAILED);
+        Long count = videoMapper.selectCount(new LambdaQueryWrapper<Video>().eq(Video::getChapterId, chapterId));
+        if (count > 0){
+            // 删除视频
+            int delete = videoMapper.delete(new LambdaQueryWrapper<Video>().eq(Video::getChapterId, chapterId));
+            if (delete == 0) {
+                throw new CourseException(MessageConstant.CHAPTER_DELETE_FAILED);
+            }
+            if (CollUtil.isNotEmpty(videoSourceIdList)) {
+                // 消息队列通知云端删除视频
+                rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", CollUtil.join(videoSourceIdList, ","));
+            }
         }
 
         // 删除章节
@@ -93,8 +103,5 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter> impl
         if (deleteChapter == 0) {
             throw new CourseException(MessageConstant.CHAPTER_DELETE_FAILED);
         }
-
-        // 消息队列通知云端删除视频
-        rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", CollUtil.join(videoSourceIdList, ","));
     }
 }
