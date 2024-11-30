@@ -3,7 +3,6 @@ package edu.sustech.course.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CourseException;
-import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.UserCourse;
 import edu.sustech.course.entity.enums.JoinEnum;
 import edu.sustech.course.entity.enums.LikeEnum;
@@ -11,6 +10,7 @@ import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.mapper.UserCourseMapper;
 import edu.sustech.course.service.UserCourseService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.sustech.course.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,8 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
 
     private final CourseMapper courseMapper;
 
+    private final CommonUtil commonUtil;
+
     /**
      * 获取用户课程记录
      *
@@ -39,7 +41,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
      */
     @Override
     public UserCourse getUserCourse(Long id) {
-        Long userId = checkUser();
+        Long userId = commonUtil.checkUser();
         return baseMapper.selectOne(
                 new LambdaQueryWrapper<UserCourse>()
                         .eq(UserCourse::getCourseId, id)
@@ -105,7 +107,7 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
     }
 
     private UserCourse checkUserCourse(Long id) {
-        Long userId = checkUser();
+        Long userId = commonUtil.checkUser();
 
         LambdaQueryWrapper<UserCourse> queryWrapper =
                 new LambdaQueryWrapper<UserCourse>()
@@ -122,13 +124,5 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
             }
         }
         return userCourse;
-    }
-
-    private Long checkUser() {
-        Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new CourseException(MessageConstant.NOT_LOGIN);
-        }
-        return userId;
     }
 }

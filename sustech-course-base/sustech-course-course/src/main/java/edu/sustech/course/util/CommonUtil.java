@@ -3,7 +3,6 @@ package edu.sustech.course.util;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.constant.MessageConstant;
-import edu.sustech.common.enums.Role;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.util.UserContext;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,14 @@ public class CommonUtil {
         UserDTO user = userClient.getUserById(userId).getData();
         if (user.getRole() != 2) {
             throw new CourseException(MessageConstant.NOT_TEACHER);
+        }
+        return userId;
+    }
+
+    public Long checkUser() {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CourseException(MessageConstant.NOT_LOGIN);
         }
         return userId;
     }

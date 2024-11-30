@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.Role;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
@@ -145,6 +146,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<ChapterDTO> getCatalog(Long courseId) {
+        // TODO 鉴权
         Course course = baseMapper.selectById(courseId);
         if (course == null) {
             throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
@@ -333,9 +335,16 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public PageResult<Map<String, Object>> getCoursesByCondition(CoursePageQueryDTO coursePageQueryDTO) {
+
+        Long userId = commonUtil.checkUser();
+        Role role = UserContext.getRole();
+
         Page<Course> coursePage = new Page<>(coursePageQueryDTO.getPage(), coursePageQueryDTO.getPageSize());
 
         LambdaQueryWrapper<Course> queryWrapper = new LambdaQueryWrapper<>();
+        if (role == Role.USER) {
+            queryWrapper.eq(Course::getUserId, userId);
+        }
         if (coursePageQueryDTO.getMcId() != null) {
             queryWrapper.eq(Course::getMcId, coursePageQueryDTO.getMcId());
         }
@@ -374,7 +383,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return new PageResult<>(0L, null);
         }
 
-        return new PageResult<>(coursePage.getTotal(), getCourseDetail(records));
+        return new PageResult<>(coursePage.getTotal(), getCourseDetail(records, role == Role.ADMIN));
     }
 
     /**
@@ -456,10 +465,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return List.of();
         }
 
-        return getCourseDetail(courseList);
+        return getCourseDetail(courseList, true);
     }
 
-    public List<Map<String, Object>> getCourseDetail(List<Course> courseList) {
+    public List<Map<String, Object>> getCourseDetail(List<Course> courseList, boolean userRequired) {
         return courseList.stream().parallel()
                 .map(course -> {
                     Map<String, Object> map = new HashMap<>();
@@ -467,19 +476,20 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
                     ExecutorService dbExecutor = Executors.newCachedThreadPool();
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                        // 查询用户信息
-                        UserCourseInfoDTO userCoursesInfoByUserId = this.getUserCoursesInfoByUserId(course.getUserId());
-                        Result<UserDTO> userAndCoursesById = userClient.getUserById(course.getUserId());
-                        if (Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
-                            UserDTO data = userAndCoursesById.getData();
-                            data.setCourseCount(userCoursesInfoByUserId.getCourseCount())
-                                    .setLike(userCoursesInfoByUserId.getLike())
-                                    .setPlay(userCoursesInfoByUserId.getPlay());
-                            map.put("user", data);
-                        } else {
-                            throw new CourseException(userAndCoursesById.getMessage());
+                        if (userRequired) {
+                            // 查询用户信息
+                            UserCourseInfoDTO userCoursesInfoByUserId = this.getUserCoursesInfoByUserId(course.getUserId());
+                            Result<UserDTO> userAndCoursesById = userClient.getUserById(course.getUserId());
+                            if (Objects.equals(userAndCoursesById.getCode(), ResultCode.SUCCESS.code())) {
+                                UserDTO data = userAndCoursesById.getData();
+                                data.setCourseCount(userCoursesInfoByUserId.getCourseCount())
+                                        .setLike(userCoursesInfoByUserId.getLike())
+                                        .setPlay(userCoursesInfoByUserId.getPlay());
+                                map.put("user", data);
+                            } else {
+                                throw new CourseException(userAndCoursesById.getMessage());
+                            }
                         }
-                        // map.put("user", userService.getUserById(course.getUid()));
                     }, dbExecutor);
 
                     CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() -> {
