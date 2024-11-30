@@ -5,7 +5,7 @@
     <select id="selectLatestAttachments" resultType="edu.sustech.course.entity.Attachment">
         WITH ranked_attachments AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY uuid ORDER BY version DESC) AS rn
                                     FROM attachment
-                                    WHERE video_id = #{videoId})
+                                    WHERE video_id = #{videoId} and is_delete = 0)
         SELECT id,
                uuid,
                version,
