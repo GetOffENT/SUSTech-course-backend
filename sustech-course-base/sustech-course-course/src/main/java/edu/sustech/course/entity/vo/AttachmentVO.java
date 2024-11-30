@@ -23,6 +23,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ApiModel(description = "文件")
 public class AttachmentVO {
+
+    @ApiModelProperty("附件ID")
+    private Long id;
+
     @ApiModelProperty("附件UUID")
     private String uuid;
 
