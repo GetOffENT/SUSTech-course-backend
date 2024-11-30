@@ -1,6 +1,7 @@
 package edu.sustech.course.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.client.UserClient;
@@ -245,9 +246,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
         }
 
+        String videoSourceId = video.getVideoSourceId();
+        if (StrUtil.isBlank(videoSourceId)) {
+            return;
+        }
         try {
             // 消息队列通知云端删除视频
-            rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", video.getVideoSourceId());
+            rabbitTemplate.convertAndSend("resource.direct", "resource.video.remove", videoSourceId);
         } catch (Exception e) {
             log.error("向消息队列发送删除视频消息失败", e);
             throw new VideoException(MessageConstant.VIDEO_DELETE_FAILED);
