@@ -1,11 +1,17 @@
 package edu.sustech.message.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
+import edu.sustech.api.client.UserClient;
+import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MailNotificationConstant;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CaptchaException;
+import edu.sustech.common.exception.CourseException;
+import edu.sustech.common.util.UserContext;
+import edu.sustech.message.entity.dto.BulkEmailDTO;
 import edu.sustech.message.entity.dto.CourseStatusDTO;
 import edu.sustech.message.service.MailService;
 import edu.sustech.message.util.EmailUtil;
@@ -33,6 +39,8 @@ public class MailServiceImpl implements MailService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final EmailUtil emailUtil;
+
+    private final UserClient userClient;
 
     /**
      * 发送验证码
@@ -122,5 +130,41 @@ public class MailServiceImpl implements MailService {
                     content
             );
         }
+    }
+
+    /**
+     * 群发邮件
+     *
+     * @param bulkEmailDTO 群发邮件信息
+     */
+    @Override
+    public void sendBulkEmails(BulkEmailDTO bulkEmailDTO) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CourseException(MessageConstant.NOT_LOGIN);
+        }
+        UserDTO user = userClient.getUserById(userId).getData();
+        if (user.getRole() != 2) {
+            throw new CourseException(MessageConstant.NOT_TEACHER);
+        }
+
+        if (CollUtil.isEmpty(bulkEmailDTO.getTo())) {
+            throw new CourseException(MessageConstant.EMAIL_TO_EMPTY);
+        }
+
+        if (bulkEmailDTO.getSender() == null) {
+            throw new CourseException(MessageConstant.SENDER_EMPTY);
+        }
+
+        emailUtil.sendMail(
+                bulkEmailDTO.getTo(),
+                bulkEmailDTO.getSender(),
+                bulkEmailDTO.getSubject(),
+                bulkEmailDTO.getContent(),
+                true,
+                bulkEmailDTO.getCc(),
+                bulkEmailDTO.getBcc(),
+                bulkEmailDTO.getAttachments()
+        );
     }
 }

@@ -1,8 +1,8 @@
 package edu.sustech.message.controller;
 
-import edu.sustech.common.constant.AuthorizationConstant;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
+import edu.sustech.message.entity.dto.BulkEmailDTO;
 import edu.sustech.message.service.MailService;
 import edu.sustech.message.util.EmailUtil;
 import io.swagger.annotations.Api;
@@ -41,14 +41,14 @@ public class MailController {
      */
     @PostMapping("/captcha/{type}")
     @ApiOperation("发送验证码")
-    public Result sendCaptcha(@RequestParam String email, @PathVariable String type) {
+    public Result<Object> sendCaptcha(@RequestParam String email, @PathVariable String type) {
         log.info("发送验证码到邮箱：{}", email);
         mailService.sendCaptcha(email, type);
         return Result.success();
     }
 
     @PostMapping
-    public Result test(@RequestPart("file") MultipartFile file) {
+    public Result<Object> test(@RequestPart("file") MultipartFile file) {
 
         emailUtil.sendMail(List.of("12212618@mail.sustech.edu.cn"), "测试图片", "测试图片",
                 "测试图片", false,
@@ -59,9 +59,23 @@ public class MailController {
     }
 
     @GetMapping
-    public Result testToken(@RequestHeader(value = "Authorization", required = false) String authorization) {
+    public Result<Object> testToken(@RequestHeader(value = "Authorization", required = false) String authorization) {
         System.out.println(authorization);
         System.out.println(UserContext.getUser());
         return Result.success(1);
+    }
+
+    /**
+     * 教师群发邮件
+     *
+     * @param bulkEmailDTO 群发邮件信息
+     * @return Result
+     */
+    @PostMapping("/bulk")
+    @ApiOperation("教师群发邮件")
+    public Result<Object> sendBulkEmails(BulkEmailDTO bulkEmailDTO) {
+        log.info("教师群发邮件：{}", bulkEmailDTO);
+        mailService.sendBulkEmails(bulkEmailDTO);
+        return Result.success();
     }
 }

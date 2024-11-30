@@ -24,6 +24,9 @@ public class MessageConstant {
     public static final String CAPTCHA_NOT_SEND_OR_EXPIRED = "验证码未发送或已过期";
     public static final String CAPTCHA_VERIFICATION_FAILED = "验证码校验失败，请重新获取";
 
+    public static final String EMAIL_TO_EMPTY = "收件人邮箱不能为空";
+    public static final String SENDER_EMPTY = "发件人不能为空";
+
     public static final String NOT_LOGIN = "用户未登录";
     public static final String COMMENT_NOT_EXIST = "评论不存在";
     public static final String DANMU_NOT_EXIST = "弹幕不存在";

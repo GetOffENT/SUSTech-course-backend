@@ -1,5 +1,6 @@
 package edu.sustech.message.service;
 
+import edu.sustech.message.entity.dto.BulkEmailDTO;
 import edu.sustech.message.entity.dto.CourseStatusDTO;
 
 /**
@@ -25,4 +26,11 @@ public interface MailService {
      * @param courseStatusDTO 课程状态信息
      */
     void sendCourseStatusMail(CourseStatusDTO courseStatusDTO);
+
+    /**
+     * 群发邮件
+     *
+     * @param bulkEmailDTO 群发邮件信息
+     */
+    void sendBulkEmails(BulkEmailDTO bulkEmailDTO);
 }
