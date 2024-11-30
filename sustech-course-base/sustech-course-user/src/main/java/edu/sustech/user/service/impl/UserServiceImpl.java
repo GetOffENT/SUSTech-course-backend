@@ -246,6 +246,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return BeanUtil.copyToList(users, StudentDTO.class);
     }
 
+    /**
+     * 搜索学生信息
+     *
+     * @param keyword 搜索内容
+     * @return 学生信息列表
+     */
+    @Override
+    public List<StudentDTO> getSearchStudentList(String keyword) {
+        // 昵称或邮箱  忽略大小写
+        List<User> users = baseMapper.selectList(new LambdaQueryWrapper<User>()
+                .like(User::getNickname, keyword)
+                .or()
+                .like(User::getEmail, keyword)
+        );
+        return BeanUtil.copyToList(users, StudentDTO.class);
+    }
+
     // 检查redis中的验证码
     private void checkCaptcha(String captcha, String email) {
         String key = CaptchaConstant.REGISTER_EMAIL_Captcha + email;

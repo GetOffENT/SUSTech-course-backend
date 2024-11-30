@@ -76,4 +76,12 @@ public interface UserService extends IService<User> {
      * @return 学生信息列表
      */
     List<StudentDTO> getStudentList(List<Long> studentIds);
+
+    /**
+     * 搜索学生信息
+     *
+     * @param keyword 搜索内容
+     * @return 学生信息列表
+     */
+    List<StudentDTO> getSearchStudentList(String keyword);
 }

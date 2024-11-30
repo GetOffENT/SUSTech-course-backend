@@ -141,4 +141,16 @@ public class UserController {
         return Result.success(userService.getStudentList(studentIds));
     }
 
+    /**
+     * 根据搜索条件获取学生信息
+     *
+     * @param keyword 搜索条件
+     * @return 学生信息列表
+     */
+    @ApiOperation("根据搜索条件获取学生信息")
+    @GetMapping("/search")
+    public Result<List<StudentDTO>> getSearchStudentList(@RequestParam String keyword) {
+        log.info("根据搜索条件获取学生信息: {}", keyword);
+        return Result.success(userService.getSearchStudentList(keyword));
+    }
 }
