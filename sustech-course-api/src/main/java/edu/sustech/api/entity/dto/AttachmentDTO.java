@@ -27,6 +27,9 @@ public class AttachmentDTO {
     @ApiModelProperty("附件ID")
     private Long id;
 
+    @ApiModelProperty("附件UUID")
+    private String uuid;
+
     @ApiModelProperty("附件版本")
     private Integer version;
 
@@ -50,4 +53,7 @@ public class AttachmentDTO {
 
     @ApiModelProperty("文件类型")
     private String fileType;
+
+    @ApiModelProperty("课件或附件")
+    private Byte isLecture;
 }

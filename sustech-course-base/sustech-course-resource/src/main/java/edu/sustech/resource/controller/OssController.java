@@ -76,9 +76,11 @@ public class OssController {
             @RequestPart("file") MultipartFile file,
             @RequestParam Long courseId,
             @RequestParam Long chapterId,
-            @RequestParam Long videoId
+            @RequestParam Long videoId,
+            @RequestParam(required = false) String uuid,
+            @RequestParam(required = false) Byte isLecture
     ) {
         log.info("视频附件上传: {}", file);
-        return Result.success(ossService.uploadAttachment(file, courseId, chapterId, videoId));
+        return Result.success(ossService.uploadAttachment(file, courseId, chapterId, videoId, uuid, isLecture));
     }
 }

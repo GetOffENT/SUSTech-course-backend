@@ -90,7 +90,7 @@ public class OssServiceImpl implements OssService {
      * @return 文件路径
      */
     @Override
-    public Long uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId) {
+    public Long uploadAttachment(MultipartFile file, Long courseId, Long chapterId, Long videoId, String uuid, Byte isLecture) {
         checkUser();
         String fileName = null;
         String file_url = null;
@@ -131,6 +131,13 @@ public class OssServiceImpl implements OssService {
                 .fileSize(file_size)
                 .fileType(file_type)
                 .build();
+
+        if (uuid != null) {
+            attachmentDTO.setUuid(uuid);
+        }
+        if (isLecture != null) {
+            attachmentDTO.setIsLecture(isLecture);
+        }
         Result<Long> longResult = courseClient.addAttachment(attachmentDTO);
         if (!Objects.equals(longResult.getCode(), ResultCode.SUCCESS.code())) {
             throw new ResourceOperationException(longResult.getMessage());

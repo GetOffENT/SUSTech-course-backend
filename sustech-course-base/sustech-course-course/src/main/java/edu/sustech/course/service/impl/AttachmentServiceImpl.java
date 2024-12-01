@@ -2,6 +2,7 @@ package edu.sustech.course.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
@@ -93,8 +94,13 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
             throw new ResourceOperationException(MessageConstant.NO_PERMISSION);
         }
 
-        Attachment attachment = BeanUtil.copyProperties(attachmentDTO, Attachment.class);
-        attachment.setUuid(UUID.randomUUID().toString()).setUserId(userId);
+        Attachment attachment = BeanUtil.copyProperties(attachmentDTO, Attachment.class).setUserId(userId);
+        if (StrUtil.isBlank(attachment.getUuid())) {
+            attachment.setUuid(UUID.randomUUID().toString());
+        } else {
+            Integer currentMaxVersion = baseMapper.selectCurrentMaxVersion(attachment.getUuid());
+            attachment.setVersion(currentMaxVersion + 1);
+        }
         boolean saved = this.save(attachment);
         if (!saved) {
             throw new ResourceOperationException(MessageConstant.ATTACHMENT_ADD_FAILED);

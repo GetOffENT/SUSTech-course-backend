@@ -18,8 +18,18 @@ public interface AttachmentMapper extends BaseMapper<Attachment> {
 
     /**
      * 获取视频最新版附件
+     *
      * @param videoId 视频ID
      * @return 附件列表
      */
     List<Attachment> selectLatestAttachments(Long videoId);
+
+    /**
+     * 获取附件历史最高版本
+     *
+     * @param uuid 附件UUID
+     * @return 附件历史最高版本
+     */
+    @Select("SELECT MAX(version) FROM attachment WHERE uuid = #{uuid}")
+    Integer selectCurrentMaxVersion(String uuid);
 }
