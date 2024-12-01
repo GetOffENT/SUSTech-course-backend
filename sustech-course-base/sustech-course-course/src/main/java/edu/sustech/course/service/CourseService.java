@@ -92,6 +92,13 @@ public interface CourseService extends IService<Course> {
      *
      * @param courseStatusDTO 课程状态信息
      */
+    void updateCourseStatusByTeacher(CourseStatusDTO courseStatusDTO);
+
+    /**
+     * 更新课程状态(监听到管理端审核消息以及在教师更新课程状态时调用)
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
     void updateCourseStatus(CourseStatusDTO courseStatusDTO);
 
     /**

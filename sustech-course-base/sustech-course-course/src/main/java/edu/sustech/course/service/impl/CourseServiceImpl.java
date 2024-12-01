@@ -393,43 +393,19 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     @Transactional
-    public void updateCourseStatus(CourseStatusDTO courseStatusDTO) {
-        Long userId = commonUtil.checkUser();
-        Role role = UserContext.getRole();
+    public void updateCourseStatusByTeacher(CourseStatusDTO courseStatusDTO) {
+        Long userId = commonUtil.checkTeacher();
 
         Course course = baseMapper.selectById(courseStatusDTO.getId());
         if (course == null) {
             throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
         }
 
-        // 非管理员且不是课程的发布者
-        if (!course.getUserId().equals(userId) && role != Role.ADMIN) {
+        // 不是课程的创建者
+        if (!course.getUserId().equals(userId)) {
             throw new CourseException(MessageConstant.NO_PERMISSION);
         }
-
-        baseMapper.updateById(BeanUtil.copyProperties(courseStatusDTO, Course.class));
-        if (courseStatusDTO.getStatus() == CourseStatus.DELETED) {
-            // 删除课程的章节信息
-            chapterMapper.delete(new LambdaQueryWrapper<Chapter>()
-                    .eq(Chapter::getCourseId, courseStatusDTO.getId())
-            );
-            // 删除课程的视频信息
-            videoMapper.delete(new LambdaQueryWrapper<Video>()
-                    .eq(Video::getCourseId, courseStatusDTO.getId())
-            );
-            // 删除课程的附件信息
-            attachmentMapper.delete(new LambdaQueryWrapper<Attachment>()
-                    .eq(Attachment::getCourseId, courseStatusDTO.getId())
-            );
-            // 删除课程的用户课程信息
-            userCourseMapper.delete(new LambdaQueryWrapper<UserCourse>()
-                    .eq(UserCourse::getCourseId, courseStatusDTO.getId())
-            );
-            // 删除课程的课程描述信息
-            courseDescriptionMapper.deleteById(courseStatusDTO.getId());
-            // 删除课程
-            baseMapper.deleteById(courseStatusDTO.getId());
-        }
+        updateCourseStatus(courseStatusDTO);
     }
 
     /**
@@ -550,5 +526,32 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public <T> List<T> getRandomElements(List<T> list, int n) {
         Collections.shuffle(list);
         return new ArrayList<>(list.subList(0, Math.min(n, list.size())));
+    }
+
+    @Transactional
+    public void updateCourseStatus(CourseStatusDTO courseStatusDTO) {
+        baseMapper.updateById(BeanUtil.copyProperties(courseStatusDTO, Course.class));
+        if (courseStatusDTO.getStatus() == CourseStatus.DELETED) {
+            // 删除课程的章节信息
+            chapterMapper.delete(new LambdaQueryWrapper<Chapter>()
+                    .eq(Chapter::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的视频信息
+            videoMapper.delete(new LambdaQueryWrapper<Video>()
+                    .eq(Video::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的附件信息
+            attachmentMapper.delete(new LambdaQueryWrapper<Attachment>()
+                    .eq(Attachment::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的用户课程信息
+            userCourseMapper.delete(new LambdaQueryWrapper<UserCourse>()
+                    .eq(UserCourse::getCourseId, courseStatusDTO.getId())
+            );
+            // 删除课程的课程描述信息
+            courseDescriptionMapper.deleteById(courseStatusDTO.getId());
+            // 删除课程
+            baseMapper.deleteById(courseStatusDTO.getId());
+        }
     }
 }

@@ -175,9 +175,9 @@ public class CourseController {
      */
     @PostMapping("/status")
     @ApiOperation("更新课程状态")
-    public Result<Object> updateCourseStatus(@RequestBody CourseStatusDTO courseStatusDTO) {
+    public Result<Object> updateCourseStatusByTeacher(@RequestBody CourseStatusDTO courseStatusDTO) {
         log.info("更新课程状态 courseStatusDTO:{}", courseStatusDTO);
-        courseService.updateCourseStatus(courseStatusDTO);
+        courseService.updateCourseStatusByTeacher(courseStatusDTO);
         return Result.success();
     }
 }
