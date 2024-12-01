@@ -5,7 +5,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.entity.dto.AttachmentDTO;
+import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.Role;
 import edu.sustech.common.exception.ResourceOperationException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.Attachment;
@@ -46,11 +48,28 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
      */
     @Override
     public List<AttachmentVO> getAttachments(Long videoId) {
-        List<Attachment> attachments = baseMapper.selectLatestAttachments(videoId);
-        if (CollUtil.isNotEmpty(attachments)) {
+        List<Attachment> attachments = baseMapper.selectLatestAttachments(videoId, false);
+        if (CollUtil.isEmpty(attachments)) {
+            return List.of();
+        }
+        Course course = courseMapper.selectById(attachments.get(0).getCourseId());
+        if (course == null) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_NOT_EXIST);
+        }
+
+        Long userId = UserContext.getUser();
+        // 课程的创建者 或者 管理员
+        if (course.getUserId().equals(userId) || UserContext.getRole() == Role.ADMIN) {
+            attachments = baseMapper.selectLatestAttachments(videoId, true);
             return BeanUtil.copyToList(attachments, AttachmentVO.class);
         }
-        return List.of();
+
+        // 课程未通过审核
+        if (course.getStatus() != CourseStatus.PASSED) {
+            throw new ResourceOperationException(MessageConstant.NO_PERMISSION);
+        }
+
+        return BeanUtil.copyToList(attachments, AttachmentVO.class);
     }
 
     /**
@@ -66,10 +85,28 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
                         .eq(Attachment::getUuid, uuid)
                         .orderByDesc(Attachment::getGmtCreate)
         );
-        if (CollUtil.isNotEmpty(attachments)) {
+        if (CollUtil.isEmpty(attachments)) {
+            return List.of();
+        }
+        Course course = courseMapper.selectById(attachments.get(0).getCourseId());
+        if (course == null) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_NOT_EXIST);
+        }
+        Long userId = UserContext.getUser();
+
+        // 课程的创建者
+        if (course.getUserId().equals(userId) || UserContext.getRole() == Role.ADMIN) {
             return BeanUtil.copyToList(attachments, AttachmentVO.class);
         }
-        return List.of();
+
+        // 课程未通过审核
+        if (course.getStatus() != CourseStatus.PASSED) {
+            return BeanUtil.copyToList(attachments, AttachmentVO.class);
+        }
+
+        // 普通账号只可查看可下载的课件
+        attachments.removeIf(attachment -> attachment.getIsDownload() == 0);
+        return BeanUtil.copyToList(attachments, AttachmentVO.class);
     }
 
     /**

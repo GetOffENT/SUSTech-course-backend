@@ -22,7 +22,7 @@ public interface AttachmentMapper extends BaseMapper<Attachment> {
      * @param videoId 视频ID
      * @return 附件列表
      */
-    List<Attachment> selectLatestAttachments(Long videoId);
+    List<Attachment> selectLatestAttachments(Long videoId, Boolean hasPermission);
 
     /**
      * 获取附件历史最高版本
