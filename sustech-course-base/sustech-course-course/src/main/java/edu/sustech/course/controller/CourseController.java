@@ -10,6 +10,7 @@ import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
+import edu.sustech.course.entity.dto.CourseStatusDTO;
 import edu.sustech.course.service.CourseDescriptionService;
 import edu.sustech.course.service.CourseService;
 import io.swagger.annotations.Api;
@@ -165,5 +166,18 @@ public class CourseController {
     public Result<List<StudentDTO>> getCourseStudentList(@PathVariable Long courseId, @RequestParam Integer joinState) {
         log.info("获取课程学生 courseId:{}", courseId);
         return Result.success(courseService.getCourseStudentList(courseId, joinState));
+    }
+
+    /**
+     * 更新课程状态
+     *
+     * @param courseStatusDTO 课程状态信息
+     */
+    @PostMapping("/status")
+    @ApiOperation("更新课程状态")
+    public Result<Object> updateCourseStatus(@RequestBody CourseStatusDTO courseStatusDTO) {
+        log.info("更新课程状态 courseStatusDTO:{}", courseStatusDTO);
+        courseService.updateCourseStatus(courseStatusDTO);
+        return Result.success();
     }
 }

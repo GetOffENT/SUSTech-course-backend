@@ -392,7 +392,21 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * @param courseStatusDTO 课程状态信息
      */
     @Override
+    @Transactional
     public void updateCourseStatus(CourseStatusDTO courseStatusDTO) {
+        Long userId = commonUtil.checkUser();
+        Role role = UserContext.getRole();
+
+        Course course = baseMapper.selectById(courseStatusDTO.getId());
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+
+        // 非管理员且不是课程的发布者
+        if (!course.getUserId().equals(userId) && role != Role.ADMIN) {
+            throw new CourseException(MessageConstant.NO_PERMISSION);
+        }
+
         baseMapper.updateById(BeanUtil.copyProperties(courseStatusDTO, Course.class));
         if (courseStatusDTO.getStatus() == CourseStatus.DELETED) {
             // 删除课程的章节信息
