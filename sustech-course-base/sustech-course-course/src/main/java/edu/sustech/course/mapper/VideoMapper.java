@@ -2,6 +2,7 @@ package edu.sustech.course.mapper;
 
 import edu.sustech.course.entity.Video;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import edu.sustech.course.entity.dto.VideoBaseForCatalogDTO;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -44,4 +45,13 @@ public interface VideoMapper extends BaseMapper<Video> {
      */
     @Select("select video_source_id from video where chapter_id = #{chapterId}")
     List<String> selectVideoSourceIdListByChapterId(Long chapterId);
+
+    /**
+     * 获取课程视频列表(基本信息)
+     *
+     * @param courseId 课程id
+     * @return 课程视频列表(基本信息)
+     */
+    @Select("SELECT id, chapter_id, title FROM video WHERE course_id = #{courseId} and is_delete = 0 order by sort")
+    List<VideoBaseForCatalogDTO> selectBaseInfoListByCourseId(Long courseId);
 }

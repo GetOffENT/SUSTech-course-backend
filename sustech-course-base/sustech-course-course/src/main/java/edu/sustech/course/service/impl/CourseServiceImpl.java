@@ -145,7 +145,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
     @Override
-    public List<ChapterDTO> getCatalog(Long courseId) {
+    public List<ChapterDTO> getDetailedCatalog(Long courseId) {
         // TODO 鉴权
         Course course = baseMapper.selectById(courseId);
         if (course == null) {
@@ -204,6 +204,35 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             chapterDTOList.add(chapterDTO);
         }
         return chapterDTOList;
+    }
+
+    /**
+     * 获取课程目录(基本信息)
+     *
+     * @param courseId 课程id
+     * @return 课程目录(基本信息)
+     */
+    @Override
+    public List<ChapterBaseForCatalogDTO> getBaseCatalog(Long courseId) {
+        checkTeacherAndCourseCreator(courseId);
+
+        // 查询课程的章节基本信息
+        List<ChapterBaseForCatalogDTO> chapterBaseForCatalogDTOS = chapterMapper.selectBaseInfoListByCourseId(courseId);
+
+        // 查询课程的视频(小节)信息
+        List<VideoBaseForCatalogDTO> videoBaseForCatalogDTOS = videoMapper.selectBaseInfoListByCourseId(courseId);
+
+        // 将视频信息添加到章节信息中
+        for (ChapterBaseForCatalogDTO chapterBaseForCatalogDTO : chapterBaseForCatalogDTOS) {
+            List<VideoBaseForCatalogDTO> videoBaseForCatalogDTOList = new ArrayList<>();
+            for (VideoBaseForCatalogDTO videoBaseForCatalogDTO : videoBaseForCatalogDTOS) {
+                if (videoBaseForCatalogDTO.getChapterId().equals(chapterBaseForCatalogDTO.getId())) {
+                    videoBaseForCatalogDTOList.add(videoBaseForCatalogDTO);
+                }
+            }
+            chapterBaseForCatalogDTO.setVideos(videoBaseForCatalogDTOList);
+        }
+        return chapterBaseForCatalogDTOS;
     }
 
     /**
@@ -416,15 +445,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<StudentDTO> getCourseStudentList(Long courseId, Integer joinState) {
-        commonUtil.checkTeacher();
-
-        Course course = baseMapper.selectById(courseId);
-        if (course == null) {
-            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
-        }
-        if (!course.getUserId().equals(UserContext.getUser())) {
-            throw new CourseException(MessageConstant.NO_PERMISSION);
-        }
+        checkTeacherAndCourseCreator(courseId);
 
         List<Long> userIds = userCourseMapper.selectUserIdsByCourseId(courseId, joinState);
         if (CollUtil.isEmpty(userIds)) {
@@ -552,6 +573,17 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             courseDescriptionMapper.deleteById(courseStatusDTO.getId());
             // 删除课程
             baseMapper.deleteById(courseStatusDTO.getId());
+        }
+    }
+
+    private void checkTeacherAndCourseCreator(Long courseId) {
+        Long userId = commonUtil.checkTeacher();
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        if (!course.getUserId().equals(userId)) {
+            throw new CourseException(MessageConstant.NO_PERMISSION);
         }
     }
 }

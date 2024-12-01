@@ -8,6 +8,7 @@ import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.Course;
+import edu.sustech.course.entity.dto.ChapterBaseForCatalogDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
 import edu.sustech.course.entity.dto.CourseStatusDTO;
@@ -82,10 +83,23 @@ public class CourseController {
      * @return 课程目录(包括小节 : title id isLearned isPublic)
      */
     @GetMapping("/catalog/{courseId}")
-    @ApiOperation("获取课程目录")
-    public Result<List<ChapterDTO>> getCatalog(@PathVariable Long courseId) {
-        log.info("获取课程目录 courseId:{}", courseId);
-        return Result.success(courseService.getCatalog(courseId));
+    @ApiOperation("获取课程目录(详细信息)")
+    public Result<List<ChapterDTO>> getDetailedCatalog(@PathVariable Long courseId) {
+        log.info("获取课程目录(详细信息) courseId:{}", courseId);
+        return Result.success(courseService.getDetailedCatalog(courseId));
+    }
+
+    /**
+     * 获取课程目录(基本信息)
+     *
+     * @param courseId 课程id
+     * @return 课程目录(基本信息)
+     */
+    @GetMapping("/baseCatalog/{courseId}")
+    @ApiOperation("获取课程目录(基本信息)")
+    public Result<List<ChapterBaseForCatalogDTO>> getBaseCatalog(@PathVariable Long courseId) {
+        log.info("获取课程目录(基本信息) courseId:{}", courseId);
+        return Result.success(courseService.getBaseCatalog(courseId));
     }
 
     /**
