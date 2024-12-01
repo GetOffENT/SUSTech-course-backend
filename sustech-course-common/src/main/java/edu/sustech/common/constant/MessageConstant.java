@@ -52,6 +52,7 @@ public class MessageConstant {
     public static final String ATTACHMENT_ADD_FAILED = "附件添加失败，请稍后再试！";
     public static final String ATTACHMENT_DELETE_FAILED = "附件删除失败，请稍后再试！";
     public static final String ATTACHMENT_NOT_EXIST = "附件不存在";
+    public static final String ATTACHMENT_UPDATE_FAILED = "附件下载状态更新失败，请稍后再试！";
     public static final String UPLOAD_VIDEO_FAILED = "上传视频失败，请稍后再试！";
     public static final String ADD_VIDEO_RESOURCE_FAILED = "添加视频资源失败，请稍后再试！";
     public static final String GET_VIDEO_URL_FAILED = "获取视频地址失败，请稍后再试！";

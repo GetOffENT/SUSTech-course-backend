@@ -82,4 +82,19 @@ public class AttachmentController {
         attachmentService.deleteAttachment(attachmentId);
         return Result.success();
     }
+
+    /**
+     * 更新附件下载权限
+     *
+     * @param attachmentId 附件ID
+     * @param isDownload   是否可以下载
+     * @return 无
+     */
+    @PostMapping("/download/{attachmentId}")
+    @ApiOperation("更新附件下载权限")
+    public Result<Object> updateAttachment(@PathVariable Long attachmentId, @RequestParam Byte isDownload) {
+        log.info("更新附件下载权限 attachmentId:{} isDownload:{}", attachmentId, isDownload);
+        attachmentService.updateAttachment(attachmentId, isDownload);
+        return Result.success();
+    }
 }

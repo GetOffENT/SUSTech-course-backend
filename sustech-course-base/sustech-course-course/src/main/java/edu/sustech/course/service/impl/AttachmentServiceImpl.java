@@ -109,6 +109,30 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
      */
     @Override
     public void deleteAttachment(Long attachmentId) {
+        checkAttachment(attachmentId);
+        boolean removeById = this.removeById(attachmentId);
+        if (!removeById) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_DELETE_FAILED);
+        }
+    }
+
+    /**
+     * 更新附件下载状态
+     *
+     * @param attachmentId 附件ID
+     * @param isDownload   是否可以下载
+     */
+    @Override
+    public void updateAttachment(Long attachmentId, Byte isDownload) {
+        Attachment attachment = checkAttachment(attachmentId);
+        attachment.setIsDownload(isDownload);
+        boolean updated = this.updateById(attachment);
+        if (!updated) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_UPDATE_FAILED);
+        }
+    }
+
+    private Attachment checkAttachment(Long attachmentId) {
         Long userId = commonUtil.checkUser();
         Attachment attachment = this.getById(attachmentId);
         if (attachment == null) {
@@ -117,9 +141,6 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         if (!attachment.getUserId().equals(userId)) {
             throw new ResourceOperationException(MessageConstant.NO_PERMISSION);
         }
-        boolean removeById = this.removeById(attachmentId);
-        if (!removeById) {
-            throw new ResourceOperationException(MessageConstant.ATTACHMENT_DELETE_FAILED);
-        }
+        return attachment;
     }
 }

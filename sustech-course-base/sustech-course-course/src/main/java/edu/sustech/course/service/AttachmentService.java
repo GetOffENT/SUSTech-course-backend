@@ -47,4 +47,12 @@ public interface AttachmentService extends IService<Attachment> {
      * @param attachmentId 附件ID
      */
     void deleteAttachment(Long attachmentId);
+
+    /**
+     * 更新附件下载状态
+     *
+     * @param attachmentId 附件ID
+     * @param isDownload   是否可以下载
+     */
+    void updateAttachment(Long attachmentId, Byte isDownload);
 }
