@@ -175,6 +175,20 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         }
     }
 
+    /**
+     * 根据uuid删除附件所有版本
+     *
+     * @param attachmentId 附件ID
+     */
+    @Override
+    public void deleteAttachmentByUuid(Long attachmentId) {
+        Attachment attachment = checkAttachment(attachmentId);
+        boolean removed = this.remove(new LambdaQueryWrapper<Attachment>().eq(Attachment::getUuid, attachment.getUuid()));
+        if (!removed) {
+            throw new ResourceOperationException(MessageConstant.ATTACHMENT_DELETE_FAILED);
+        }
+    }
+
     private Attachment checkAttachment(Long attachmentId) {
         Long userId = commonUtil.checkUser();
         Attachment attachment = this.getById(attachmentId);

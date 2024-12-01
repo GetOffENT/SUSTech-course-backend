@@ -84,6 +84,20 @@ public class AttachmentController {
     }
 
     /**
+     * 根据UUID删除附件所有版本
+     *
+     * @param attachmentId 附件ID
+     * @return 无
+     */
+    @DeleteMapping("/uuid/{attachmentId}")
+    @ApiOperation("删除附件所有版本")
+    public Result<Object> deleteAttachmentByUuid(@PathVariable Long attachmentId) {
+        log.info("删除附件所有版本 uuid:{}", attachmentId);
+        attachmentService.deleteAttachmentByUuid(attachmentId);
+        return Result.success();
+    }
+
+    /**
      * 更新附件下载权限
      *
      * @param attachmentId 附件ID

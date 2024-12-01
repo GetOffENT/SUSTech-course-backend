@@ -55,4 +55,11 @@ public interface AttachmentService extends IService<Attachment> {
      * @param isDownload   是否可以下载
      */
     void updateAttachment(Long attachmentId, Byte isDownload);
+
+    /**
+     * 根据uuid删除附件所有版本
+     *
+     * @param attachmentId 附件ID
+     */
+    void deleteAttachmentByUuid(Long attachmentId);
 }
