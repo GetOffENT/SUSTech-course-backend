@@ -146,10 +146,21 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<ChapterDTO> getDetailedCatalog(Long courseId) {
-        // TODO 鉴权
         Course course = baseMapper.selectById(courseId);
         if (course == null) {
             throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        // 课程未发布状态
+        if (course.getStatus() != CourseStatus.PASSED) {
+            Long userId = UserContext.getUser();
+            // 用户未登录
+            if (userId == null) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
+            // 不是课程的创建者 且 不是管理员
+            if (!course.getUserId().equals(userId) && UserContext.getRole() != Role.ADMIN) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
         }
 
         // 查询课程的章节信息
