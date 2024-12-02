@@ -146,22 +146,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<ChapterDTO> getDetailedCatalog(Long courseId) {
-        Course course = baseMapper.selectById(courseId);
-        if (course == null) {
-            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
-        }
-        // 课程未发布状态
-        if (course.getStatus() != CourseStatus.PASSED) {
-            Long userId = UserContext.getUser();
-            // 用户未登录
-            if (userId == null) {
-                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
-            }
-            // 不是课程的创建者 且 不是管理员
-            if (!course.getUserId().equals(userId) && UserContext.getRole() != Role.ADMIN) {
-                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
-            }
-        }
+        checkUserAndCourseStatus(courseId);
 
         // 查询课程的章节信息
         List<Chapter> chapters = chapterMapper.selectList(new LambdaQueryWrapper<Chapter>()
@@ -178,7 +163,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         // 如果用户登录了，则查询是否已经学习
         Long user = UserContext.getUser();
-        if (user != null && course.getStatus() == CourseStatus.PASSED) {
+        if (user != null && UserContext.getRole() != Role.ADMIN) {
             log.info("课程已经发布且用户已登录，查询用户的视频学习记录");
 
             // 查询用户的视频学习记录
@@ -225,7 +210,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      */
     @Override
     public List<ChapterBaseForCatalogDTO> getBaseCatalog(Long courseId) {
-        checkTeacherAndCourseCreator(courseId);
+        checkUserAndCourseStatus(courseId);
 
         // 查询课程的章节基本信息
         List<ChapterBaseForCatalogDTO> chapterBaseForCatalogDTOS = chapterMapper.selectBaseInfoListByCourseId(courseId);
@@ -649,6 +634,25 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         }
         if (!course.getUserId().equals(userId)) {
             throw new CourseException(MessageConstant.NO_PERMISSION);
+        }
+    }
+
+    private void checkUserAndCourseStatus(Long courseId) {
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        // 课程未发布状态
+        if (course.getStatus() != CourseStatus.PASSED) {
+            Long userId = UserContext.getUser();
+            // 用户未登录
+            if (userId == null) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
+            // 不是课程的创建者 且 不是管理员
+            if (!course.getUserId().equals(userId) && UserContext.getRole() != Role.ADMIN) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
         }
     }
 }

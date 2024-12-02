@@ -6,8 +6,10 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.UserVideoRecord;
 import edu.sustech.course.entity.dto.UserVideoRecordDTO;
+import edu.sustech.course.entity.vo.UserVideoRecordVO;
 import edu.sustech.course.mapper.UserVideoRecordMapper;
 import edu.sustech.course.service.UserVideoRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -72,6 +74,29 @@ public class UserVideoRecordServiceImpl extends ServiceImpl<UserVideoRecordMappe
             }
             baseMapper.updateById(userVideoRecord);
         }
+    }
+
+    /**
+     * 获取用户指定课程观看记录
+     *
+     * @param courseId 课程ID
+     */
+    @Override
+    public List<UserVideoRecordVO> getCourseRecords(Long courseId) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new IllegalArgumentException(MessageConstant.NOT_LOGIN);
+        }
+        List<UserVideoRecord> userVideoRecords = baseMapper.selectList(
+                new LambdaQueryWrapper<UserVideoRecord>()
+                        .eq(UserVideoRecord::getUserId, userId)
+                        .eq(UserVideoRecord::getCourseId, courseId)
+        );
+        if (CollUtil.isEmpty(userVideoRecords)) {
+            return List.of();
+        }
+
+        return BeanUtil.copyToList(userVideoRecords, UserVideoRecordVO.class);
     }
 
 

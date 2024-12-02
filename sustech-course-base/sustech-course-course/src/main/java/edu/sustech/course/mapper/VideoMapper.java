@@ -52,6 +52,6 @@ public interface VideoMapper extends BaseMapper<Video> {
      * @param courseId 课程id
      * @return 课程视频列表(基本信息)
      */
-    @Select("SELECT id, chapter_id, title FROM video WHERE course_id = #{courseId} and is_delete = 0 order by sort")
+    @Select("SELECT id, chapter_id, title, duration, min_watch_time FROM video WHERE course_id = #{courseId} and is_delete = 0 order by sort")
     List<VideoBaseForCatalogDTO> selectBaseInfoListByCourseId(Long courseId);
 }

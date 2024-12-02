@@ -2,6 +2,7 @@ package edu.sustech.course.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -27,6 +28,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "UserVideoRecord对象", description = "用户观看记录")
 public class UserVideoRecord implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("用户观看记录ID")

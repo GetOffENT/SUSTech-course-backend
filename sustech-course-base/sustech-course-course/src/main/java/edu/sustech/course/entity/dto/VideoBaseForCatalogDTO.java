@@ -30,4 +30,10 @@ public class VideoBaseForCatalogDTO {
 
     @ApiModelProperty("小节名称")
     private String title;
+
+    @ApiModelProperty("小节时长")
+    private Double duration;
+
+    @ApiModelProperty("小节最小观看时间")
+    private Double minWatchTime;
 }
