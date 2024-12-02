@@ -4,10 +4,7 @@ import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
-import edu.sustech.course.entity.dto.ChapterBaseForCatalogDTO;
-import edu.sustech.course.entity.dto.CourseDTO;
-import edu.sustech.course.entity.dto.CourseDetailDTO;
-import edu.sustech.course.entity.dto.CourseStatusDTO;
+import edu.sustech.course.entity.dto.*;
 import edu.sustech.course.service.CourseDescriptionService;
 import edu.sustech.course.service.CourseService;
 import io.swagger.annotations.Api;
@@ -161,7 +158,7 @@ public class CourseController {
     @ApiOperation("根据动态条件获取课程")
     @PostMapping("/condition")
     public Result<PageResult<Map<String, Object>>> getCoursesByCondition(@RequestBody CoursePageQueryDTO coursePageQueryDTO) {
-        log.info("获取课程列表 coursePageQueryDTO:{}", coursePageQueryDTO);
+        log.info("根据动态条件获取课程 coursePageQueryDTO:{}", coursePageQueryDTO);
         return Result.success(courseService.getCoursesByCondition(coursePageQueryDTO));
     }
 
@@ -189,5 +186,17 @@ public class CourseController {
         log.info("更新课程状态 courseStatusDTO:{}", courseStatusDTO);
         courseService.updateCourseStatusByTeacher(courseStatusDTO);
         return Result.success();
+    }
+
+    /**
+     * 根据用户加入状态 动态分页查询取课程列表
+     *
+     * @param courseByJoinStatusPageQueryDTO 查询条件
+     */
+    @PostMapping("/condition/join")
+    @ApiOperation("根据用户加入状态 动态分页查询取课程列表")
+    public Result<PageResult<Map<String, Object>>> getCoursesByJoinStatus(@RequestBody CourseByJoinStatusPageQueryDTO courseByJoinStatusPageQueryDTO) {
+        log.info("根据用户加入状态分页查询取课程列表 coursePageQueryDTO:{}", courseByJoinStatusPageQueryDTO);
+        return Result.success(courseService.getCoursesByJoinStatus(courseByJoinStatusPageQueryDTO));
     }
 }

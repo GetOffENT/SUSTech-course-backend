@@ -52,7 +52,7 @@ public class AssignmentController {
      * @param assignmentId 作业ID
      * @return 学生作业记录列表
      */
-    @GetMapping("/student/list")
+    @PostMapping("/student/list")
     @ApiOperation("获取学生作业记录列表")
     public Result<List<AssignmentUserVO>> listAssignmentUser(
             @RequestParam Long assignmentId,

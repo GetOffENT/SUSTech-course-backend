@@ -470,6 +470,60 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 根据加入状态获取课程
+     *
+     * @param courseByJoinStatusPageQueryDTO 查询条件
+     * @return 课程列表
+     */
+    @Override
+    public PageResult<Map<String, Object>> getCoursesByJoinStatus(CourseByJoinStatusPageQueryDTO courseByJoinStatusPageQueryDTO) {
+
+        Long userId = commonUtil.checkUser();
+        List<UserCourse> userCourseList = userCourseMapper.selectList(
+                new LambdaQueryWrapper<UserCourse>()
+                        .eq(UserCourse::getUserId, userId)
+                        .eq(UserCourse::getJoinState, courseByJoinStatusPageQueryDTO.getJoinStatus())
+        );
+
+        List<Long> courseIds = userCourseList.stream().map(UserCourse::getCourseId).toList();
+        if (CollUtil.isEmpty(courseIds)) {
+            return new PageResult<>(0L, null);
+        }
+
+        Page<Course> coursePage = new Page<>(courseByJoinStatusPageQueryDTO.getPage(), courseByJoinStatusPageQueryDTO.getPageSize());
+
+        LambdaQueryWrapper<Course> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Course::getId, courseIds);
+        if (courseByJoinStatusPageQueryDTO.getMcId() != null) {
+            queryWrapper.eq(Course::getMcId, courseByJoinStatusPageQueryDTO.getMcId());
+        }
+        if (CollUtil.isNotEmpty(courseByJoinStatusPageQueryDTO.getDuration())) {
+            queryWrapper.between(Course::getDuration, courseByJoinStatusPageQueryDTO.getDuration().get(0), courseByJoinStatusPageQueryDTO.getDuration().get(1));
+        }
+        if (courseByJoinStatusPageQueryDTO.getScId() != null) {
+            queryWrapper.eq(Course::getScId, courseByJoinStatusPageQueryDTO.getScId());
+        }
+        if (CollUtil.isNotEmpty(courseByJoinStatusPageQueryDTO.getTags())) {
+            queryWrapper.in(Course::getTags, courseByJoinStatusPageQueryDTO.getTags());
+        }
+        if (courseByJoinStatusPageQueryDTO.getTitle() != null) {
+            queryWrapper.like(Course::getTitle, courseByJoinStatusPageQueryDTO.getTitle());
+        }
+        if (courseByJoinStatusPageQueryDTO.getForm() != null) {
+            queryWrapper.eq(Course::getForm, courseByJoinStatusPageQueryDTO.getForm().getCode());
+        }
+
+        baseMapper.selectPage(coursePage, queryWrapper);
+
+        List<Course> records = coursePage.getRecords();
+        if (CollUtil.isEmpty(records)) {
+            return new PageResult<>(0L, null);
+        }
+
+        return new PageResult<>(coursePage.getTotal(), getCourseDetail(records, false));
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id

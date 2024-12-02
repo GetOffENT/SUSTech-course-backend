@@ -4,10 +4,7 @@ import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.sustech.course.entity.dto.ChapterBaseForCatalogDTO;
-import edu.sustech.course.entity.dto.CourseDTO;
-import edu.sustech.course.entity.dto.CourseDetailDTO;
-import edu.sustech.course.entity.dto.CourseStatusDTO;
+import edu.sustech.course.entity.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -114,4 +111,12 @@ public interface CourseService extends IService<Course> {
      * @return 课程学生
      */
     List<StudentDTO> getCourseStudentList(Long courseId, Integer joinState);
+
+    /**
+     * 根据加入状态获取课程
+     *
+     * @param courseByJoinStatusPageQueryDTO 查询条件
+     * @return 课程列表
+     */
+    PageResult<Map<String, Object>> getCoursesByJoinStatus(CourseByJoinStatusPageQueryDTO courseByJoinStatusPageQueryDTO);
 }
