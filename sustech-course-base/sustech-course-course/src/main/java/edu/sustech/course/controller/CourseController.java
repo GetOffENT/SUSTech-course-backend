@@ -1,13 +1,9 @@
 package edu.sustech.course.controller;
 
-import edu.sustech.api.entity.dto.ChapterDTO;
-import edu.sustech.api.entity.dto.CoursePageQueryDTO;
-import edu.sustech.api.entity.dto.StudentDTO;
+import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.result.MapResult;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
-import edu.sustech.api.entity.dto.UserCourseInfoDTO;
-import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.dto.ChapterBaseForCatalogDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
@@ -124,7 +120,7 @@ public class CourseController {
      */
     @GetMapping("/{courseId}")
     @ApiOperation("获取课程信息")
-    public Result<Course> getCourseById(@PathVariable Long courseId) {
+    public Result<CourseInfoDTO> getCourseById(@PathVariable Long courseId) {
         log.info("获取课程信息 courseId:{}", courseId);
         return Result.success(courseService.getCourseById(courseId));
     }

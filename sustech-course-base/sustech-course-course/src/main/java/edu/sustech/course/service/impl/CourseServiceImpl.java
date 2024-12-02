@@ -253,7 +253,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
      * @return 课程信息
      */
     @Override
-    public Course getCourseById(Long courseId) {
+    public CourseInfoDTO getCourseById(Long courseId) {
         Course course = baseMapper.selectById(courseId);
         if (course == null) {
             throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
@@ -263,7 +263,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         // 用户登录了，且用户是课程的发布者
         if (userId != null && userId.equals(course.getUserId())) {
-            return course;
+            return BeanUtil.copyProperties(course, CourseInfoDTO.class);
         }
 
         if (course.getStatus() != CourseStatus.PASSED) {
@@ -284,12 +284,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             );
             // 用户加入了课程
             if (userCourse != null && userCourse.getJoinState() == JoinEnum.JOINED) {
-                return course;
+                return BeanUtil.copyProperties(course, CourseInfoDTO.class);
             }
 
             throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
         }
-        return course;
+        return BeanUtil.copyProperties(course, CourseInfoDTO.class);
     }
 
     /**

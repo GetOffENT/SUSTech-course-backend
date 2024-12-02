@@ -21,6 +21,15 @@ import java.util.Map;
 public interface CourseClient {
 
     /**
+     * 获取课程信息
+     *
+     * @param courseId 课程id
+     * @return 课程信息
+     */
+    @GetMapping("/course/course/{courseId}")
+    Result<CourseInfoDTO> getCourseById(@PathVariable Long courseId);
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id

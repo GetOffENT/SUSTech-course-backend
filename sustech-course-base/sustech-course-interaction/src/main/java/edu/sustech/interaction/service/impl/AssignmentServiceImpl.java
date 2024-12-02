@@ -5,8 +5,13 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.entity.dto.CourseInfoDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.exception.AssignmentException;
+import edu.sustech.common.exception.CourseException;
+import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.Assignment;
 import edu.sustech.interaction.entity.AssignmentUser;
@@ -44,6 +49,8 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
     private final AssignmentUserMapper assignmentUserMapper;
 
+    private final CourseClient courseClient;
+
     /**
      * 获取课程作业列表
      *
@@ -52,6 +59,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public List<AssignmentVO> listAssignment(Long courseId) {
+        Long userId = checkUser();
         List<Assignment> assignments = baseMapper.selectList(
                 new LambdaQueryWrapper<Assignment>()
                         .eq(Assignment::getCourseId, courseId)
@@ -59,6 +67,12 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         if (CollUtil.isEmpty(assignments)) {
             return List.of();
         }
+
+        // 检查是否是作业的发布者
+        if (!userId.equals(assignments.get(0).getUserId())) {
+            throw new AssignmentException(MessageConstant.NO_PERMISSION);
+        }
+
         return BeanUtil.copyToList(assignments, AssignmentVO.class);
     }
 
@@ -70,10 +84,10 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public List<AssignmentUserVO> listAssignmentUser(Long assignmentId, List<Long> userIds) {
-        Assignment assignment = baseMapper.selectById(assignmentId);
-        if (assignment == null) {
-            throw new AssignmentException(MessageConstant.ASSIGNMENT_NOT_EXIST);
-        }
+
+        Assignment assignment = checkUserAndAssignment(assignmentId);
+
+        // 课程没有学生则返回空列表
         if (CollUtil.isEmpty(userIds)) {
             return List.of();
         }
@@ -122,6 +136,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public void updateStatus(Long id, Integer status) {
+        checkUserAndAssignment(id);
         AssignmentStatus assignmentStatus = AssignmentStatus.of(status);
         baseMapper.updateById(
                 Assignment.builder()
@@ -139,10 +154,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public AssignmentVO createAssignment(AssignmentDTO assignmentDTO) {
-        Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new AssignmentException(MessageConstant.NOT_LOGIN);
-        }
+        Long userId = checkUserAndCourse(assignmentDTO.getCourseId());
         Assignment assignment =
                 BeanUtil.copyProperties(assignmentDTO, Assignment.class)
                         .setUserId(userId)
@@ -158,6 +170,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public void deleteAssignment(Long id) {
+        checkUserAndAssignment(id);
         int row = baseMapper.deleteById(id);
         if (row == 0) {
             throw new AssignmentException(MessageConstant.ASSIGNMENT_DELETE_FAILED);
@@ -171,6 +184,8 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public void gradeAssignment(AssignmentGradeDTO assignmentGradeDTO) {
+        checkUserAndAssignment(assignmentGradeDTO.getAssignmentId());
+
         AssignmentUser assignmentUser = assignmentUserMapper.selectOne(
                 new LambdaQueryWrapper<AssignmentUser>()
                         .eq(AssignmentUser::getAssignmentId, assignmentGradeDTO.getAssignmentId())
@@ -195,10 +210,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
      */
     @Override
     public void submitAssignment(AssignmentSubmitDTO assignmentSubmitDTO) {
-        Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new AssignmentException(MessageConstant.NOT_LOGIN);
-        }
+        Long userId = checkUser();
 
         Assignment assignment = baseMapper.selectById(assignmentSubmitDTO.getAssignmentId());
         if (LocalDateTime.now().isAfter(assignment.getDeadline())){
@@ -231,10 +243,8 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
     @Override
     @Transactional
     public List<AssignmentAndAssignmentUserVO> getAssignmentAndInfoList(Long courseId) {
-        Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new AssignmentException(MessageConstant.NOT_LOGIN);
-        }
+        Long userId = checkUser();
+
         List<Assignment> assignments = baseMapper.selectList(
                 new LambdaQueryWrapper<Assignment>()
                         .eq(Assignment::getCourseId, courseId)
@@ -308,5 +318,50 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
                         BeanUtil.copyProperties(map.get(assignmentAndAssignmentUserVO.getId()), assignmentAndAssignmentUserVO, "id")
         );
         return assignmentAndAssignmentUserVOs;
+    }
+
+    public Long checkUser() {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CourseException(MessageConstant.NOT_LOGIN);
+        }
+        return userId;
+    }
+
+    public Long checkUserAndCourse(Long courseId) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CourseException(MessageConstant.NOT_LOGIN);
+        }
+
+        Result<CourseInfoDTO> courseById = courseClient.getCourseById(courseId);
+        if (Objects.equals(courseById.getCode(), ResultCode.SUCCESS.code())){
+            CourseInfoDTO course = courseById.getData();
+            if (course == null) {
+                throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+            }
+            if (!userId.equals(course.getUserId())) {
+                throw new CourseException(MessageConstant.NO_PERMISSION);
+            }
+        } else {
+            throw new CourseException(MessageConstant.COURSE_NOT_EXIST);
+        }
+        return userId;
+    }
+
+    public Assignment checkUserAndAssignment(Long assignmentId) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CourseException(MessageConstant.NOT_LOGIN);
+        }
+
+        Assignment assignment = baseMapper.selectById(assignmentId);
+        if (assignment == null) {
+            throw new AssignmentException(MessageConstant.ASSIGNMENT_NOT_EXIST);
+        }
+        if (!userId.equals(assignment.getUserId())) {
+            throw new AssignmentException(MessageConstant.NO_PERMISSION);
+        }
+        return assignment;
     }
 }

@@ -1,12 +1,9 @@
 package edu.sustech.course.service;
 
-import edu.sustech.api.entity.dto.ChapterDTO;
-import edu.sustech.api.entity.dto.CoursePageQueryDTO;
-import edu.sustech.api.entity.dto.StudentDTO;
+import edu.sustech.api.entity.dto.*;
 import edu.sustech.common.result.PageResult;
 import edu.sustech.course.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.course.entity.dto.ChapterBaseForCatalogDTO;
 import edu.sustech.course.entity.dto.CourseDTO;
 import edu.sustech.course.entity.dto.CourseDetailDTO;
@@ -71,7 +68,7 @@ public interface CourseService extends IService<Course> {
      * @param courseId 课程id
      * @return 课程信息
      */
-    Course getCourseById(Long courseId);
+    CourseInfoDTO getCourseById(Long courseId);
 
     /**
      * 新增课程(添加课程基本信息)

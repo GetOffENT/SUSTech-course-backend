@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class AssignmentDTO {
 
     @ApiModelProperty("课程ID")
-    private String courseId;
+    private Long courseId;
 
     @ApiModelProperty("作业标题")
     private String title;
