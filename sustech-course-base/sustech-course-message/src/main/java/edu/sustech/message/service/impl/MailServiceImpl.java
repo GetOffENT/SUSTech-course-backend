@@ -8,7 +8,7 @@ import edu.sustech.api.entity.enums.CourseStatus;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MailNotificationConstant;
 import edu.sustech.common.constant.MessageConstant;
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import edu.sustech.common.exception.CaptchaException;
 import edu.sustech.common.exception.CourseException;
 import edu.sustech.common.util.UserContext;
@@ -177,7 +177,7 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendCourseJoinStatusMail(CourseJoinStatusDTO courseJoinStatusDTO) {
-        if (courseJoinStatusDTO.getStatus() == JoinEnum.JOINED) {
+        if (courseJoinStatusDTO.getStatus() == JoinStatus.JOINED) {
             String content;
             if (courseJoinStatusDTO.getInviteOrApply() == 0) {
                 content = MailNotificationConstant.COURSE_JOIN_INVITE_MAIL_TEMPLATE.formatted(courseJoinStatusDTO.getTitle());
@@ -191,7 +191,7 @@ public class MailServiceImpl implements MailService {
                     MailNotificationConstant.COURSE_JOIN_STATUS_MAIL_SUBJECT,
                     content
             );
-        } else if (courseJoinStatusDTO.getStatus() == JoinEnum.REJECTED) {
+        } else if (courseJoinStatusDTO.getStatus() == JoinStatus.REJECTED) {
             String content = MailNotificationConstant.COURSE_JOIN_REJECTED_MAIL_TEMPLATE.formatted(courseJoinStatusDTO.getTitle(), courseJoinStatusDTO.getReason());
             emailUtil.sendHtmlMail(
                     courseJoinStatusDTO.getEmail(),

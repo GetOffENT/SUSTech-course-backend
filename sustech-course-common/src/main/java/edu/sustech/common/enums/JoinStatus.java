@@ -14,7 +14,7 @@ import lombok.Getter;
  * @since 2024-11-16 6:52
  */
 @Getter
-public enum JoinEnum {
+public enum JoinStatus {
     NONE(0, "未加入"),
     APPLYING(1, "申请中"),
     JOINED(2, "已加入"),
@@ -26,7 +26,7 @@ public enum JoinEnum {
     private final Integer code;
     private final String desc;
 
-    JoinEnum(Integer code, String desc) {
+    JoinStatus(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }

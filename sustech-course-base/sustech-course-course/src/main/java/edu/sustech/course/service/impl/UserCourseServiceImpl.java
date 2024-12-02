@@ -6,7 +6,7 @@ import edu.sustech.common.exception.CourseException;
 import edu.sustech.course.entity.Course;
 import edu.sustech.course.entity.UserCourse;
 import edu.sustech.course.entity.dto.CourseJoinStatusDTO;
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import edu.sustech.course.entity.enums.LikeEnum;
 import edu.sustech.course.mapper.CourseMapper;
 import edu.sustech.course.mapper.UserCourseMapper;
@@ -98,15 +98,15 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
     public UserCourse applyCourse(Long id) {
         UserCourse userCourse = checkUserCourse(id, null);
 
-        if (userCourse.getJoinState() == JoinEnum.APPLYING) {
-            userCourse.setJoinState(JoinEnum.NONE);
+        if (userCourse.getJoinState() == JoinStatus.APPLYING) {
+            userCourse.setJoinState(JoinStatus.NONE);
             this.updateById(userCourse);
             return userCourse;
         }
-        if (userCourse.getJoinState() == JoinEnum.JOINED) {
+        if (userCourse.getJoinState() == JoinStatus.JOINED) {
             throw new CourseException(MessageConstant.ALREADY_JOINED);
         }
-        userCourse.setJoinState(JoinEnum.APPLYING);
+        userCourse.setJoinState(JoinStatus.APPLYING);
         this.updateById(userCourse);
         return userCourse;
     }

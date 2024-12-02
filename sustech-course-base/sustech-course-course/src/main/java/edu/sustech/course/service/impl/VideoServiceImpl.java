@@ -17,7 +17,7 @@ import edu.sustech.common.util.UserContext;
 import edu.sustech.course.entity.*;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
 import edu.sustech.api.entity.enums.CourseStatus;
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.VideoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -107,7 +107,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             // 非发布用户查看视频
             if (!userId.equals(video.getUserId())) {
                 // 已登录的用户是否加入了课程
-                if (userCourse == null || userCourse.getJoinState() != JoinEnum.JOINED) {
+                if (userCourse == null || userCourse.getJoinState() != JoinStatus.JOINED) {
                     throw new VideoException(MessageConstant.VIDEO_NOT_EXIST);
                 }
             }
@@ -117,7 +117,7 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         if (course.getStatus() != CourseStatus.PASSED || video.getIsPublic() == 0) {
             // 登录用户不是发布者 并且 登录用户没有加入课程
             if (!video.getUserId().equals(userId)
-                    && (userCourse == null || userCourse.getJoinState() != JoinEnum.JOINED)) {
+                    && (userCourse == null || userCourse.getJoinState() != JoinStatus.JOINED)) {
                 throw new VideoException(MessageConstant.VIDEO_NOT_PUBLIC);
             }
         }

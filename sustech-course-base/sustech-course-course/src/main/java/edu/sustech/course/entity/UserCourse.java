@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import edu.sustech.course.entity.enums.LikeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -48,7 +48,7 @@ public class UserCourse implements Serializable {
     private LikeEnum like;
 
     @ApiModelProperty("加入状态  0否 1申请中 2已加入 3申请被拒绝 4已退出")
-    private JoinEnum joinState;
+    private JoinStatus joinState;
 
     @ApiModelProperty("已学习时长(秒)")
     private Double learnedTime;

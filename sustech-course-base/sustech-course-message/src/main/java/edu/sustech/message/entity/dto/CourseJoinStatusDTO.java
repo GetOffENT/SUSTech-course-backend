@@ -1,6 +1,6 @@
 package edu.sustech.message.entity.dto;
 
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class CourseJoinStatusDTO {
     private String title;
 
     @ApiModelProperty(value = "状态")
-    private JoinEnum status;
+    private JoinStatus status;
 
     @ApiModelProperty(value = "拒绝原因")
     private String reason;

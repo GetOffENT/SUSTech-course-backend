@@ -17,7 +17,7 @@ import edu.sustech.course.entity.*;
 import edu.sustech.course.entity.dto.*;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
 import edu.sustech.api.entity.enums.CourseStatus;
-import edu.sustech.common.enums.JoinEnum;
+import edu.sustech.common.enums.JoinStatus;
 import edu.sustech.course.mapper.*;
 import edu.sustech.course.service.CategoryService;
 import edu.sustech.course.service.CourseService;
@@ -283,7 +283,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                             .eq(UserCourse::getCourseId, courseId)
             );
             // 用户加入了课程
-            if (userCourse != null && userCourse.getJoinState() == JoinEnum.JOINED) {
+            if (userCourse != null && userCourse.getJoinState() == JoinStatus.JOINED) {
                 return BeanUtil.copyProperties(course, CourseInfoDTO.class);
             }
 
