@@ -18,15 +18,15 @@ public enum AssignmentStatus {
     /**
      * 未发布
      */
-    NOT_PUBLISHED(0, "未发布"),
+    NOT_PUBLISHED(1, "未发布"),
     /**
      * 已发布
      */
-    PUBLISHED(1, "已发布"),
+    PUBLISHED(2, "已发布"),
     /**
      * 已批改
      */
-    GRADED(2, "已批改");
+    GRADED(3, "已批改");
 
 
     @JsonValue
