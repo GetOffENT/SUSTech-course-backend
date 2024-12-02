@@ -32,7 +32,7 @@ public interface UserCourseService extends IService<UserCourse> {
     UserCourse likeOrNot(Long id, Boolean isLike);
 
     /**
-     * 申请加入课程
+     * 申请或取消申请加入课程
      *
      * @param id 课程ID
      * @return 用户课程记录

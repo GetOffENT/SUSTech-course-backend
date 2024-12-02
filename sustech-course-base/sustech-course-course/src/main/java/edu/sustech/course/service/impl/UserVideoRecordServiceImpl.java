@@ -66,7 +66,7 @@ public class UserVideoRecordServiceImpl extends ServiceImpl<UserVideoRecordMappe
         } else {
             userVideoRecord.setPlayTime(userVideoRecordDTO.getPlayTime())
                     .setPlayRange(CollUtil.join(playRange, ","))
-                    .setTotalPlayTime(userVideoRecord.getTotalPlayTime());
+                    .setTotalPlayTime(totalPlayTime);
             if (userVideoRecord.getIsLearned() == 0) {
                 userVideoRecord.setIsLearned((byte) (totalPlayTime >= userVideoRecordDTO.getMinWatchTime() ? 1 : 0));
             }

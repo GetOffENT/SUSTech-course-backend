@@ -45,7 +45,7 @@ public class UserVideoRecordDTO implements Serializable {
     private Double playTime;
 
     /**
-     * 根据该值计算是否已经学习完成，可以从后端查，但之前前端获取了该数据，这里直接传过来介绍一次数据库查询
+     * 根据该值计算是否已经学习完成，可以从后端查，但之前前端获取了该数据，这里直接传过来减少一次数据库查询
      */
     @ApiModelProperty("至少观看时长（秒）")
     private Double minWatchTime;

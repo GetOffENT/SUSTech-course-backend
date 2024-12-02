@@ -56,13 +56,13 @@ public class UserCourseController {
     }
 
     /**
-     * 申请加入课程
+     * 申请或取消申请加入课程
      *
      * @param id 课程ID
      * @return 用户课程记录
      */
     @PostMapping("/apply/{id}")
-    @ApiOperation("申请加入课程")
+    @ApiOperation("申请或取消申请加入课程")
     public Result<UserCourse> applyCourse(@PathVariable Long id) {
         log.info("用户【{}】申请或取消申请加入课程【{}】", UserContext.getUser(), id);
         return Result.success(userCourseService.applyCourse(id));
