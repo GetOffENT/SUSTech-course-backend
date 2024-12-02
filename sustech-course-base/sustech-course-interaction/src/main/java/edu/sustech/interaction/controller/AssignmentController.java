@@ -77,16 +77,16 @@ public class AssignmentController {
     }
 
     /**
-     * 新建作业
+     * 新建或更新作业
      *
      * @param assignmentDTO 作业信息
      * @return 作业信息(含id等)
      */
     @PostMapping
     @ApiOperation("新建作业")
-    public Result<AssignmentVO> createAssignment(@RequestBody AssignmentDTO assignmentDTO) {
+    public Result<AssignmentVO> createOrUpdateAssignment(@RequestBody AssignmentDTO assignmentDTO) {
         log.info("新建作业: {}", assignmentDTO);
-        return Result.success(assignmentService.createAssignment(assignmentDTO));
+        return Result.success(assignmentService.createOrUpdateAssignment(assignmentDTO));
     }
 
     /**

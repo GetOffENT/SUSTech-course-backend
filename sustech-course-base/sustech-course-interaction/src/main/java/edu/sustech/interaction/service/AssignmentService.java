@@ -46,12 +46,12 @@ public interface AssignmentService extends IService<Assignment> {
     void updateStatus(Long id, Integer status);
 
     /**
-     * 新建作业
+     * 新建或更新作业
      *
      * @param assignmentDTO 作业信息
      * @return 作业信息(含id等)
      */
-    AssignmentVO createAssignment(AssignmentDTO assignmentDTO);
+    AssignmentVO createOrUpdateAssignment(AssignmentDTO assignmentDTO);
 
     /**
      * 删除作业

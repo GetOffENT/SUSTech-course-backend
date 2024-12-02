@@ -21,8 +21,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "新建作业表单")
+@ApiModel(description = "新建或修改作业表单")
 public class AssignmentDTO {
+
+    @ApiModelProperty("作业ID")
+    private Long id;
 
     @ApiModelProperty("课程ID")
     private Long courseId;

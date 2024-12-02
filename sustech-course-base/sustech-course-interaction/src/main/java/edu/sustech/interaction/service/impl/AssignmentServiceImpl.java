@@ -147,14 +147,23 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
     }
 
     /**
-     * 新建作业
+     * 新建或更新作业
      *
      * @param assignmentDTO 作业信息
      * @return 作业信息(含id等)
      */
     @Override
-    public AssignmentVO createAssignment(AssignmentDTO assignmentDTO) {
+    public AssignmentVO createOrUpdateAssignment(AssignmentDTO assignmentDTO) {
         Long userId = checkUserAndCourse(assignmentDTO.getCourseId());
+
+        if (assignmentDTO.getId() != null) {
+            int row = baseMapper.updateById(BeanUtil.copyProperties(assignmentDTO, Assignment.class));
+            if (row == 0) {
+                throw new AssignmentException(MessageConstant.ASSIGNMENT_UPDATE_FAILED);
+            }
+            return BeanUtil.copyProperties(baseMapper.selectById(assignmentDTO.getId()), AssignmentVO.class);
+        }
+
         Assignment assignment =
                 BeanUtil.copyProperties(assignmentDTO, Assignment.class)
                         .setUserId(userId)
@@ -213,7 +222,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         Long userId = checkUser();
 
         Assignment assignment = baseMapper.selectById(assignmentSubmitDTO.getAssignmentId());
-        if (LocalDateTime.now().isAfter(assignment.getDeadline())){
+        if (LocalDateTime.now().isAfter(assignment.getDeadline())) {
             throw new AssignmentException(MessageConstant.ASSIGNMENT_EXPIRED);
         }
 
@@ -335,7 +344,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         }
 
         Result<CourseInfoDTO> courseById = courseClient.getCourseById(courseId);
-        if (Objects.equals(courseById.getCode(), ResultCode.SUCCESS.code())){
+        if (Objects.equals(courseById.getCode(), ResultCode.SUCCESS.code())) {
             CourseInfoDTO course = courseById.getData();
             if (course == null) {
                 throw new CourseException(MessageConstant.COURSE_NOT_EXIST);

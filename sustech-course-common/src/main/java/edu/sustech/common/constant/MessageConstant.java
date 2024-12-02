@@ -57,6 +57,7 @@ public class MessageConstant {
     public static final String ASSIGNMENT_SUBMIT_FAILED = "作业提交失败";
     public static final String ASSIGNMENT_QUERY_FAILED = "作业查询失败";
     public static final String ASSIGNMENT_EXPIRED = "作业已过期";
+    public static final String ASSIGNMENT_UPDATE_FAILED = "作业更新失败";
 
     public static final String ATTACHMENT_ADD_FAILED = "附件添加失败，请稍后再试！";
     public static final String ATTACHMENT_DELETE_FAILED = "附件删除失败，请稍后再试！";
