@@ -20,7 +20,7 @@ public class CodeGenerator {
         String author = "Yuxian Wu";
         String parent = "edu.sustech";
         String moduleName = "interaction";
-        String table = "assignment_user";
+        String table = "video_comment_love";
 
         FastAutoGenerator.create("jdbc:mysql://" + host + ":" + port + "/" + database + "?serverTimezone=GMT%2B8", username, password)
                 .globalConfig(builder -> {

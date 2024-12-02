@@ -59,7 +59,7 @@ sustechcourse:
     location: classpath:jwt.jks
     alias: sustech-course
     password: sustech-course-123456
-    tokenTTL: 30m
+    tokenTTL: 3000m
   auth:
     excludePaths:
       - /captcha/**

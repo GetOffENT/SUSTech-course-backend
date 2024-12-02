@@ -10,8 +10,11 @@ import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.VideoComment;
+import edu.sustech.interaction.entity.VideoCommentLove;
 import edu.sustech.interaction.entity.dto.CommentDTO;
+import edu.sustech.interaction.entity.enums.CommentLoveStatus;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
+import edu.sustech.interaction.mapper.VideoCommentLoveMapper;
 import edu.sustech.interaction.mapper.VideoCommentMapper;
 import edu.sustech.interaction.service.VideoCommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,6 +39,8 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, VideoComment> implements VideoCommentService {
+
+    private final VideoCommentLoveMapper videoCommentLoveMapper;
 
     private final UserClient userClient;
 
@@ -66,14 +71,12 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
                 new QueryWrapper<VideoComment>()
                         .eq("video_id", vid)
                         .eq("root_id", 0)
-                        .orderByDesc(type == 1 ? "(love - bad)" : "gmt_create")
+                        .orderByDesc(type == 1 ? "(like_count - dislike_count)" : "gmt_create")
                         .last("LIMIT 10 OFFSET " + offset)
         );
 
         List<CommentTreeVO> commmentTreeVOList = rootComments.stream().parallel()
-                .map(rootComment -> {
-                    return getCommentTree(rootComment, 2L);
-                })
+                .map(rootComment -> getCommentTree(rootComment, 2L))
                 .toList();
 
         return Map.of(
@@ -113,7 +116,7 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         if (userId == null) {
             throw new CommentException(MessageConstant.NOT_LOGIN);
         }
-        videoComment.setUserId(userId).setLove(0L).setBad(0L).setIsTop((byte) 0);
+        videoComment.setUserId(userId).setLikeCount(0L).setDislikeCount(0L).setIsTop((byte) 0);
         baseMapper.insert(videoComment);
 
         // 更新评论数量
@@ -132,14 +135,8 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
     @Transactional
     @Override
     public void deleteComment(Long id) {
+        VideoComment videoComment = checkUserAndComment(id);
         Long userId = UserContext.getUser();
-        if (userId == null) {
-            throw new CommentException(MessageConstant.NOT_LOGIN);
-        }
-        VideoComment videoComment = baseMapper.selectById(id);
-        if (videoComment == null) {
-            throw new CommentException(MessageConstant.COMMENT_NOT_EXIST);
-        }
 
         VideoDTO videoDTO = courseClient.getVideoById(videoComment.getVideoId()).getData();
         if (!videoComment.getUserId().equals(userId) && !Objects.equals(videoDTO.getUserId(), userId)) {
@@ -171,6 +168,61 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         log.info("删除评论{}及其{}条子评论", id, count);
     }
 
+    /**
+     * 点赞或点踩
+     *
+     * @param id     评论id
+     * @param isLike 是否点赞
+     * @return 点赞信息
+     */
+    @Override
+    @Transactional
+        public VideoCommentLove likeOrNot(Long id, Boolean isLike) {
+        VideoComment videoComment = checkUserAndComment(id);
+        Long userId = UserContext.getUser();
+
+        LambdaQueryWrapper<VideoCommentLove> queryWrapper = new LambdaQueryWrapper<VideoCommentLove>()
+                .eq(VideoCommentLove::getUserId, userId)
+                .eq(VideoCommentLove::getCommentId, id);
+        VideoCommentLove videoCommentLove = videoCommentLoveMapper.selectOne(queryWrapper);
+        if (videoCommentLove == null) {
+            videoCommentLove = VideoCommentLove.builder()
+                    .videoId(videoComment.getVideoId())
+                    .commentId(id)
+                    .userId(userId)
+                    .build();
+            int insert = videoCommentLoveMapper.insert(videoCommentLove);
+            if (insert == 0) {
+                throw new CommentException(MessageConstant.LOVE_FAILED);
+            } else {
+                videoCommentLove = videoCommentLoveMapper.selectOne(queryWrapper);
+            }
+        }
+
+        if (isLike) {
+            if (videoCommentLove.getLoveStatus() == CommentLoveStatus.LIKE) {
+                baseMapper.updateLikeCountAndDislikeCount(id, -1, 0);
+                videoCommentLove.setLoveStatus(CommentLoveStatus.NONE);
+            } else {
+                baseMapper.updateLikeCountAndDislikeCount(id, 1, videoCommentLove.getLoveStatus() == CommentLoveStatus.DISLIKE ? -1 : 0);
+                videoCommentLove.setLoveStatus(CommentLoveStatus.LIKE);
+            }
+        } else {
+            if (videoCommentLove.getLoveStatus() == CommentLoveStatus.DISLIKE) {
+                baseMapper.updateLikeCountAndDislikeCount(id, 0, -1);
+                videoCommentLove.setLoveStatus(CommentLoveStatus.NONE);
+            } else {
+                baseMapper.updateLikeCountAndDislikeCount(id, videoCommentLove.getLoveStatus() == CommentLoveStatus.LIKE ? -1 : 0, 1);
+                videoCommentLove.setLoveStatus(CommentLoveStatus.DISLIKE);
+            }
+        }
+        int update = videoCommentLoveMapper.updateById(videoCommentLove);
+        if (update == 0) {
+            throw new CommentException(MessageConstant.LOVE_FAILED);
+        }
+        return videoCommentLove;
+    }
+
 
     private CommentTreeVO getCommentTree(VideoComment rootComment, Long limit) {
         CommentTreeVO commentTreeVO = BeanUtil.copyProperties(rootComment, CommentTreeVO.class);
@@ -184,7 +236,7 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         if (rootComment.getRootId() == 0) {
             QueryWrapper<VideoComment> queryWrapper = new QueryWrapper<VideoComment>()
                     .eq("root_id", rootComment.getId())
-                    .orderByDesc("love - bad");
+                    .orderByDesc("like_count - dislike_count");
             if (limit > 0) {
                 queryWrapper.last("LIMIT " + limit);
             }
@@ -201,5 +253,17 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
             );
         }
         return commentTreeVO;
+    }
+
+    private VideoComment checkUserAndComment(Long commentId) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CommentException(MessageConstant.NOT_LOGIN);
+        }
+        VideoComment videoComment = baseMapper.selectById(commentId);
+        if (videoComment == null) {
+            throw new CommentException(MessageConstant.COMMENT_NOT_EXIST);
+        }
+        return videoComment;
     }
 }

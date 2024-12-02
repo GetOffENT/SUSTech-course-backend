@@ -2,6 +2,7 @@ package edu.sustech.interaction.service;
 
 import edu.sustech.interaction.entity.VideoComment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.interaction.entity.VideoCommentLove;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
 
@@ -49,4 +50,13 @@ public interface VideoCommentService extends IService<VideoComment> {
      * @param id 评论id
      */
     void deleteComment(Long id);
+
+    /**
+     * 点赞或点踩
+     *
+     * @param id     评论id
+     * @param isLike 是否点赞
+     * @return 点赞信息
+     */
+    VideoCommentLove likeOrNot(Long id, Boolean isLike);
 }

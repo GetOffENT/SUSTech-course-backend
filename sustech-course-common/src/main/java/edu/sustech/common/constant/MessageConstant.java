@@ -33,6 +33,7 @@ public class MessageConstant {
     public static final String COMMENT_NO_PERMISSION = "无权限删除该评论";
     public static final String DANMU_NO_PERMISSION = "无权限删除该弹幕";
     public static final String NO_PERMISSION_TO_ADD_COURSE_REVIEW = "无权添加课程评价";
+    public static final String LOVE_FAILED = "点赞或点踩失败";
     public static final String COMMENT_DELETE_ERROR = "删除评论失败";
     public static final String DANMU_DELETE_ERROR = "删除弹幕失败";
     public static final String ALREADY_JOINED = "已加入该课程";
