@@ -12,10 +12,12 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.CourseReview;
+import edu.sustech.interaction.entity.CourseReviewLike;
 import edu.sustech.interaction.entity.CourseReviewScore;
+import edu.sustech.interaction.entity.enums.CourseReviewLikeStatus;
 import edu.sustech.interaction.entity.vo.CourseReviewScoreVO;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
-import edu.sustech.interaction.mapper.CourseReviewLoveMapper;
+import edu.sustech.interaction.mapper.CourseReviewLikeMapper;
 import edu.sustech.interaction.mapper.CourseReviewMapper;
 import edu.sustech.interaction.mapper.CourseReviewScoreMapper;
 import edu.sustech.interaction.service.CourseReviewService;
@@ -40,9 +42,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, CourseReview> implements CourseReviewService {
 
-    private final CourseReviewLoveMapper courseReviewLoveMapper;
-
     private final CourseReviewScoreMapper courseReviewScoreMapper;
+
+    private final CourseReviewLikeMapper courseReviewLikeMapper;
 
     private final UserClient userClient;
 
@@ -133,7 +135,10 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         Long Userid = checkUser();
         CourseReview courseReview = BeanUtil.copyProperties(courseReviewVO, CourseReview.class);
         courseReview.setUserId(Userid).setCourseId(courseId);
-        this.save(courseReview);
+        boolean saved = this.save(courseReview);
+        if (!saved) {
+            throw new CourseReviewException(MessageConstant.ERROR);
+        }
 
         List<CourseReviewScoreVO> indexScores = courseReviewVO.getIndexScores();
         if (indexScores == null || indexScores.isEmpty()) {
@@ -143,13 +148,15 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         for (CourseReviewScoreVO indexScore : indexScores) {
             CourseReviewScore courseReviewScore = BeanUtil.copyProperties(indexScore, CourseReviewScore.class)
                     .setCourseId(courseId).setReviewId(courseReview.getId());
-            courseReviewScoreMapper.insert(courseReviewScore);
+            int insert = courseReviewScoreMapper.insert(courseReviewScore);
+            if (insert == 0) {
+                throw new CourseReviewException(MessageConstant.ERROR);
+            }
         }
-
     }
 
     /**
-     * 获取用户对课程评价
+     * 获取当前用户对课程的评价
      *
      * @param courseId 课程id
      * @return 课程评价
@@ -197,6 +204,66 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
                 new LambdaQueryWrapper<CourseReviewScore>()
                         .eq(CourseReviewScore::getReviewId, reviewId)
         );
+    }
+
+    /**
+     * 点赞或点踩某条评价
+     *
+     * @param id     评价id
+     * @param isLike 设置赞还是踩 true赞 false踩
+     */
+    @Override
+    public void likeOrNot(Long id, Boolean isLike) {
+        Long userId = checkUser();
+
+        CourseReview courseReview = baseMapper.selectOne(
+                new LambdaQueryWrapper<CourseReview>()
+                        .eq(CourseReview::getId, id)
+        );
+        if (courseReview == null) {
+            throw new CourseReviewException(MessageConstant.COURSE_REVIEW_NOT_EXIST);
+        }
+
+        // 查询是否有点赞记录
+        LambdaQueryWrapper<CourseReviewLike> queryWrapper = new LambdaQueryWrapper<CourseReviewLike>()
+                .eq(CourseReviewLike::getUserId, userId)
+                .eq(CourseReviewLike::getReviewId, id);
+        CourseReviewLike courseReviewLike = courseReviewLikeMapper.selectOne(queryWrapper);
+        // 无记录则插入空记录
+        if (courseReviewLike == null) {
+            courseReviewLike = CourseReviewLike.builder()
+                    .courseId(courseReview.getCourseId())
+                    .reviewId(id)
+                    .userId(userId)
+                    .build();
+            int insert = courseReviewLikeMapper.insert(courseReviewLike);
+            if (insert == 0) {
+                throw new CourseReviewException(MessageConstant.LOVE_FAILED);
+            } else {
+                courseReviewLike = courseReviewLikeMapper.selectOne(queryWrapper);
+            }
+        }
+        if (isLike) {
+            if (courseReviewLike.getLikeStatus() == CourseReviewLikeStatus.LIKE) {
+                baseMapper.updateLikeCountAndDislikeCount(id, -1, 0);
+                courseReviewLike.setLikeStatus(CourseReviewLikeStatus.NONE);
+            } else {
+                baseMapper.updateLikeCountAndDislikeCount(id, 1, courseReviewLike.getLikeStatus() == CourseReviewLikeStatus.DISLIKE ? -1 : 0);
+                courseReviewLike.setLikeStatus(CourseReviewLikeStatus.LIKE);
+            }
+        } else {
+            if (courseReviewLike.getLikeStatus() == CourseReviewLikeStatus.DISLIKE) {
+                baseMapper.updateLikeCountAndDislikeCount(id, 0, -1);
+                courseReviewLike.setLikeStatus(CourseReviewLikeStatus.NONE);
+            } else {
+                baseMapper.updateLikeCountAndDislikeCount(id, courseReviewLike.getLikeStatus() == CourseReviewLikeStatus.LIKE ? -1 : 0, 1);
+                courseReviewLike.setLikeStatus(CourseReviewLikeStatus.DISLIKE);
+            }
+        }
+        int update = courseReviewLikeMapper.updateById(courseReviewLike);
+        if (update == 0) {
+            throw new CourseReviewException(MessageConstant.LOVE_FAILED);
+        }
     }
 
     private Long checkUser() {

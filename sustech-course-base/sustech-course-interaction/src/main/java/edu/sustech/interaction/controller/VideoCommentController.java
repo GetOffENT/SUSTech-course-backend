@@ -2,7 +2,6 @@ package edu.sustech.interaction.controller;
 
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
-import edu.sustech.interaction.entity.VideoCommentLove;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
 import edu.sustech.interaction.service.VideoCommentService;
@@ -95,12 +94,12 @@ public class VideoCommentController {
      *
      * @param id     评论id
      * @param isLike 设置赞还是踩 true赞 false踩
-     * @return 点赞信息
      */
     @PostMapping("/like/{id}")
     @ApiOperation("点赞或点踩某条评论")
-    public Result<VideoCommentLove> likeOrNot(@PathVariable Long id, @RequestParam Boolean isLike) {
+    public Result<Object> likeOrNot(@PathVariable Long id, @RequestParam Boolean isLike) {
         log.info("用户【{}】设置评论【{}】的【{}】状态", UserContext.getUser(), id, isLike ? "点赞" : "点踩");
-        return Result.success(videoCommentService.likeOrNot(id, isLike));
+        videoCommentService.likeOrNot(id, isLike);
+        return Result.success();
     }
 }

@@ -1,6 +1,6 @@
 package edu.sustech.interaction.mapper;
 
-import edu.sustech.interaction.entity.CourseReviewLove;
+import edu.sustech.interaction.entity.CourseReviewLike;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Yuxian Wu
  * @since 2024-11-17
  */
-public interface CourseReviewLoveMapper extends BaseMapper<CourseReviewLove> {
+public interface CourseReviewLikeMapper extends BaseMapper<CourseReviewLike> {
 
 }

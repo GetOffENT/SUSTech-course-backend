@@ -4,7 +4,6 @@ import edu.sustech.interaction.entity.CourseReview;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +35,8 @@ public interface CourseReviewService extends IService<CourseReview> {
     void addCourseReview(CourseReviewVO courseReviewVO, Long courseId);
 
     /**
-     * 获取用户对课程评价
+     * 获取当前用户对课程的评价
+     *
      * @param courseId 课程id
      * @return 课程评价
      */
@@ -44,7 +44,16 @@ public interface CourseReviewService extends IService<CourseReview> {
 
     /**
      * 删除课程评价
+     *
      * @param reviewId 评价id
      */
     void deleteCourseReview(Long reviewId);
+
+    /**
+     * 点赞或点踩某条评价
+     *
+     * @param id     评价id
+     * @param isLike 设置赞还是踩 true赞 false踩
+     */
+    void likeOrNot(Long id, Boolean isLike);
 }

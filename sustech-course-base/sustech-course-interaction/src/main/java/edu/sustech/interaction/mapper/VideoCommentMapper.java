@@ -22,6 +22,13 @@ public interface VideoCommentMapper extends BaseMapper<VideoComment> {
 
     Integer deleteBatchByIds(List<Long> commentIds);
 
+    /**
+     * 更新点赞数和点踩数
+     *
+     * @param id           视频评论id
+     * @param likeCount    点赞变化数
+     * @param dislikeCount 点踩变化数
+     */
     @Update("update video_comment set like_count = like_count + #{likeCount}, dislike_count = dislike_count + #{dislikeCount}, gmt_modified = now() where id = #{id}")
     void updateLikeCountAndDislikeCount(Long id, Integer likeCount, Integer dislikeCount);
 }

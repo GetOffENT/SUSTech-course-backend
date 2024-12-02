@@ -28,7 +28,8 @@ public class MessageConstant {
     public static final String SENDER_EMPTY = "发件人不能为空";
 
     public static final String NOT_LOGIN = "用户未登录";
-    public static final String COMMENT_NOT_EXIST = "评论不存在";
+    public static final String COMMENT_NOT_EXIST = "视频评论不存在";
+    public static final String COURSE_REVIEW_NOT_EXIST = "课程评价不存在";
     public static final String DANMU_NOT_EXIST = "弹幕不存在";
     public static final String COMMENT_NO_PERMISSION = "无权限删除该评论";
     public static final String DANMU_NO_PERMISSION = "无权限删除该弹幕";

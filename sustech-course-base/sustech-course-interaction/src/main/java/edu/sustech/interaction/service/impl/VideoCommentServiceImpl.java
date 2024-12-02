@@ -10,11 +10,11 @@ import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.VideoComment;
-import edu.sustech.interaction.entity.VideoCommentLove;
+import edu.sustech.interaction.entity.VideoCommentLike;
 import edu.sustech.interaction.entity.dto.CommentDTO;
-import edu.sustech.interaction.entity.enums.CommentLoveStatus;
+import edu.sustech.interaction.entity.enums.VideoCommentLikeStatus;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
-import edu.sustech.interaction.mapper.VideoCommentLoveMapper;
+import edu.sustech.interaction.mapper.VideoCommentLikeMapper;
 import edu.sustech.interaction.mapper.VideoCommentMapper;
 import edu.sustech.interaction.service.VideoCommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,7 +40,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, VideoComment> implements VideoCommentService {
 
-    private final VideoCommentLoveMapper videoCommentLoveMapper;
+    private final VideoCommentLikeMapper videoCommentLikeMapper;
 
     private final UserClient userClient;
 
@@ -173,54 +173,54 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
      *
      * @param id     评论id
      * @param isLike 是否点赞
-     * @return 点赞信息
      */
     @Override
     @Transactional
-        public VideoCommentLove likeOrNot(Long id, Boolean isLike) {
+        public void likeOrNot(Long id, Boolean isLike) {
         VideoComment videoComment = checkUserAndComment(id);
         Long userId = UserContext.getUser();
 
-        LambdaQueryWrapper<VideoCommentLove> queryWrapper = new LambdaQueryWrapper<VideoCommentLove>()
-                .eq(VideoCommentLove::getUserId, userId)
-                .eq(VideoCommentLove::getCommentId, id);
-        VideoCommentLove videoCommentLove = videoCommentLoveMapper.selectOne(queryWrapper);
-        if (videoCommentLove == null) {
-            videoCommentLove = VideoCommentLove.builder()
+        // 查询是否有点赞记录
+        LambdaQueryWrapper<VideoCommentLike> queryWrapper = new LambdaQueryWrapper<VideoCommentLike>()
+                .eq(VideoCommentLike::getUserId, userId)
+                .eq(VideoCommentLike::getCommentId, id);
+        VideoCommentLike videoCommentLike = videoCommentLikeMapper.selectOne(queryWrapper);
+        // 无记录则插入空记录
+        if (videoCommentLike == null) {
+            videoCommentLike = VideoCommentLike.builder()
                     .videoId(videoComment.getVideoId())
                     .commentId(id)
                     .userId(userId)
                     .build();
-            int insert = videoCommentLoveMapper.insert(videoCommentLove);
+            int insert = videoCommentLikeMapper.insert(videoCommentLike);
             if (insert == 0) {
                 throw new CommentException(MessageConstant.LOVE_FAILED);
             } else {
-                videoCommentLove = videoCommentLoveMapper.selectOne(queryWrapper);
+                videoCommentLike = videoCommentLikeMapper.selectOne(queryWrapper);
             }
         }
 
         if (isLike) {
-            if (videoCommentLove.getLoveStatus() == CommentLoveStatus.LIKE) {
+            if (videoCommentLike.getLikeStatus() == VideoCommentLikeStatus.LIKE) {
                 baseMapper.updateLikeCountAndDislikeCount(id, -1, 0);
-                videoCommentLove.setLoveStatus(CommentLoveStatus.NONE);
+                videoCommentLike.setLikeStatus(VideoCommentLikeStatus.NONE);
             } else {
-                baseMapper.updateLikeCountAndDislikeCount(id, 1, videoCommentLove.getLoveStatus() == CommentLoveStatus.DISLIKE ? -1 : 0);
-                videoCommentLove.setLoveStatus(CommentLoveStatus.LIKE);
+                baseMapper.updateLikeCountAndDislikeCount(id, 1, videoCommentLike.getLikeStatus() == VideoCommentLikeStatus.DISLIKE ? -1 : 0);
+                videoCommentLike.setLikeStatus(VideoCommentLikeStatus.LIKE);
             }
         } else {
-            if (videoCommentLove.getLoveStatus() == CommentLoveStatus.DISLIKE) {
+            if (videoCommentLike.getLikeStatus() == VideoCommentLikeStatus.DISLIKE) {
                 baseMapper.updateLikeCountAndDislikeCount(id, 0, -1);
-                videoCommentLove.setLoveStatus(CommentLoveStatus.NONE);
+                videoCommentLike.setLikeStatus(VideoCommentLikeStatus.NONE);
             } else {
-                baseMapper.updateLikeCountAndDislikeCount(id, videoCommentLove.getLoveStatus() == CommentLoveStatus.LIKE ? -1 : 0, 1);
-                videoCommentLove.setLoveStatus(CommentLoveStatus.DISLIKE);
+                baseMapper.updateLikeCountAndDislikeCount(id, videoCommentLike.getLikeStatus() == VideoCommentLikeStatus.LIKE ? -1 : 0, 1);
+                videoCommentLike.setLikeStatus(VideoCommentLikeStatus.DISLIKE);
             }
         }
-        int update = videoCommentLoveMapper.updateById(videoCommentLove);
+        int update = videoCommentLikeMapper.updateById(videoCommentLike);
         if (update == 0) {
             throw new CommentException(MessageConstant.LOVE_FAILED);
         }
-        return videoCommentLove;
     }
 
 

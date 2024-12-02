@@ -1,6 +1,6 @@
 package edu.sustech.interaction.mapper;
 
-import edu.sustech.interaction.entity.VideoCommentLove;
+import edu.sustech.interaction.entity.VideoCommentLike;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Yuxian Wu
  * @since 2024-12-03
  */
-public interface VideoCommentLoveMapper extends BaseMapper<VideoCommentLove> {
+public interface VideoCommentLikeMapper extends BaseMapper<VideoCommentLike> {
 
 }

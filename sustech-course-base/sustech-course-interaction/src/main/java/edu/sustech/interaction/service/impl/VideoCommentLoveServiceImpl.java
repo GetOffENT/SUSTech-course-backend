@@ -1,7 +1,7 @@
 package edu.sustech.interaction.service.impl;
 
-import edu.sustech.interaction.entity.VideoCommentLove;
-import edu.sustech.interaction.mapper.VideoCommentLoveMapper;
+import edu.sustech.interaction.entity.VideoCommentLike;
+import edu.sustech.interaction.mapper.VideoCommentLikeMapper;
 import edu.sustech.interaction.service.VideoCommentLoveService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2024-12-03
  */
 @Service
-public class VideoCommentLoveServiceImpl extends ServiceImpl<VideoCommentLoveMapper, VideoCommentLove> implements VideoCommentLoveService {
+public class VideoCommentLoveServiceImpl extends ServiceImpl<VideoCommentLikeMapper, VideoCommentLike> implements VideoCommentLoveService {
 
 }

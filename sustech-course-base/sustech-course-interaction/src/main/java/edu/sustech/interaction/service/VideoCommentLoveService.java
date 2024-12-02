@@ -1,6 +1,6 @@
 package edu.sustech.interaction.service;
 
-import edu.sustech.interaction.entity.VideoCommentLove;
+import edu.sustech.interaction.entity.VideoCommentLike;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author Yuxian Wu
  * @since 2024-12-03
  */
-public interface VideoCommentLoveService extends IService<VideoCommentLove> {
+public interface VideoCommentLoveService extends IService<VideoCommentLike> {
 
 }

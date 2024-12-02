@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import edu.sustech.interaction.entity.enums.CourseReviewLikeStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -24,9 +25,9 @@ import lombok.experimental.Accessors;
 @Data
 @Builder
 @Accessors(chain = true)
-@TableName("course_review_love")
-@ApiModel(value = "CourseReviewLove对象", description = "课程评论点赞列表")
-public class CourseReviewLove implements Serializable {
+@TableName("course_review_like")
+@ApiModel(value = "CourseReviewLike对象", description = "课程评论点赞列表")
+public class CourseReviewLike implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -44,8 +45,8 @@ public class CourseReviewLove implements Serializable {
     @ApiModelProperty("用户id")
     private Long userId;
 
-    @ApiModelProperty("点赞或者点踩 1（true）点赞， 0（false）点踩")
-    private Byte loveOrBad;
+    @ApiModelProperty("点赞状态  0无操作 1点赞 2点踩")
+    private CourseReviewLikeStatus likeStatus;
 
     @ApiModelProperty("逻辑删除 1（true）已删除， 0（false）未删除")
     private Byte isDelete;

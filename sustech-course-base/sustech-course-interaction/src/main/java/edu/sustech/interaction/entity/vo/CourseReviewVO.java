@@ -39,10 +39,10 @@ public class CourseReviewVO {
     private String content;
 
     @ApiModelProperty("该条评论的点赞数")
-    private Long love;
+    private Long likeCount;
 
     @ApiModelProperty("不喜欢的数量")
-    private Long bad;
+    private Long dislikeCount;
 
     @ApiModelProperty("是否置顶 0普通 1置顶")
     private Byte isTop;

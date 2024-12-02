@@ -1,8 +1,7 @@
 package edu.sustech.interaction.controller;
 
-import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.result.Result;
-import edu.sustech.interaction.entity.CourseReview;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 import edu.sustech.interaction.service.CourseReviewService;
 import io.swagger.annotations.Api;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,15 +65,15 @@ public class CourseReviewController {
     }
 
     /**
-     * 获取用户对课程的评价
+     * 获取当前用户对课程的评价
      *
      * @param courseId 课程id
      * @return 课程评价
      */
     @GetMapping("/{courseId}")
-    @ApiOperation("获取用户对课程的评价")
+    @ApiOperation("获取当前用户对课程的评价")
     public Result<CourseReviewVO> getCourseReview(@PathVariable Long courseId) {
-        log.info("获取用户对课程{}的评价", courseId);
+        log.info("获取当前用户对课程{}的评价", courseId);
         return Result.success(courseReviewService.getCourseReview(courseId));
     }
 
@@ -90,6 +88,20 @@ public class CourseReviewController {
     public Result<Object> deleteCourseReview(@PathVariable Long reviewId) {
         log.info("删除用户对课程{}的评价", reviewId);
         courseReviewService.deleteCourseReview(reviewId);
+        return Result.success();
+    }
+
+    /**
+     * 点赞或点踩某条评价
+     *
+     * @param id     评价id
+     * @param isLike 设置赞还是踩 true赞 false踩
+     */
+    @PostMapping("/like/{id}")
+    @ApiOperation("点赞或点踩某条评价")
+    public Result<Object> likeOrNot(@PathVariable Long id, @RequestParam Boolean isLike) {
+        log.info("用户【{}】设置评论【{}】的【{}】状态", UserContext.getUser(), id, isLike ? "点赞" : "点踩");
+        courseReviewService.likeOrNot(id, isLike);
         return Result.success();
     }
 
