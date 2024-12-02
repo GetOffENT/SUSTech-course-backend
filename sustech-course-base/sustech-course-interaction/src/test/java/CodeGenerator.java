@@ -11,17 +11,28 @@ public class CodeGenerator {
 
     @Test
     public void create() {
-        FastAutoGenerator.create("jdbc:mysql://192.168.101.135:3306/sc-interaction?serverTimezone=GMT%2B8", "root", "mysql")
+        String host = "192.168.101.135";
+        String port = "3306";
+        String database = "sc-interaction";
+        String username = "root";
+        String password = "mysql";
+        String projectPath = "E:\\courses\\CS309-Object-orientedAnalysisAndDesign\\project\\SUSTech-course\\SUSTech-course-backend\\sustech-course-base\\sustech-course-interaction" + "/src/main/java";
+        String author = "Yuxian Wu";
+        String parent = "edu.sustech";
+        String moduleName = "interaction";
+        String table = "assignment_user";
+
+        FastAutoGenerator.create("jdbc:mysql://" + host + ":" + port + "/" + database + "?serverTimezone=GMT%2B8", username, password)
                 .globalConfig(builder -> {
-                    builder.author("Yuxian Wu") // 设置作者
-                            .outputDir("E:\\courses\\CS309-Object-orientedAnalysisAndDesign\\project\\SUSTech-course\\SUSTech-course-backend\\sustech-course-base\\sustech-course-interaction" + "/src/main/java") // 输出目录
+                    builder.author(author) // 设置作者
+                            .outputDir(projectPath) // 输出目录
                             .disableOpenDir() // 生成后不打开文件夹
                             .enableSwagger();
 //                            .dateType(DateType.ONLY_DATE); // 设置日期类型
                 })
                 .packageConfig(builder -> {
-                    builder.moduleName("interaction") // 设置模块名
-                            .parent("edu.sustech") // 设置父包名
+                    builder.moduleName(moduleName) // 设置模块名
+                            .parent(parent) // 设置父包名
                             .controller("controller") // 设置 Controller 包名
                             .entity("entity") // 设置实体类包名
                             .mapper("mapper") // 设置 Mapper 接口包名
@@ -30,7 +41,7 @@ public class CodeGenerator {
                             .xml("mapper.xml"); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("course_review_score")// 设置需要生成的表名
+                    builder.addInclude(table)// 设置需要生成的表名
                             .entityBuilder()
                             .enableRemoveIsPrefix() // 去除表前缀
                             .idType(IdType.ASSIGN_ID)

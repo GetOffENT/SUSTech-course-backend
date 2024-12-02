@@ -49,6 +49,15 @@ public class MessageConstant {
     public static final String CHAPTER_NOT_FOUND = "章节不存在";
     public static final String CHAPTER_DELETE_FAILED = "删除章节失败";
     public static final String VIDEO_ADD_FAILED = "小节添加失败，请稍后再试！";
+
+    public static final String ASSIGNMENT_DELETE_FAILED = "删除作业失败";
+    public static final String ASSIGNMENT_USER_NOT_FOUND = "未找到对应作业记录";
+    public static final String ASSIGNMENT_NOT_EXIST = "作业不存在";
+    public static final String ASSIGNMENT_GRADE_FAILED = "作业评分失败";
+    public static final String ASSIGNMENT_SUBMIT_FAILED = "作业提交失败";
+    public static final String ASSIGNMENT_QUERY_FAILED = "作业查询失败";
+    public static final String ASSIGNMENT_EXPIRED = "作业已过期";
+
     public static final String ATTACHMENT_ADD_FAILED = "附件添加失败，请稍后再试！";
     public static final String ATTACHMENT_DELETE_FAILED = "附件删除失败，请稍后再试！";
     public static final String ATTACHMENT_NOT_EXIST = "附件不存在";
@@ -56,6 +65,8 @@ public class MessageConstant {
     public static final String UPLOAD_VIDEO_FAILED = "上传视频失败，请稍后再试！";
     public static final String ADD_VIDEO_RESOURCE_FAILED = "添加视频资源失败，请稍后再试！";
     public static final String GET_VIDEO_URL_FAILED = "获取视频地址失败，请稍后再试！";
+
+
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
     public static final String SERVER_ERROR = "妮小可出错了！请稍后再试(¯﹃¯)";
 

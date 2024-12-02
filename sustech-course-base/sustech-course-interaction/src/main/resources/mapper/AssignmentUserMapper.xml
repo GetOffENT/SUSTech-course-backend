@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sustech.interaction.mapper.AssignmentUserMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO assignment_user (id, assignment_id, user_id, status, gmt_create, gmt_modified)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.assignmentId}, #{item.userId}, #{item.status}, #{item.gmtCreate}, #{item.gmtModified})
+        </foreach>
+    </insert>
+</mapper>
