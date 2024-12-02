@@ -266,6 +266,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         List<AssignmentUser> assignmentUserList = assignmentUserMapper.selectList(
                 new LambdaQueryWrapper<AssignmentUser>()
                         .in(AssignmentUser::getAssignmentId, assignmentIds)
+                        .eq(AssignmentUser::getUserId, userId)
         );
 
         // 作业ID到作业的映射
