@@ -56,7 +56,7 @@ public class OssController {
      */
     @PostMapping("/files")
     @ApiOperation("多文件上传")
-    public Result<List<String>> uploadFiles(@RequestPart("files") List<MultipartFile> files) {
+    public Result<List<String>> uploadFiles(@RequestPart(value = "files",required = false) List<MultipartFile> files) {
         log.info("多文件上传: {}", files);
         return Result.success(ossService.uploadFiles(files));
     }

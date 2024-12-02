@@ -1,5 +1,6 @@
 package edu.sustech.resource.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.entity.dto.AttachmentDTO;
 import edu.sustech.common.constant.MessageConstant;
@@ -73,6 +74,9 @@ public class OssServiceImpl implements OssService {
     @Override
     public List<String> uploadFiles(List<MultipartFile> files) {
         checkUser();
+        if (CollUtil.isEmpty(files)) {
+            return List.of();
+        }
         List<String> result = new ArrayList<>();
         for (MultipartFile file : files) {
             result.add(upload(file));
