@@ -22,9 +22,6 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "教师信息")
 public class TeacherDTO {
 
-    @ApiModelProperty("教师ID,即用户ID")
-    private Long id;
-
     @ApiModelProperty("教师姓名")
     private String teacherName;
 

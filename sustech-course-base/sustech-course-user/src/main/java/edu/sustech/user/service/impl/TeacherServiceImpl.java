@@ -37,10 +37,10 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public void addOrUpdateTeacherInfo(TeacherDTO teacherDTO) {
         Long userId = checkTeacher();
 
-        Teacher teacher = baseMapper.selectById(teacherDTO.getId());
+        Teacher teacher = baseMapper.selectById(userId);
         if (teacher == null) {
             Teacher insertInfo = Teacher.builder()
-                    .id(teacherDTO.getId())
+                    .id(userId)
                     .teacherName(teacherDTO.getTeacherName())
                     .teacherInfo(teacherDTO.getTeacherInfo())
                     .teacherAvatar(teacherDTO.getTeacherAvatar())
@@ -49,7 +49,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             if (insert == 0) {
                 throw new TeacherException(MessageConstant.TEACHER_INFO_ADD_FAILED);
             }
-        } else{
+        } else {
             if (!teacher.getId().equals(userId)) {
                 throw new TeacherException(MessageConstant.NO_PERMISSION);
             }
