@@ -119,4 +119,12 @@ public interface CourseService extends IService<Course> {
      * @return 课程列表
      */
     PageResult<Map<String, Object>> getCoursesByJoinStatus(CourseByJoinStatusPageQueryDTO courseByJoinStatusPageQueryDTO);
+
+    /**
+     * 更新课程评价数量
+     *
+     * @param courseId 课程id
+     * @param count    评价数量
+     */
+    void updateCourseReviewCount(Long courseId, Integer count);
 }

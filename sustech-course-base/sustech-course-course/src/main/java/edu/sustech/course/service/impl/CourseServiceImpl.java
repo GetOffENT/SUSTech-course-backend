@@ -509,6 +509,17 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     /**
+     * 更新课程评价数量
+     *
+     * @param courseId 课程id
+     * @param count    评价数量
+     */
+    @Override
+    public void updateCourseReviewCount(Long courseId, Integer count) {
+        baseMapper.updateCourseReviewCount(courseId, count);
+    }
+
+    /**
      * 根据用户id查询该用户的所有课程信息
      *
      * @param id 用户id

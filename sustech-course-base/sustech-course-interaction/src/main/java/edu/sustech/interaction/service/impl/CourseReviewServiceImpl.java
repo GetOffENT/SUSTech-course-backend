@@ -26,6 +26,7 @@ import edu.sustech.interaction.service.CourseReviewService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,8 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
     private final CourseReviewLikeMapper courseReviewLikeMapper;
 
     private final UserClient userClient;
+
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 获取课程评价列表
@@ -75,6 +78,13 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         }
         Page<CourseReview> courseReviewPage = baseMapper.selectPage(iPage, queryWrapper);
         List<CourseReview> courseReviews = courseReviewPage.getRecords();
+        if (CollUtil.isEmpty(courseReviews)) {
+            return Map.of(
+                    "total", courseReviewPage.getTotal(),
+                    "score", score == null ? 0 : score,
+                    "reviews", List.of()
+            );
+        }
         List<CourseReviewVO> courseReviewVOS = BeanUtil.copyToList(courseReviews, CourseReviewVO.class);
 
         // 默认按照热度排序
@@ -137,9 +147,9 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
     @Transactional
     @Override
     public void addCourseReview(CourseReviewVO courseReviewVO, Long courseId) {
-        Long Userid = checkUser();
+        Long UserId = checkUser();
         CourseReview courseReview = BeanUtil.copyProperties(courseReviewVO, CourseReview.class);
-        courseReview.setUserId(Userid).setCourseId(courseId);
+        courseReview.setUserId(UserId).setCourseId(courseId);
         boolean saved = this.save(courseReview);
         if (!saved) {
             throw new CourseReviewException(MessageConstant.ERROR);
@@ -157,6 +167,14 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
             if (insert == 0) {
                 throw new CourseReviewException(MessageConstant.ERROR);
             }
+        }
+
+        // 发送消息到课程服务更新课程评价数量
+        try {
+            rabbitTemplate.convertAndSend("course.review.direct", "course.review.count", Map.of("courseId", courseId, "count", 1));
+        } catch (Exception e) {
+            log.error("发送消息失败", e);
+            throw new CourseReviewException(MessageConstant.ERROR);
         }
     }
 
@@ -199,6 +217,16 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
     @Override
     @Transactional
     public void deleteCourseReview(Long reviewId) {
+        Long userId = checkUser();
+        CourseReview courseReview = baseMapper.selectOne(
+                new LambdaQueryWrapper<CourseReview>()
+                        .eq(CourseReview::getId, reviewId)
+                        .eq(CourseReview::getUserId, userId)
+        );
+        if (courseReview == null) {
+            throw new CourseReviewException(MessageConstant.COURSE_REVIEW_NOT_EXIST);
+        }
+
         int flag = baseMapper.deleteById(reviewId);
         if (flag == 0) {
             throw new CourseReviewException(MessageConstant.ERROR);
@@ -209,6 +237,21 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
                 new LambdaQueryWrapper<CourseReviewScore>()
                         .eq(CourseReviewScore::getReviewId, reviewId)
         );
+
+        // 发送消息到课程服务更新课程评价数量
+        try {
+            rabbitTemplate.convertAndSend(
+                    "course.review.direct",
+                    "course.review.count",
+                    Map.of(
+                            "courseId", courseReview.getCourseId(),
+                            "count", -flag
+                    )
+            );
+        } catch (Exception e) {
+            log.error("发送消息失败", e);
+            throw new CourseReviewException(MessageConstant.ERROR);
+        }
     }
 
     /**
@@ -294,10 +337,10 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
     }
 
     private Long checkUser() {
-        Long Userid = UserContext.getUser();
-        if (Userid == null) {
+        Long UserId = UserContext.getUser();
+        if (UserId == null) {
             throw new CourseReviewException(MessageConstant.NO_PERMISSION_TO_ADD_COURSE_REVIEW);
         }
-        return Userid;
+        return UserId;
     }
 }

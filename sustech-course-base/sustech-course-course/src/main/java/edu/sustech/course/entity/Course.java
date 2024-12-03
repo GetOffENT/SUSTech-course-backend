@@ -97,8 +97,8 @@ public class Course implements Serializable {
     @ApiModelProperty("分享数")
     private Long shareCount;
 
-    @ApiModelProperty("评论数量")
-    private Long commentCount;
+    @ApiModelProperty("评价数量")
+    private Long reviewCount;
 
     @ApiModelProperty("乐观锁")
     private Long version;

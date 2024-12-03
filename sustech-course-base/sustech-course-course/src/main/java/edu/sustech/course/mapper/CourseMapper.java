@@ -50,4 +50,12 @@ public interface CourseMapper extends BaseMapper<Course> {
      */
     @Update("update course set like_count = like_count + #{likeCount}, dislike_count = dislike_count + #{dislikeCount}, gmt_modified = now() where id = #{id}")
     void updateLikeCountAndDislikeCount(Long id, Integer likeCount, Integer dislikeCount);
+
+    /**
+     * 更新课程的评价数量
+     * @param courseId 课程ID
+     * @param count 评价数量
+     */
+    @Update("update course set review_count = review_count + #{count}, gmt_modified = now() where id = #{courseId}")
+    void updateCourseReviewCount(Long courseId, Integer count);
 }

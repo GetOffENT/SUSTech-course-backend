@@ -87,8 +87,8 @@ public class CourseInfoDTO {
     @ApiModelProperty("分享数")
     private Long shareCount;
 
-    @ApiModelProperty("评论数量")
-    private Long commentCount;
+    @ApiModelProperty("评价数量")
+    private Long reviewCount;
 
     @ApiModelProperty("状态 0审核中 1已过审 2未过审 3已发布 4已删除 5已私密 6编辑中")
     private CourseStatus status;
