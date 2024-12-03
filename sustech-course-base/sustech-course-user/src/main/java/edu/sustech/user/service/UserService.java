@@ -4,6 +4,7 @@ import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.user.entity.dto.ChangePasswordDTO;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
@@ -93,4 +94,11 @@ public interface UserService extends IService<User> {
      * @return 头像路径
      */
     String updateUserAvatar(MultipartFile file);
+
+    /**
+     * 修改密码
+     *
+     * @param changePasswordDTO 修改密码信息
+     */
+    void changePwd(ChangePasswordDTO changePasswordDTO);
 }

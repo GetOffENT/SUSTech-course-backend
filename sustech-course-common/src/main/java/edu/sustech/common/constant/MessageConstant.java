@@ -76,6 +76,8 @@ public class MessageConstant {
     public static final String SERVER_ERROR = "妮小可出错了！请稍后再试(¯﹃¯)";
 
     public static final String AVATAR_UPDATE_FAILED = "头像更新失败";
+    public static final String OLD_PASSWORD_ERROR = "旧密码错误";
+    public static final String PASSWORD_UPDATE_FAILED = "密码更新失败";
 
     public static final String LLM_ERROR = "抱歉，我不明白你的意思";
 

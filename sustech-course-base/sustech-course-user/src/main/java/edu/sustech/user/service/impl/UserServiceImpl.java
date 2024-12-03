@@ -19,6 +19,7 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.user.entity.User;
+import edu.sustech.user.entity.dto.ChangePasswordDTO;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
@@ -296,6 +297,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return avatar;
         } else {
             throw new UserException(upload.getMessage());
+        }
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param changePasswordDTO 修改密码信息
+     */
+    @Override
+    public void changePwd(ChangePasswordDTO changePasswordDTO) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new UserException(MessageConstant.NO_PERMISSION);
+        }
+
+        User user = baseMapper.selectById(userId);
+        if (user == null) {
+            throw new UserException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+
+        String oldPassword = DigestUtils.md5DigestAsHex(changePasswordDTO.getOldPassword().getBytes());
+        if (!oldPassword.equals(user.getPassword())) {
+            throw new UserException(MessageConstant.OLD_PASSWORD_ERROR);
+        }
+
+        User user2 = User.builder()
+                .id(userId)
+                .password(DigestUtils.md5DigestAsHex(changePasswordDTO.getNewPassword().getBytes()))
+                .build();
+        int update = baseMapper.updateById(user2);
+        if (update == 0) {
+            throw new UserException(MessageConstant.PASSWORD_UPDATE_FAILED);
         }
     }
 

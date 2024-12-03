@@ -3,6 +3,7 @@ package edu.sustech.user.controller;
 import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
+import edu.sustech.user.entity.dto.ChangePasswordDTO;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
@@ -117,6 +118,18 @@ public class UserController {
         return Result.success(userService.updateUserAvatar(file));
     }
 
+    /**
+     * 修改密码
+     *
+     * @param changePasswordDTO 修改密码信息
+     */
+    @ApiOperation("修改密码")
+    @PostMapping("/password")
+    public Result<Object> changePwd(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        log.info("修改密码: {}", changePasswordDTO);
+        userService.changePwd(changePasswordDTO);
+        return Result.success();
+    }
 
     /**
      * 获取用户信息(提供远程调用)
