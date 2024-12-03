@@ -2,10 +2,11 @@ package edu.sustech.user.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import edu.sustech.user.entity.enums.GenderEnum;
+import edu.sustech.user.entity.enums.Gender;
 import edu.sustech.user.entity.enums.RoleEnum;
 import edu.sustech.user.entity.enums.StateEnum;
 import io.swagger.annotations.ApiModel;
@@ -29,6 +30,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "User对象", description = "用户表")
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("用户ID")
@@ -57,7 +59,7 @@ public class User implements Serializable {
     private String background;
 
     @ApiModelProperty("性别 0女 1男 2未知")
-    private GenderEnum gender;
+    private Gender gender;
 
     @ApiModelProperty("个性签名")
     private String description;

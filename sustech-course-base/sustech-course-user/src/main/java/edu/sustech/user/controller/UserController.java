@@ -3,10 +3,7 @@ package edu.sustech.user.controller;
 import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
-import edu.sustech.user.entity.dto.ChangePasswordDTO;
-import edu.sustech.user.entity.dto.FoundByEmailDTO;
-import edu.sustech.user.entity.dto.LoginByEmailDTO;
-import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.user.entity.dto.*;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.service.UserService;
 import io.swagger.annotations.Api;
@@ -128,6 +125,19 @@ public class UserController {
     public Result<Object> changePwd(@RequestBody ChangePasswordDTO changePasswordDTO) {
         log.info("修改密码: {}", changePasswordDTO);
         userService.changePwd(changePasswordDTO);
+        return Result.success();
+    }
+
+    /**
+     * 用户修改基本信息
+     *
+     * @param userInfoDTO 用户信息
+     */
+    @ApiOperation("用户修改基本信息")
+    @PostMapping("/info")
+    public Result<Object> changeInfo(@RequestBody UserInfoDTO userInfoDTO) {
+        log.info("修改用户信息: {}", userInfoDTO);
+        userService.changeInfo(userInfoDTO);
         return Result.success();
     }
 

@@ -4,10 +4,7 @@ import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.common.result.Result;
 import edu.sustech.user.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.sustech.user.entity.dto.ChangePasswordDTO;
-import edu.sustech.user.entity.dto.FoundByEmailDTO;
-import edu.sustech.user.entity.dto.LoginByEmailDTO;
-import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.user.entity.dto.*;
 import edu.sustech.api.entity.dto.UserDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,4 +98,11 @@ public interface UserService extends IService<User> {
      * @param changePasswordDTO 修改密码信息
      */
     void changePwd(ChangePasswordDTO changePasswordDTO);
+
+    /**
+     * 用户修改基本信息
+     *
+     * @param userInfoDTO 用户信息
+     */
+    void changeInfo(UserInfoDTO userInfoDTO);
 }

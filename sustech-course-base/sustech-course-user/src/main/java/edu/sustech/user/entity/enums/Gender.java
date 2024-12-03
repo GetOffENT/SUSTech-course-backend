@@ -13,7 +13,7 @@ import lombok.Getter;
  * @since 2024-11-16 17:59
  */
 @Getter
-public enum GenderEnum {
+public enum Gender {
     MAN(1, "男"),
     WOMAN(0, "女"),
     UNKNOWN(2, "未知");
@@ -23,7 +23,7 @@ public enum GenderEnum {
     private final int code;
     private final String desc;
 
-    private GenderEnum(int code, String desc) {
+    Gender(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

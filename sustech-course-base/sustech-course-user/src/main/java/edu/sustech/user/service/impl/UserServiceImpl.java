@@ -19,10 +19,7 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.user.entity.User;
-import edu.sustech.user.entity.dto.ChangePasswordDTO;
-import edu.sustech.user.entity.dto.FoundByEmailDTO;
-import edu.sustech.user.entity.dto.LoginByEmailDTO;
-import edu.sustech.user.entity.dto.RegisterByEmailDTO;
+import edu.sustech.user.entity.dto.*;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.user.entity.enums.StateEnum;
 import edu.sustech.user.mapper.UserMapper;
@@ -307,6 +304,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public void changePwd(ChangePasswordDTO changePasswordDTO) {
+        User user = checkUser();
+
+        String oldPassword = DigestUtils.md5DigestAsHex(changePasswordDTO.getOldPassword().getBytes());
+        if (!oldPassword.equals(user.getPassword())) {
+            throw new UserException(MessageConstant.OLD_PASSWORD_ERROR);
+        }
+
+        User user2 = User.builder()
+                .id(user.getId())
+                .password(DigestUtils.md5DigestAsHex(changePasswordDTO.getNewPassword().getBytes()))
+                .build();
+        int update = baseMapper.updateById(user2);
+        if (update == 0) {
+            throw new UserException(MessageConstant.PASSWORD_UPDATE_FAILED);
+        }
+    }
+
+    /**
+     * 用户修改基本信息
+     *
+     * @param userInfoDTO 用户信息
+     */
+    @Override
+    public void changeInfo(UserInfoDTO userInfoDTO) {
+        User user = checkUser();
+
+        User user2 = BeanUtil.copyProperties(userInfoDTO, User.class);
+        user2.setId(user.getId());
+        int update = baseMapper.updateById(user2);
+        if (update == 0) {
+            throw new UserException(MessageConstant.INFO_UPDATE_FAILED);
+        }
+    }
+
+    private User checkUser() {
         Long userId = UserContext.getUser();
         if (userId == null) {
             throw new UserException(MessageConstant.NO_PERMISSION);
@@ -316,20 +348,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new UserException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-
-        String oldPassword = DigestUtils.md5DigestAsHex(changePasswordDTO.getOldPassword().getBytes());
-        if (!oldPassword.equals(user.getPassword())) {
-            throw new UserException(MessageConstant.OLD_PASSWORD_ERROR);
-        }
-
-        User user2 = User.builder()
-                .id(userId)
-                .password(DigestUtils.md5DigestAsHex(changePasswordDTO.getNewPassword().getBytes()))
-                .build();
-        int update = baseMapper.updateById(user2);
-        if (update == 0) {
-            throw new UserException(MessageConstant.PASSWORD_UPDATE_FAILED);
-        }
+        return user;
     }
 
     // 检查redis中的验证码
