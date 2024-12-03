@@ -87,8 +87,8 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
         Assignment assignment = checkUserAndAssignment(assignmentId);
 
-        // 课程没有学生则返回空列表
-        if (CollUtil.isEmpty(userIds)) {
+        // 课程没有学生或者作业未发布则返回空列表
+        if (CollUtil.isEmpty(userIds) || assignment.getStatus() == AssignmentStatus.NOT_PUBLISHED) {
             return List.of();
         }
         List<AssignmentUser> assignmentUserList = assignmentUserMapper.selectList(
@@ -257,6 +257,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         List<Assignment> assignments = baseMapper.selectList(
                 new LambdaQueryWrapper<Assignment>()
                         .eq(Assignment::getCourseId, courseId)
+                        .ne(Assignment::getStatus, AssignmentStatus.NOT_PUBLISHED)
         );
         if (CollUtil.isEmpty(assignments)) {
             return List.of();
