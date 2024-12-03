@@ -9,6 +9,7 @@ import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.exception.CourseReviewException;
+import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
 import edu.sustech.common.util.UserContext;
@@ -59,15 +60,12 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
      * @param courseId 课程id
      * @param page     页码
      * @param pageSize 每页大小
-     * @return 课程评价列表(不包括自己的评论)
+     * @return 分页查询到的课程评价列表(不包括自己的评论)
      */
     @Override
-    public Map<String, Object> getCourseReviewList(Integer courseId, Integer page, Integer pageSize) {
+    public PageResult<CourseReviewVO> getCourseReviewList(Long courseId, Integer page, Integer pageSize) {
 
         Page<CourseReview> iPage = new Page<>(page, pageSize);
-
-        // 获取课程的平均分（不能使用分页查到的结果计算课程平均分）
-        Double score = baseMapper.selectAverageScore(courseId);
 
         // 如果登录了就不查自己的评论，因为自己的评论会单独获取
         Long userId = UserContext.getUser();
@@ -79,11 +77,7 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         Page<CourseReview> courseReviewPage = baseMapper.selectPage(iPage, queryWrapper);
         List<CourseReview> courseReviews = courseReviewPage.getRecords();
         if (CollUtil.isEmpty(courseReviews)) {
-            return Map.of(
-                    "total", courseReviewPage.getTotal(),
-                    "score", score == null ? 0 : score,
-                    "reviews", List.of()
-            );
+            return new PageResult<>(courseReviewPage.getTotal(), List.of());
         }
         List<CourseReviewVO> courseReviewVOS = BeanUtil.copyToList(courseReviews, CourseReviewVO.class);
 
@@ -97,11 +91,7 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         );
 
         if (CollUtil.isEmpty(courseReviewScores)) {
-            return Map.of(
-                    "total", courseReviewPage.getTotal(),
-                    "score", score,
-                    "reviews", courseReviewVOS
-            );
+            return new PageResult<>(courseReviewPage.getTotal(), courseReviewVOS);
         }
 
         courseReviewScores.sort((o1, o2) -> {
@@ -131,11 +121,19 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
             courseReviewVO.setIndexScores(courseReviewScoreVOS);
         }
 
-        return Map.of(
-                "total", courseReviewPage.getTotal(),
-                "score", score,
-                "reviews", courseReviewVOS
-        );
+        return new PageResult<>(courseReviewPage.getTotal(), courseReviewVOS);
+    }
+
+    /**
+     * 获取课程平均评分
+     *
+     * @param courseId 课程id
+     * @return 课程平均评分
+     */
+    @Override
+    public Double getAverageScore(Long courseId) {
+        Double score = baseMapper.selectAverageScore(courseId);
+        return score == null ? 0 : score;
     }
 
     /**

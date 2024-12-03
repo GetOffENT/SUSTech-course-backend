@@ -1,12 +1,12 @@
 package edu.sustech.interaction.service;
 
+import edu.sustech.common.result.PageResult;
 import edu.sustech.interaction.entity.CourseReview;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.interaction.entity.vo.CourseReviewLikeVO;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -24,9 +24,17 @@ public interface CourseReviewService extends IService<CourseReview> {
      * @param courseId 课程id
      * @param page     页码
      * @param pageSize 每页大小
-     * @return 课程评价列表(" reviews ", 课程评价列表, " total ", 总数, " score ", 全部评价的平均分)
+     * @return 分页查询到的课程评价列表(" records ", 课程评价列表, " total ", 总数)
      */
-    Map<String, Object> getCourseReviewList(Integer courseId, Integer page, Integer pageSize);
+    PageResult<CourseReviewVO> getCourseReviewList(Long courseId, Integer page, Integer pageSize);
+
+    /**
+     * 获取课程平均评分
+     *
+     * @param courseId 课程id
+     * @return 课程平均评分
+     */
+    Double getAverageScore(Long courseId);
 
     /**
      * 添加课程评价

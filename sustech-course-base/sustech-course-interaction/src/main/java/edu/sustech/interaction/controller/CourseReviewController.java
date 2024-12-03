@@ -1,5 +1,6 @@
 package edu.sustech.interaction.controller;
 
+import edu.sustech.common.result.PageResult;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.vo.CourseReviewLikeVO;
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -38,18 +38,30 @@ public class CourseReviewController {
      * @param courseId 课程id
      * @param page     页码
      * @param pageSize 每页大小
-     * @return 课程评价列表(" reviews ", 课程评价列表, " total ", 总数, " score ", 全部评价的平均分)
+     * @return 分页查询道德课程评价列表(" records ", 课程评价列表, " total ", 总数)
      */
     @GetMapping("/list/{courseId}")
     @ApiOperation("获取课程评价列表")
-    public Result<Map<String, Object>> getCourseReviewList(
-            @PathVariable Integer courseId,
+    public Result<PageResult<CourseReviewVO>> getCourseReviewList(
+            @PathVariable Long courseId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
         return Result.success(courseReviewService.getCourseReviewList(courseId, page, pageSize));
     }
 
+    /**
+     * 获取课程平均评分
+     *
+     * @param courseId 课程id
+     * @return 课程平均评分
+     */
+    @GetMapping("/score/{courseId}")
+    @ApiOperation("获取课程平均评分")
+    public Result<Double> getAverageScore(@PathVariable Long courseId) {
+        log.info("获取课程{}的平均评分", courseId);
+        return Result.success(courseReviewService.getAverageScore(courseId));
+    }
 
     /**
      * 添加课程评价

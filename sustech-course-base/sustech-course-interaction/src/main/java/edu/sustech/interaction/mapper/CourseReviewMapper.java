@@ -21,7 +21,7 @@ public interface CourseReviewMapper extends BaseMapper<CourseReview> {
      * @return 课程平均分
      */
     @Select("SELECT AVG(score) FROM course_review WHERE course_id = #{courseId} and is_delete = 0")
-    Double selectAverageScore(Integer courseId);
+    Double selectAverageScore(Long courseId);
 
     /**
      * 更新点赞数和点踩数
