@@ -59,6 +59,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final ResourceClient resourceClient;
 
+    private final String DEFAULT_AVATAR = "https://sky-www9989.oss-cn-shenzhen.aliyuncs.com/43492d5c-af0e-4863-9552-0fec981156ae.jpg";
+
     /**
      * 邮箱注册
      *
@@ -81,6 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
         // 使用hutool工具包随机字符串
         user.setNickname(MessageConstant.RANDOM_NICKNAME_PREFIX + RandomUtil.randomString(10));
+        user.setAvatar(DEFAULT_AVATAR);
         int insert = baseMapper.insert(user);
         if (insert == 0) {
             throw new RegisterException(MessageConstant.ERROR);
