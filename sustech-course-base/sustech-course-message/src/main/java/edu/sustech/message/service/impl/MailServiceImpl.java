@@ -155,7 +155,7 @@ public class MailServiceImpl implements MailService {
         }
 
         if (bulkEmailDTO.getSender() == null) {
-            throw new CourseException(MessageConstant.SENDER_EMPTY);
+            bulkEmailDTO.setSender(CaptchaConstant.DEFAULT_SENDER);
         }
 
         emailUtil.sendMail(
