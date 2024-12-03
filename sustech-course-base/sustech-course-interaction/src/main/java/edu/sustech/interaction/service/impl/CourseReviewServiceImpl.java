@@ -31,6 +31,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -174,7 +175,11 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         } catch (Exception e) {
             log.error("发送消息失败", e);
         }
-        return courseReviewVO.setId(courseReview.getId());
+        return courseReviewVO
+                .setId(courseReview.getId())
+                .setGmtCreate(LocalDateTime.now())
+                .setLikeCount(0L)
+                .setDislikeCount(0L);
     }
 
     /**
