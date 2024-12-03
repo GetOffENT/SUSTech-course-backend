@@ -38,7 +38,7 @@
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <velocity.version>2.0</velocity.version>
         <swagger.version>3.0.0</swagger.version>
-        <org.projectlombok.version>1.18.20</org.projectlombok.version>
+        <org.projectlombok.version>1.18.30</org.projectlombok.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <jodatime.version>2.10.1</jodatime.version>
