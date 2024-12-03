@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.UserDTO;
 import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.CommentException;
 import edu.sustech.common.exception.CourseReviewException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
@@ -15,6 +16,7 @@ import edu.sustech.interaction.entity.CourseReview;
 import edu.sustech.interaction.entity.CourseReviewLike;
 import edu.sustech.interaction.entity.CourseReviewScore;
 import edu.sustech.interaction.entity.enums.CourseReviewLikeStatus;
+import edu.sustech.interaction.entity.vo.CourseReviewLikeVO;
 import edu.sustech.interaction.entity.vo.CourseReviewScoreVO;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 import edu.sustech.interaction.mapper.CourseReviewLikeMapper;
@@ -264,6 +266,28 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         if (update == 0) {
             throw new CourseReviewException(MessageConstant.LOVE_FAILED);
         }
+    }
+
+    /**
+     * 获取用户的课程评价点赞点踩记录列表(课程评价ID和点赞点踩状态)
+     *
+     * @return 课程评价点赞点踩记录列表
+     */
+    @Override
+    public List<CourseReviewLikeVO> listLikeOrDislikeRecord() {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CommentException(MessageConstant.NOT_LOGIN);
+        }
+        List<CourseReviewLike> courseReviewLikeList = courseReviewLikeMapper.selectList(
+                new LambdaQueryWrapper<CourseReviewLike>()
+                        .eq(CourseReviewLike::getUserId, userId)
+                        .ne(CourseReviewLike::getLikeStatus, CourseReviewLikeStatus.NONE)
+        );
+        if (CollUtil.isEmpty(courseReviewLikeList)) {
+            return List.of();
+        }
+        return BeanUtil.copyToList(courseReviewLikeList, CourseReviewLikeVO.class);
     }
 
     private Long checkUser() {

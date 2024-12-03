@@ -106,14 +106,14 @@ public class VideoCommentController {
     }
 
     /**
-     * 获取用户的点赞点踩记录列表(ID和点赞点踩状态)
+     * 获取用户的视频评论点赞点踩记录列表(视频评论ID和点赞点踩状态)
      *
      * @return 点赞点踩记录列表
      */
     @GetMapping("/list")
-    @ApiOperation("获取用户的点赞点踩记录列表")
+    @ApiOperation("获取用户的视频评论点赞点踩记录列表")
     public Result<List<VideoCommentLikeVO>> listLikeOrDislikeRecord() {
-        log.info("获取用户【{}】的点赞点踩记录列表", UserContext.getUser());
+        log.info("获取用户【{}】的视频评论点赞点踩记录列表", UserContext.getUser());
         return Result.success(videoCommentService.listLikeOrDislikeRecord());
     }
 }

@@ -2,8 +2,10 @@ package edu.sustech.interaction.service;
 
 import edu.sustech.interaction.entity.CourseReview;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.interaction.entity.vo.CourseReviewLikeVO;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,4 +58,11 @@ public interface CourseReviewService extends IService<CourseReview> {
      * @param isLike 设置赞还是踩 true赞 false踩
      */
     void likeOrNot(Long id, Boolean isLike);
+
+    /**
+     * 获取用户的课程评价点赞点踩记录列表(课程评价ID和点赞点踩状态)
+     *
+     * @return 课程评价点赞点踩记录列表
+     */
+    List<CourseReviewLikeVO> listLikeOrDislikeRecord();
 }

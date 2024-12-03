@@ -2,6 +2,7 @@ package edu.sustech.interaction.controller;
 
 import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
+import edu.sustech.interaction.entity.vo.CourseReviewLikeVO;
 import edu.sustech.interaction.entity.vo.CourseReviewVO;
 import edu.sustech.interaction.service.CourseReviewService;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -103,6 +105,18 @@ public class CourseReviewController {
         log.info("用户【{}】设置评论【{}】的【{}】状态", UserContext.getUser(), id, isLike ? "点赞" : "点踩");
         courseReviewService.likeOrNot(id, isLike);
         return Result.success();
+    }
+
+    /**
+     * 获取用户的课程评价点赞点踩记录列表(课程评价ID和点赞点踩状态)
+     *
+     * @return 点赞点踩记录列表
+     */
+    @GetMapping("/list")
+    @ApiOperation("获取用户的课程评价点赞点踩记录列表")
+    public Result<List<CourseReviewLikeVO>> listLikeOrDislikeRecord(){
+        log.info("获取用户【{}】的课程评价点赞点踩记录列表", UserContext.getUser());
+        return Result.success(courseReviewService.listLikeOrDislikeRecord());
     }
 
 }
