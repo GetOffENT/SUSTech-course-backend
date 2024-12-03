@@ -2,6 +2,7 @@ package edu.sustech.user.service;
 
 import edu.sustech.user.entity.Teacher;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.sustech.user.entity.dto.TeacherDTO;
 
 /**
  * <p>
@@ -13,4 +14,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface TeacherService extends IService<Teacher> {
 
+    /**
+     * 新增或更新教师信息
+     *
+     * @param teacherDTO 教师信息
+     */
+    void addOrUpdateTeacherInfo(TeacherDTO teacherDTO);
 }
