@@ -44,8 +44,9 @@ public interface CourseMapper extends BaseMapper<Course> {
 
     /**
      * 更新课程的点赞数和点踩数
-     * @param id 课程ID
-     * @param likeCount 点赞数
+     *
+     * @param id           课程ID
+     * @param likeCount    点赞数
      * @param dislikeCount 点踩数
      */
     @Update("update course set like_count = like_count + #{likeCount}, dislike_count = dislike_count + #{dislikeCount}, gmt_modified = now() where id = #{id}")
@@ -53,9 +54,19 @@ public interface CourseMapper extends BaseMapper<Course> {
 
     /**
      * 更新课程的评价数量
+     *
      * @param courseId 课程ID
-     * @param count 评价数量
+     * @param count    评价数量
      */
     @Update("update course set review_count = review_count + #{count}, gmt_modified = now() where id = #{courseId}")
     void updateCourseReviewCount(Long courseId, Integer count);
+
+    /**
+     * 更新课程的加入数量
+     *
+     * @param courseId 课程ID
+     * @param count    加入数量
+     */
+    @Update("update course set join_count = join_count + #{count}, gmt_modified = now() where id = #{courseId}")
+    void updateJoinCount(Long courseId, Integer count);
 }

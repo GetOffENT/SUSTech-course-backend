@@ -134,6 +134,10 @@ public class UserCourseServiceImpl extends ServiceImpl<UserCourseMapper, UserCou
             throw new CourseException(MessageConstant.ERROR);
         }
 
+        if (courseJoinStatusDTO.getStatus() == JoinStatus.JOINED) {
+            courseMapper.updateJoinCount(courseJoinStatusDTO.getCourseId(), 1);
+        }
+
         // 消息队列通知消息服务 推送邮件
         try {
             courseJoinStatusDTO.setTitle(course.getTitle());
