@@ -33,8 +33,9 @@ public interface CourseReviewService extends IService<CourseReview> {
      *
      * @param courseReviewVO 课程评价
      * @param courseId       课程id
+     * @return 当前评价
      */
-    void addCourseReview(CourseReviewVO courseReviewVO, Long courseId);
+    CourseReviewVO addCourseReview(CourseReviewVO courseReviewVO, Long courseId);
 
     /**
      * 获取当前用户对课程的评价

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @ApiModel(description = "课程评价")
 public class CourseReviewVO {
     @ApiModelProperty("评论id")

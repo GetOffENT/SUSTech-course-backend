@@ -143,10 +143,11 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
      *
      * @param courseReviewVO 课程评价
      * @param courseId       课程id
+     * @return 当前评价
      */
     @Transactional
     @Override
-    public void addCourseReview(CourseReviewVO courseReviewVO, Long courseId) {
+    public CourseReviewVO addCourseReview(CourseReviewVO courseReviewVO, Long courseId) {
         Long UserId = checkUser();
         CourseReview courseReview = BeanUtil.copyProperties(courseReviewVO, CourseReview.class);
         courseReview.setUserId(UserId).setCourseId(courseId);
@@ -174,8 +175,8 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
             rabbitTemplate.convertAndSend("course.review.direct", "course.review.count", Map.of("courseId", courseId, "count", 1));
         } catch (Exception e) {
             log.error("发送消息失败", e);
-            throw new CourseReviewException(MessageConstant.ERROR);
         }
+        return courseReviewVO.setId(courseReview.getId());
     }
 
     /**

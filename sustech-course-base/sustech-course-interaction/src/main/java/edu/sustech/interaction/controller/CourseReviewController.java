@@ -56,14 +56,13 @@ public class CourseReviewController {
      *
      * @param courseReviewVO 课程评价
      * @param courseId       课程id
-     * @return 成功或失败
+     * @return 当前评价
      */
     @PostMapping("/{courseId}")
     @ApiOperation("添加课程评价")
-    public Result<Object> addCourseReview(@RequestBody CourseReviewVO courseReviewVO, @PathVariable Long courseId) {
+    public Result<CourseReviewVO> addCourseReview(@RequestBody CourseReviewVO courseReviewVO, @PathVariable Long courseId) {
         log.info("添加对课程{}的评价：{}", courseId, courseReviewVO);
-        courseReviewService.addCourseReview(courseReviewVO, courseId);
-        return Result.success();
+        return Result.success(courseReviewService.addCourseReview(courseReviewVO, courseId));
     }
 
     /**
@@ -114,7 +113,7 @@ public class CourseReviewController {
      */
     @GetMapping("/list")
     @ApiOperation("获取用户的课程评价点赞点踩记录列表")
-    public Result<List<CourseReviewLikeVO>> listLikeOrDislikeRecord(){
+    public Result<List<CourseReviewLikeVO>> listLikeOrDislikeRecord() {
         log.info("获取用户【{}】的课程评价点赞点踩记录列表", UserContext.getUser());
         return Result.success(courseReviewService.listLikeOrDislikeRecord());
     }
