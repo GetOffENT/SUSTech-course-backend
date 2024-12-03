@@ -2,6 +2,7 @@ package edu.sustech.course.entity.dto;
 
 import edu.sustech.api.entity.enums.CourseForm;
 import edu.sustech.api.entity.enums.CourseOpenStatus;
+import edu.sustech.api.entity.enums.CourseStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,9 @@ public class CourseDetailDTO {
 
     @ApiModelProperty("是否公开 0不公开 1部分公开 2完全公开")
     private CourseOpenStatus openState;
+
+    @ApiModelProperty("状态 0审核中 1已过审 2未过审 3已发布 4已删除 5已私密 6编辑中")
+    private CourseStatus status;
 
     @ApiModelProperty("标签 回车分隔")
     private String tags;

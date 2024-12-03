@@ -321,8 +321,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public void addCourseDetail(CourseDetailDTO courseDetailDTO) {
         commonUtil.checkTeacher();
 
-        Course course = BeanUtil.copyProperties(courseDetailDTO, Course.class)
-                .setStatus(CourseStatus.PENDING);
+        Course course = BeanUtil.copyProperties(courseDetailDTO, Course.class);
+        if (courseDetailDTO.getStatus() != null) {
+            courseDetailDTO.setStatus(CourseStatus.PENDING);
+        }
         int update = baseMapper.updateById(course);
         if (update == 0) {
             throw new CourseException(MessageConstant.COURSE_ADD_FAILED);
