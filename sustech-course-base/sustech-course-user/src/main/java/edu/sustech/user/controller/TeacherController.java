@@ -46,10 +46,9 @@ public class TeacherController {
      */
     @PostMapping
     @ApiOperation("新增或更新教师信息")
-    public Result<Object> addOrUpdateTeacherInfo(TeacherDTO teacherDTO) {
+    public Result<Object> addOrUpdateTeacherInfo(@RequestBody TeacherDTO teacherDTO) {
         log.info("新增或更新教师信息: {}", teacherDTO);
         teacherService.addOrUpdateTeacherInfo(teacherDTO);
         return Result.success();
-
     }
 }
