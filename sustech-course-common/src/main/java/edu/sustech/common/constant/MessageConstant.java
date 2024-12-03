@@ -73,5 +73,7 @@ public class MessageConstant {
     public static final String ERROR = "妮小可被玩坏了(¯﹃¯)";
     public static final String SERVER_ERROR = "妮小可出错了！请稍后再试(¯﹃¯)";
 
+    public static final String LLM_ERROR = "抱歉，我不明白你的意思";
+
     public static final String INVALID_TIME_POINTS = "时间点列表必须为偶数长度！";
 }

@@ -1,21 +1,26 @@
 package edu.sustech.interaction.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import edu.sustech.common.constant.MessageConstant;
+import edu.sustech.common.exception.LLMException;
+import edu.sustech.common.result.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+
 @RestController
 @RequestMapping("/interaction/llm")
 @Slf4j
@@ -23,53 +28,56 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class LLMController {
 
+    private static final String API_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-4.0-turbo-8k-latest";
+    private static final String ACCESS_TOKEN = "24.2888665733ea543cbc02f6f6a81ac10e.2592000.1735795690.282335-116499673"; // 替换为实际的access token
+
     /**
      * 调用大模型回复
      *
-     * @param question 问题
+     * @param input 问题
      * @return 回答
      */
-    @GetMapping("/reply")
+    @PostMapping("/reply")
     @ApiOperation("调用大模型对问题进行回答")
-    public String reply(String question) throws IOException, InterruptedException {
-        String API_KEY = "";
-        String SECRET_KEY = "";
-        String TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials";
-        String url = TOKEN_URL + "&client_id=" + API_KEY + "&client_secret=" + SECRET_KEY;
-        HttpClient client1 = HttpClient.newHttpClient();
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+    public Result<String> reply(@RequestParam("input") String input) {
+        try {
+            System.out.println("Question: " + input);
+            // 构造请求的完整URL
+            String requestUrl = API_URL + "?access_token=" + ACCESS_TOKEN;
 
-        HttpResponse<String> response1 = client1.send(request1, HttpResponse.BodyHandlers.ofString());
-        ObjectMapper mapper1 = new ObjectMapper();
-        var jsonNode = mapper1.readTree(response1.body());
-        String accessToken = jsonNode.get("access_token").asText();
+            Map<String, Object> message = new HashMap<>();
+            message.put("role", "user");
+            message.put("content", input);
 
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("messages", List.of(message));
 
+            // 序列化为 JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = objectMapper.writeValueAsString(payload);
 
-        String API_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie-4.0-turbo-128k";
-        HttpClient client2 = HttpClient.newHttpClient();
+            // 构造 HTTP 请求
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(requestUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
 
-        // Request Body
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("messages", new Object[] {
-                Map.of("role", "user", "content", question)
-        });
-        ObjectMapper mapper2 = new ObjectMapper();
-        String jsonBody = mapper2.writeValueAsString(requestBody);
+            // 发送请求并处理响应
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Build HTTP Request
-        String urlWithToken = API_URL + "?access_token=" + accessToken;
-        HttpRequest request2 = HttpRequest.newBuilder()
-                .uri(URI.create(urlWithToken))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                .build();
-
-        // Send Request
-        HttpResponse<String> response2 = client2.send(request2, HttpResponse.BodyHandlers.ofString());
-        return response2.body();
+            // 打印响应
+            if (response.statusCode() == 200) {
+                System.out.println("Response: " + response.body());
+                JSONObject jsonObject = JSONObject.parseObject(response.body());
+                return Result.success(jsonObject.get("result").toString());
+            } else {
+                System.out.println("Error: " + response.statusCode());
+            }
+        } catch (Exception e) {
+            throw new LLMException(MessageConstant.LLM_ERROR);
+        }
+        return Result.error("调用大模型失败");
     }
 }
