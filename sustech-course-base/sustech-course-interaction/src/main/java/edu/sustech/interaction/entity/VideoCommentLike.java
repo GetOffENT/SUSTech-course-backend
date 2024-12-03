@@ -37,7 +37,6 @@ public class VideoCommentLike implements Serializable {
     private Long id;
 
     @ApiModelProperty("视频id")
-
     private Long videoId;
 
     @ApiModelProperty("评论id")

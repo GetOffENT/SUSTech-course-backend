@@ -1,8 +1,8 @@
 package edu.sustech.interaction.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import edu.sustech.api.client.CourseClient;
 import edu.sustech.api.client.UserClient;
 import edu.sustech.api.entity.dto.VideoDTO;
@@ -14,6 +14,7 @@ import edu.sustech.interaction.entity.VideoCommentLike;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.enums.VideoCommentLikeStatus;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
+import edu.sustech.interaction.entity.vo.VideoCommentLikeVO;
 import edu.sustech.interaction.mapper.VideoCommentLikeMapper;
 import edu.sustech.interaction.mapper.VideoCommentMapper;
 import edu.sustech.interaction.service.VideoCommentService;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -67,13 +69,12 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         );
 
         // 获取根评论列表
-        List<VideoComment> rootComments = baseMapper.selectList(
-                new QueryWrapper<VideoComment>()
-                        .eq("video_id", vid)
-                        .eq("root_id", 0)
-                        .orderByDesc(type == 1 ? "(like_count - dislike_count)" : "gmt_create")
-                        .last("LIMIT 10 OFFSET " + offset)
-        );
+        List<VideoComment> rootComments = baseMapper.selectComments(vid, 0L, 10L, offset);
+        if (type == 1) {
+            rootComments.sort(Comparator.comparingLong(comment -> comment.getDislikeCount() - comment.getLikeCount()));
+        } else {
+            rootComments.sort(Comparator.comparing(VideoComment::getGmtCreate).reversed());
+        }
 
         List<CommentTreeVO> commmentTreeVOList = rootComments.stream().parallel()
                 .map(rootComment -> getCommentTree(rootComment, 2L))
@@ -120,7 +121,6 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         baseMapper.insert(videoComment);
 
         // 更新评论数量
-        // TODO 改为消息队列异步更新评论数量
         courseClient.updateCommentCount(commentDTO.getVid(), 1);
 
         return getCommentTree(videoComment, -1L);
@@ -176,7 +176,7 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
      */
     @Override
     @Transactional
-        public void likeOrNot(Long id, Boolean isLike) {
+    public void likeOrNot(Long id, Boolean isLike) {
         VideoComment videoComment = checkUserAndComment(id);
         Long userId = UserContext.getUser();
 
@@ -223,6 +223,28 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         }
     }
 
+    /**
+     * 获取用户的点赞点踩记录列表(ID和点赞点踩状态)
+     *
+     * @return 点赞点踩记录
+     */
+    @Override
+    public List<VideoCommentLikeVO> listLikeOrDislikeRecord() {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new CommentException(MessageConstant.NOT_LOGIN);
+        }
+        List<VideoCommentLike> videoCommentLikeList = videoCommentLikeMapper.selectList(
+                new LambdaQueryWrapper<VideoCommentLike>()
+                        .eq(VideoCommentLike::getUserId, userId)
+                        .ne(VideoCommentLike::getLikeStatus, VideoCommentLikeStatus.NONE)
+        );
+        if (CollUtil.isEmpty(videoCommentLikeList)) {
+            return List.of();
+        }
+        return BeanUtil.copyToList(videoCommentLikeList, VideoCommentLikeVO.class);
+    }
+
 
     private CommentTreeVO getCommentTree(VideoComment rootComment, Long limit) {
         CommentTreeVO commentTreeVO = BeanUtil.copyProperties(rootComment, CommentTreeVO.class);
@@ -234,13 +256,9 @@ public class VideoCommentServiceImpl extends ServiceImpl<VideoCommentMapper, Vid
         commentTreeVO.setToUser(userClient.getUserAndCoursesById(rootComment.getToUserId()).getData());
 
         if (rootComment.getRootId() == 0) {
-            QueryWrapper<VideoComment> queryWrapper = new QueryWrapper<VideoComment>()
-                    .eq("root_id", rootComment.getId())
-                    .orderByDesc("like_count - dislike_count");
-            if (limit > 0) {
-                queryWrapper.last("LIMIT " + limit);
-            }
-            List<VideoComment> childComments = baseMapper.selectList(queryWrapper);
+            List<VideoComment> childComments = baseMapper.selectComments(null, rootComment.getId(), limit, 0L);
+            childComments.sort(Comparator.comparingLong(comment -> comment.getDislikeCount() - comment.getLikeCount()));
+
             commentTreeVO.setReplies(
                     childComments.stream().parallel()
                             .map(childComment -> {

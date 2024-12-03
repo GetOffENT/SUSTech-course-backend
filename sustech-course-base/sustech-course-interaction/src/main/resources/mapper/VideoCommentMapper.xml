@@ -7,20 +7,32 @@
         WITH RECURSIVE CommentHierarchy AS (
             -- 从目标评论开始
             SELECT id
-            FROM comment_video
+            FROM video_comment
             WHERE id = #{commentId}
             UNION
             SELECT c.id
-            FROM comment_video c
+            FROM video_comment c
                      JOIN CommentHierarchy ch ON c.parent_id = ch.id)
         SELECT id
         FROM CommentHierarchy;
         ]]>
     </select>
+    <select id="selectComments" resultType="edu.sustech.interaction.entity.VideoComment">
+        SELECT *
+        FROM video_comment
+        WHERE root_id = #{rootId}
+        <if test="vid != null">
+            AND video_id = #{vid}
+        </if>
+        AND is_delete = 0
+        <if test="limit > 0">
+            LIMIT #{offset}, #{limit}
+        </if>
+    </select>
 
     <!-- 逻辑批量删除评论 -->
     <delete id="deleteBatchByIds">
-        UPDATE comment_video
+        UPDATE video_comment
         SET is_delete = 1
         WHERE id IN
         <foreach collection="commentIds" item="id" open="(" separator="," close=")">

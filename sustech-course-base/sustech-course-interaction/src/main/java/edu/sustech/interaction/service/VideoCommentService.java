@@ -4,7 +4,9 @@ import edu.sustech.interaction.entity.VideoComment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
+import edu.sustech.interaction.entity.vo.VideoCommentLikeVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,4 +59,11 @@ public interface VideoCommentService extends IService<VideoComment> {
      * @param isLike 是否点赞
      */
     void likeOrNot(Long id, Boolean isLike);
+
+    /**
+     * 获取用户的点赞点踩记录列表(ID和点赞点踩状态)
+     *
+     * @return 点赞点踩记录
+     */
+    List<VideoCommentLikeVO> listLikeOrDislikeRecord();
 }

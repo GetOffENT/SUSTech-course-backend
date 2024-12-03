@@ -4,6 +4,7 @@ import edu.sustech.common.result.Result;
 import edu.sustech.common.util.UserContext;
 import edu.sustech.interaction.entity.dto.CommentDTO;
 import edu.sustech.interaction.entity.vo.CommentTreeVO;
+import edu.sustech.interaction.entity.vo.VideoCommentLikeVO;
 import edu.sustech.interaction.service.VideoCommentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -101,5 +103,17 @@ public class VideoCommentController {
         log.info("用户【{}】设置评论【{}】的【{}】状态", UserContext.getUser(), id, isLike ? "点赞" : "点踩");
         videoCommentService.likeOrNot(id, isLike);
         return Result.success();
+    }
+
+    /**
+     * 获取用户的点赞点踩记录列表(ID和点赞点踩状态)
+     *
+     * @return 点赞点踩记录列表
+     */
+    @GetMapping("/list")
+    @ApiOperation("获取用户的点赞点踩记录列表")
+    public Result<List<VideoCommentLikeVO>> listLikeOrDislikeRecord() {
+        log.info("获取用户【{}】的点赞点踩记录列表", UserContext.getUser());
+        return Result.success(videoCommentService.listLikeOrDislikeRecord());
     }
 }
