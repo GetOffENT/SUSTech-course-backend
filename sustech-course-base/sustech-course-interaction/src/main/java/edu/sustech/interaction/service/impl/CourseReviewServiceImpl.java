@@ -63,7 +63,7 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
 
         Page<CourseReview> iPage = new Page<>(page, pageSize);
 
-        // 获取课程的平均分（不能使用分页获取课程平均分）
+        // 获取课程的平均分（不能使用分页查到的结果计算课程平均分）
         Double score = baseMapper.selectAverageScore(courseId);
 
         // 如果登录了就不查自己的评论，因为自己的评论会单独获取
@@ -76,6 +76,9 @@ public class CourseReviewServiceImpl extends ServiceImpl<CourseReviewMapper, Cou
         Page<CourseReview> courseReviewPage = baseMapper.selectPage(iPage, queryWrapper);
         List<CourseReview> courseReviews = courseReviewPage.getRecords();
         List<CourseReviewVO> courseReviewVOS = BeanUtil.copyToList(courseReviews, CourseReviewVO.class);
+
+        // 默认按照热度排序
+        courseReviewVOS.sort(Comparator.comparingLong(review -> review.getDislikeCount() - review.getLikeCount()));
 
         // 先根据获取所有的具体指标评分，再在代码中处理逻辑
         List<CourseReviewScore> courseReviewScores = courseReviewScoreMapper.selectList(
