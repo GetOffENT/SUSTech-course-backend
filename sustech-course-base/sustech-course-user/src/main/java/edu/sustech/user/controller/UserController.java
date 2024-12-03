@@ -12,8 +12,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -100,6 +102,19 @@ public class UserController {
     public Result<UserDTO> getUserAndCoursesDataById(@PathVariable Long uid) {
         log.info("获取用户信息: {}", uid);
         return Result.success(userService.getUserAndCoursesById(uid));
+    }
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 头像文件
+     * @return 头像地址
+     */
+    @ApiOperation("更新用户头像")
+    @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Result<String> updateUserAvatar(@RequestPart("file") MultipartFile file) {
+        log.info("更新用户头像: {}", file);
+        return Result.success(userService.updateUserAvatar(file));
     }
 
 

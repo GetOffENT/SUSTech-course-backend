@@ -8,6 +8,7 @@ import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
 import edu.sustech.user.entity.dto.RegisterByEmailDTO;
 import edu.sustech.api.entity.dto.UserDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -84,4 +85,12 @@ public interface UserService extends IService<User> {
      * @return 学生信息列表
      */
     List<StudentDTO> getSearchStudentList(String keyword);
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 头像文件
+     * @return 头像路径
+     */
+    String updateUserAvatar(MultipartFile file);
 }

@@ -2,10 +2,9 @@ package edu.sustech.api.client;
 
 import edu.sustech.common.result.Result;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,4 +45,13 @@ public interface ResourceClient {
      */
     @GetMapping("/resource/vod/play/{videoSourceId}")
     Result<String> getPlayInfo(@PathVariable String videoSourceId);
+
+    /**
+     * 文件上传
+     *
+     * @param file 文件
+     * @return 文件路径
+     */
+    @PostMapping(value = "/resource/oss/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result<String> upload(@RequestPart("file") MultipartFile file);
 }

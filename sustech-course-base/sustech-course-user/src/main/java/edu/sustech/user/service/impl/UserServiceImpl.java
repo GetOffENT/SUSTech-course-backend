@@ -8,13 +8,16 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.sustech.api.client.CourseClient;
+import edu.sustech.api.client.ResourceClient;
 import edu.sustech.api.entity.dto.StudentDTO;
 import edu.sustech.api.entity.dto.UserCourseInfoDTO;
 import edu.sustech.common.constant.CaptchaConstant;
 import edu.sustech.common.constant.MessageConstant;
 import edu.sustech.common.exception.RegisterException;
+import edu.sustech.common.exception.UserException;
 import edu.sustech.common.result.Result;
 import edu.sustech.common.enums.ResultCode;
+import edu.sustech.common.util.UserContext;
 import edu.sustech.user.entity.User;
 import edu.sustech.user.entity.dto.FoundByEmailDTO;
 import edu.sustech.user.entity.dto.LoginByEmailDTO;
@@ -29,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -54,6 +58,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final CaptchaService captchaService;
 
     private final CourseClient courseClient;
+
+    private final ResourceClient resourceClient;
 
     /**
      * 邮箱注册
@@ -261,6 +267,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .like(User::getEmail, keyword)
         );
         return BeanUtil.copyToList(users, StudentDTO.class);
+    }
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 头像文件
+     * @return 头像地址
+     */
+    @Override
+    public String updateUserAvatar(MultipartFile file) {
+        Long userId = UserContext.getUser();
+        if (userId == null) {
+            throw new UserException(MessageConstant.NO_PERMISSION);
+        }
+
+        Result<String> upload = resourceClient.upload(file);
+        if (Objects.equals(upload.getCode(), ResultCode.SUCCESS.code())) {
+            String avatar = upload.getData();
+            User user = User.builder()
+                    .id(userId)
+                    .avatar(avatar)
+                    .build();
+            int update = baseMapper.updateById(user);
+            if (update == 0) {
+                throw new UserException(MessageConstant.AVATAR_UPDATE_FAILED);
+            }
+            return avatar;
+        } else {
+            throw new UserException(upload.getMessage());
+        }
     }
 
     // 检查redis中的验证码
