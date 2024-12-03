@@ -323,7 +323,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
         Course course = BeanUtil.copyProperties(courseDetailDTO, Course.class);
         if (courseDetailDTO.getStatus() != null) {
-            courseDetailDTO.setStatus(CourseStatus.PENDING);
+            courseDetailDTO.setStatus(courseDetailDTO.getStatus());
+        } else {
+            course.setStatus(CourseStatus.PENDING);
         }
         int update = baseMapper.updateById(course);
         if (update == 0) {
